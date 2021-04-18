@@ -28,7 +28,7 @@ lastTimestamp = int(time.time())
 
 def main():
     if not os.path.isfile(CLIPNOTIFY_PATH):
-        print "Error: clipnotify not found at \"%s\". Did you run \"make\"?" % CLIPNOTIFY_PATH
+        print("Error: clipnotify not found at \"%s\". Did you run \"make\"?" % CLIPNOTIFY_PATH)
         return
 
     global indicator
@@ -79,7 +79,8 @@ def quit(_):
 def selectionMonitor():
     while True:
         os.popen(CLIPNOTIFY_PATH) # wait for selection to change, to avoid manual polling
-        selection = os.popen("xsel").read()
+        selection = os.popen("xsel -o").read()
+        # selection = ""
         # print selection
 
         selection = selection.strip()

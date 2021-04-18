@@ -1,11 +1,11 @@
 # Timestamp tray converter
 
-It's a small tool to easily convert timestamp to human-readable time. Only select the timestamp and it will automatically show time as a tray icon. See demo below: 
+It's a small tool to easily convert timestamp to human-readable time. Just highlight the timestamp and it will automatically show as time in the tray. See demo below: 
  
 ![demo](/docs/demo.gif)
 
 ## Usage
-Currently works only on Linux. Requires Python.  
+Currently works only on Linux. Requires Python and xsel package.  
 - `git clone https://github.com/mindaugasw/timestamp-tray-converter.git`
 - `cd timestamp-tray-converter`
 - `make`
