@@ -9,13 +9,13 @@ from gi.repository import Gtk as gtk, AppIndicator3 as appindicator
 # AppIndicator tutorial: https://fosspost.org/custom-system-tray-icon-indicator-linux/
 # AppIndicator usage examples: https://www.programcreek.com/python/example/103466/gi.repository.AppIndicator3
 
-# App options:
+# App configuration:
 TRAY_ICON = "clock-app" # can choose from /usr/share/icons
 TIMESTAMP_REGEX = "^\d{9,11}$" # will be used to determine if selection is a timestamp
 CLEAR_ON_SELECTION_CHANGE = True # whether to keep label text until new timestamp is detected, or clear label immediately on selection change
 LABEL_EMPTY = "" # string that will be used to clear label text
 USE_RELATIVE_TIME = True # whether print relative time or full datetime
-RELATIVE_FRACTIONAL_FORMAT = "%.1f" # in relative mode used for printing eg. 5.5 minutes ago
+RELATIVE_FRACTIONAL_FORMAT = "%.1f" # how many decimal places to print in relative mode
 DATETIME_FORMAT = "%Y-%m-%d   %H:%M:%S" # datetime string format when using datetime mode
 
 TRAY_APP_ID = "timestamp-tray-converter"
@@ -82,7 +82,7 @@ def selectionMonitor():
             lastTimestamp = selection
 
             if USE_RELATIVE_TIME:
-                refreshTimestamp(selection)
+                showRelativeTime(selection)
             else:
                 showDatetime(selection)
             
@@ -92,7 +92,7 @@ def showDatetime(timestamp):
     labelText = "%s - %s" % (timestamp, datetimeText)
     indicator.set_label(labelText, "")
 
-def refreshTimestamp(timestamp):
+def showRelativeTime(timestamp):
     diffSigned = int(time.time()) - int(timestamp)
     diff = abs(diffSigned)
 
