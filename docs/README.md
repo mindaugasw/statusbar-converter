@@ -5,6 +5,7 @@ It's a small tool to easily convert timestamp to human-readable time. Only selec
 ![demo](/docs/demo.gif)
 
 ## Usage
+Currently works only on Linux. Requires Python.  
 - `git clone https://github.com/mindaugasw/timestamp-tray-converter.git`
 - `cd timestamp-tray-converter`
 - `make`

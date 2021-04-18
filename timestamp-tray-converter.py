@@ -12,7 +12,7 @@ from gi.repository import Gtk as gtk, AppIndicator3 as appindicator
 # App configuration:
 TRAY_ICON = "clock-app" # can choose from /usr/share/icons
 TIMESTAMP_REGEX = "^\d{9,11}$" # will be used to determine if selection is a timestamp
-CLEAR_ON_SELECTION_CHANGE = True # whether to keep label text until new timestamp is detected, or clear label immediately on selection change
+CLEAR_ON_SELECTION_CHANGE = False # whether to keep label text until new timestamp is detected, or clear label immediately on selection change
 LABEL_EMPTY = "" # string that will be used to clear label text
 USE_RELATIVE_TIME = True # whether print relative time or full datetime
 RELATIVE_FRACTIONAL_FORMAT = "%.1f" # how many decimal places to print in relative mode
@@ -43,6 +43,11 @@ def main():
 def menu():
     menu = gtk.Menu()
 
+    # Clear command
+    clear_command = gtk.MenuItem("Clear")
+    clear_command.connect("activate", clear)
+    menu.append(clear_command)
+
     # Refresh - update "time ago" text for last copied timestamp
     refresh_command = gtk.MenuItem("Refresh last timestamp")
     refresh_command.connect("activate", refresh)
@@ -56,9 +61,16 @@ def menu():
     menu.show_all()
     return menu
 
+# clear label text. Can be used if app is configured to not clear automatically
+def clear(_):
+    indicator.set_label(LABEL_EMPTY, "")
+
 # update "time ago" text for last copied timestamp
 def refresh(_):
-    refreshTimestamp(lastTimestamp)
+    if USE_RELATIVE_TIME:
+        showRelativeTime(lastTimestamp)
+    else:
+        showDatetime(lastTimestamp)
 
 def quit(_):
   gtk.main_quit()
@@ -85,7 +97,6 @@ def selectionMonitor():
                 showRelativeTime(selection)
             else:
                 showDatetime(selection)
-            
 
 def showDatetime(timestamp):
     datetimeText = datetime.datetime.fromtimestamp(float(timestamp)).strftime(DATETIME_FORMAT)
