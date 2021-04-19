@@ -19,7 +19,7 @@ RELATIVE_FRACTIONAL_FORMAT = "%.1f" # how many decimal places to print in relati
 DATETIME_FORMAT = "%Y-%m-%d   %H:%M:%S" # datetime string format when using datetime mode
 
 TRAY_APP_ID = "timestamp-tray-converter"
-CLIPNOTIFY_PATH = "./clipnotify/clipnotify"
+CLIPNOTIFY_PATH = os.path.dirname(__file__) + "/clipnotify/clipnotify"
 
 global indicator
 global lastTimestamp
