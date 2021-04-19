@@ -16,6 +16,7 @@ CLEAR_ON_SELECTION_CHANGE = False # whether to keep label text until new timesta
 LABEL_EMPTY = "" # string that will be used to clear label text
 USE_RELATIVE_TIME = True # whether print relative time or full datetime
 RELATIVE_FRACTIONAL_FORMAT = "%.1f" # how many decimal places to print in relative mode
+RELATIVE_SHOW_TIME = True # if enabled, will also print exact time timestamps 1-24h in the past/future
 DATETIME_FORMAT = "%Y-%m-%d   %H:%M:%S" # datetime string format when using datetime mode
 
 TRAY_APP_ID = "timestamp-tray-converter"
@@ -108,13 +109,19 @@ def showRelativeTime(timestamp):
     diffSigned = int(time.time()) - int(timestamp)
     diff = abs(diffSigned)
 
+    timeText = ""
+
     if diff < 60: # up to 60 seconds, show seconds
         diffText = str(diff) + " s"
     elif diff < 600: # up to 10 minutes, show minutes (fractional)
         diffText = str(RELATIVE_FRACTIONAL_FORMAT % (diff / 60.0)) + " min"
     elif diff < 3600: # up to 60 minutes, show minutes
+        if RELATIVE_SHOW_TIME:
+            timeText = datetime.datetime.fromtimestamp(float(timestamp)).strftime(" (%H:%M)")
         diffText = str(diff / 60) + " min"
     elif diff < 86400: # up to 1 day, show hours (fractional)
+        if RELATIVE_SHOW_TIME:
+            timeText = datetime.datetime.fromtimestamp(float(timestamp)).strftime(" (%H:%M)")
         diffText = str(RELATIVE_FRACTIONAL_FORMAT % (diff / 3600.0)) + " h"
     elif diff < 2678400: # up to 1 month, show days (fractional)
         diffText = str(RELATIVE_FRACTIONAL_FORMAT % (diff / 86400.0)) + " days"
@@ -126,11 +133,11 @@ def showRelativeTime(timestamp):
         diffText = str(diff / 31536000) + " years"
 
     if diffSigned > 0:
-        labelFormat = "{0} - {1} ago"
+        labelFormat = "{0} - {1} ago{2}"
     else:
-        labelFormat = "{0} - in {1}"
+        labelFormat = "{0} - in {1}{2}"
 
-    labelText = labelFormat.format(timestamp, diffText)
+    labelText = labelFormat.format(timestamp, diffText, timeText)
     indicator.set_label(labelText, "")
 
 if __name__ == "__main__":
