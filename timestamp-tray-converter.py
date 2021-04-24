@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 import os, gi, thread, re, time, datetime
 gi.require_version('Gtk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
@@ -10,17 +8,56 @@ from gi.repository import Gtk as gtk, AppIndicator3 as appindicator
 # AppIndicator usage examples: https://www.programcreek.com/python/example/103466/gi.repository.AppIndicator3
 
 # App configuration:
+TRAY_APP_ID = "timestamp-tray-converter"
+CLIPNOTIFY_PATH = os.path.dirname(__file__) + "/clipnotify/clipnotify"
 TRAY_ICON = "clock-app" # can choose from /usr/share/icons
 TIMESTAMP_REGEX = "^\d{9,11}$" # will be used to determine if selection is a timestamp
 CLEAR_ON_SELECTION_CHANGE = False # whether to keep label text until new timestamp is detected, or clear label immediately on selection change
 LABEL_EMPTY = "" # string that will be used to clear label text
-USE_RELATIVE_TIME = True # whether print relative time or full datetime
-RELATIVE_FRACTIONAL_FORMAT = "%.1f" # how many decimal places to print in relative mode
-RELATIVE_SHOW_TIME = True # if enabled, will also print exact time timestamps 1-24h in the past/future
-DATETIME_FORMAT = "%Y-%m-%d   %H:%M:%S" # datetime string format when using datetime mode
+TIME_FRACTIONAL_FORMAT = "%.1f" # how many decimal places to print in for relative time
 
-TRAY_APP_ID = "timestamp-tray-converter"
-CLIPNOTIFY_PATH = os.path.dirname(__file__) + "/clipnotify/clipnotify"
+# Time string formatting
+# Structure: [max time diff in seconds, string format]
+#
+# Format is chosen based on time difference (in seconds). Each sub-array is checked
+# if time diff is less than 1st element. If yes, 2nd element is used as format.
+# If no format matches, last one is used as default.
+#
+# Supported format options:
+# - all strftime() formatting
+# - timestamp
+# - relText - units for relative time (s/min/h/days/months/years)
+# - relNumber - relative time number
+# - relNumberDec - relative time number, formatted against TIME_FRACTIONAL_FORMAT
+# - relIn - if timestamp is in the future, will be "in ". Otherwise empty.
+# - relAgo - if timestamp is in the past, will be " ago". Otherwise empty.
+FORMATS = [
+    # up to 60 s, e.g. "1619295908 - 59 s ago"
+    [60, "{timestamp} - {relIn}{relNumber} {relText}{relAgo}"],
+    
+    # up to 10 min, e.g. "1619295908 - 5.5 min ago"
+    [600, "{timestamp} - {relIn}{relNumberDec} {relText}{relAgo}"],
+
+    # up to 1 h, e.g. "1619295908 - 29 min ago (15:10)"
+    [3600, "{timestamp} - {relIn}{relNumber} {relText}{relAgo} (%H:%M)"],
+    
+    # up to 1 day, e.g. "1619295908 - 5.5 h ago (12:00)"
+    [86400, "{timestamp} - {relIn}{relNumberDec} {relText}{relAgo} (%H:%M)"],
+
+    # up to 1 month, e.g. "1619295908 - 5.5 days ago (5th 12:00)"
+    [2678400, "{timestamp} - {relIn}{relNumberDec} {relText}{relAgo} (%d{dayOrdinal} %H:%M)"],
+
+    # up to 1 year, e.g. "1619295908 - 9.2 months ago"
+    [31536000, "{timestamp} - {relIn}{relNumberDec} {relText}{relAgo}"],
+
+    # up to 75 years, e.g. "1619295908 - 5.8 years ago ('15)"
+    [2365200000, "{timestamp} - {relIn}{relNumberDec} {relText}{relAgo} ('%y)"],
+
+    # up to many years, e.g. "1619295908 - 420 years ago"
+    # default
+    [2365200000, "{timestamp} - {relIn}{relNumberDec} {relText}{relAgo}"],
+]
+
 
 global indicator
 global lastTimestamp
@@ -44,16 +81,19 @@ def main():
 def menu():
     menu = gtk.Menu()
 
-    # Clear command
-    clear_command = gtk.MenuItem("Clear")
-    clear_command.connect("activate", clear)
-    menu.append(clear_command)
+    # Copy current timestamp
+    # TODO
 
     # Refresh - update "time ago" text for last copied timestamp
     refresh_command = gtk.MenuItem("Refresh last timestamp")
     refresh_command.connect("activate", refresh)
     menu.append(refresh_command)
 
+    # Clear command
+    clear_command = gtk.MenuItem("Clear")
+    clear_command.connect("activate", clear)
+    menu.append(clear_command)
+    
     # Exit command
     exit_command = gtk.MenuItem('Exit')
     exit_command.connect('activate', quit)
@@ -81,7 +121,6 @@ def selectionMonitor():
     while True:
         os.popen(CLIPNOTIFY_PATH) # wait for selection to change, to avoid manual polling
         selection = os.popen("xsel -o").read()
-        # selection = ""
         # print selection
 
         selection = selection.strip()
@@ -94,51 +133,84 @@ def selectionMonitor():
         else:
             global lastTimestamp
             lastTimestamp = selection
+            
+            labelText = formatTimestamp(selection)
+            indicator.set_label(labelText, "")
 
-            if USE_RELATIVE_TIME:
-                showRelativeTime(selection)
-            else:
-                showDatetime(selection)
+# Get data for showing relative time
+# Automatically chooses second/minute/day/month/year units
+# and returns numeric difference, numeric difference as float, and
+# unit name as string (s/min/h/days/months/years)
+#
+# Returns [int diff, float diff, string unitName]
+def getRelativeTime(timestamp):
+    diff = abs(int(time.time()) - timestamp)
+    print(diff)
 
-def showDatetime(timestamp):
-    datetimeText = datetime.datetime.fromtimestamp(float(timestamp)).strftime(DATETIME_FORMAT)
-    labelText = "%s - %s" % (timestamp, datetimeText)
-    indicator.set_label(labelText, "")
-
-def showRelativeTime(timestamp):
-    diffSigned = int(time.time()) - int(timestamp)
-    diff = abs(diffSigned)
-
-    timeText = ""
-
-    if diff < 60: # up to 60 seconds, show seconds
-        diffText = str(diff) + " s"
-    elif diff < 600: # up to 10 minutes, show minutes (fractional)
-        diffText = str(RELATIVE_FRACTIONAL_FORMAT % (diff / 60.0)) + " min"
+    if diff < 60: # up to 60 seconds, return seconds
+        return [diff, float(diff), "s"]
     elif diff < 3600: # up to 60 minutes, show minutes
-        if RELATIVE_SHOW_TIME:
-            timeText = datetime.datetime.fromtimestamp(float(timestamp)).strftime(" (%H:%M)")
-        diffText = str(diff / 60) + " min"
-    elif diff < 86400: # up to 1 day, show hours (fractional)
-        if RELATIVE_SHOW_TIME:
-            timeText = datetime.datetime.fromtimestamp(float(timestamp)).strftime(" (%H:%M)")
-        diffText = str(RELATIVE_FRACTIONAL_FORMAT % (diff / 3600.0)) + " h"
-    elif diff < 2678400: # up to 1 month, show days (fractional)
-        diffText = str(RELATIVE_FRACTIONAL_FORMAT % (diff / 86400.0)) + " days"
-    elif diff < 31536000: # up to 1 year, show months (fractional)
-        diffText = str(RELATIVE_FRACTIONAL_FORMAT % (diff / 2678400.0)) + " months"
-    elif diff < 315360000: # up to 10 years, show years (fractional)
-        diffText = str(RELATIVE_FRACTIONAL_FORMAT % (diff / 31536000.0)) + " years"
+        return [diff / 60, diff / 60.0, "min"]
+    elif diff < 86400: # up to 1 day, show hours
+        return [diff / 3600, diff / 3600.0, "h"]
+    elif diff < 2678400: # up to 1 month, show days
+        return [diff / 86400, diff / 86400.0, "days"]
+    elif diff < 31536000: # up to 1 year, show months
+        return [diff / 2678400, diff / 2678400.0, "months"]
     else: # show years
-        diffText = str(diff / 31536000) + " years"
+        return [diff / 31536000, diff / 31536000.0, "years"]
 
-    if diffSigned > 0:
-        labelFormat = "{0} - {1} ago{2}"
+# Get day ordinal number (st/nd/rd/th) for given timestamp
+def getDayOrdinal(timestamp):
+    day = datetime.datetime.fromtimestamp(timestamp).day
+
+    if day == 1 or day == 21 or day == 31:
+        return "st"
+    elif day == 2 or day == 22:
+        return "nd"
+    elif day == 3 or day == 23:
+        return "rd"
     else:
-        labelFormat = "{0} - in {1}{2}"
+        return "th"
 
-    labelText = labelFormat.format(timestamp, diffText, timeText)
-    indicator.set_label(labelText, "")
+# The main method for all formatting stuff: get timestamp, return ready-to-print string
+def formatTimestamp(timestamp):
+    timestamp = int(timestamp)
+
+    relNumber, relNumberDec, relText = getRelativeTime(timestamp)
+    relNumberDec = TIME_FRACTIONAL_FORMAT % relNumberDec
+
+    if (timestamp - time.time() < 0):
+        relIn = ""
+        relAgo = " ago"
+    else:
+        relIn = "in "
+        relAgo = ""
+
+    diff = abs(int(time.time()) - timestamp)
+
+    chosenFormat = None
+    for f in FORMATS:
+        if (diff < f[0]):
+            chosenFormat = f[1]
+            break
+
+    # if no format matched, use the last one
+    if chosenFormat == None:
+        chosenFormat = FORMATS[-1][1]
+
+
+    text = chosenFormat.format(
+        timestamp = timestamp,
+        relIn = relIn,
+        relAgo = relAgo,
+        relNumber = relNumber,
+        relNumberDec = relNumberDec,
+        relText = relText,
+        dayOrdinal = getDayOrdinal(timestamp))
+    text = datetime.datetime.fromtimestamp(timestamp).strftime(text)
+
+    return text
 
 if __name__ == "__main__":
     main()
