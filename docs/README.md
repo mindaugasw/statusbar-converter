@@ -10,4 +10,4 @@ Currently works only on Linux. Requires Python and xsel package.
 - `cd timestamp-tray-converter`
 - `make`
 - Optionally change app configuration in `timestamp-tray-converter.py`
-- Run `./timestamp-tray-converter.py` or add it to your startup items
+- Run `python ./timestamp-tray-converter.py` or add it to your startup items

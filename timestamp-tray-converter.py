@@ -2,6 +2,7 @@ import os, gi, thread, re, time, datetime
 gi.require_version('Gtk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
 from gi.repository import Gtk as gtk, AppIndicator3 as appindicator
+from subprocess import Popen, PIPE
 
 # Selection monitoring tutorial: https://askubuntu.com/a/1167129/1152277
 # AppIndicator tutorial: https://fosspost.org/custom-system-tray-icon-indicator-linux/
@@ -12,7 +13,7 @@ TRAY_APP_ID = "timestamp-tray-converter"
 CLIPNOTIFY_PATH = os.path.dirname(__file__) + "/clipnotify/clipnotify"
 TRAY_ICON = "clock-app" # can choose from /usr/share/icons
 TIMESTAMP_REGEX = "^\d{9,11}$" # will be used to determine if selection is a timestamp
-CLEAR_ON_SELECTION_CHANGE = False # whether to keep label text until new timestamp is detected, or clear label immediately on selection change
+CLEAR_ON_SELECTION_CHANGE = False # whether to keep label text until new timestamp is detected, or clear label immediately on selection change # seems to be kinda buggy
 LABEL_EMPTY = "" # string that will be used to clear label text
 TIME_FRACTIONAL_FORMAT = "%.1f" # how many decimal places to print in for relative time
 
@@ -24,13 +25,14 @@ TIME_FRACTIONAL_FORMAT = "%.1f" # how many decimal places to print in for relati
 # If no format matches, last one is used as default.
 #
 # Supported format options:
-# - all strftime() formatting
+# - all strftime() formatting (https://strftime.org/)
 # - timestamp
 # - relText - units for relative time (s/min/h/days/months/years)
 # - relNumber - relative time number
 # - relNumberDec - relative time number, formatted against TIME_FRACTIONAL_FORMAT
 # - relIn - if timestamp is in the future, will be "in ". Otherwise empty.
 # - relAgo - if timestamp is in the past, will be " ago". Otherwise empty.
+# - dayOrdinal - timestamp day's ordinal value text like st/nd/rd/th
 FORMATS = [
     # up to 60 s, e.g. "1619295908 - 59 s ago"
     [60, "{timestamp} - {relIn}{relNumber} {relText}{relAgo}"],
@@ -45,7 +47,7 @@ FORMATS = [
     [86400, "{timestamp} - {relIn}{relNumberDec} {relText}{relAgo} (%H:%M)"],
 
     # up to 1 month, e.g. "1619295908 - 5.5 days ago (5th 12:00)"
-    [2678400, "{timestamp} - {relIn}{relNumberDec} {relText}{relAgo} (%d{dayOrdinal} %H:%M)"],
+    [2678400, "{timestamp} - {relIn}{relNumberDec} {relText}{relAgo} (%m-%d  %H:%M)"],
 
     # up to 1 year, e.g. "1619295908 - 9.2 months ago"
     [31536000, "{timestamp} - {relIn}{relNumberDec} {relText}{relAgo}"],
@@ -82,38 +84,46 @@ def menu():
     menu = gtk.Menu()
 
     # Copy current timestamp
-    # TODO
+    copyCurrentCommand = gtk.MenuItem("Copy current timestamp")
+    copyCurrentCommand.connect("activate", copyCurrentTimestamp_command)
+    menu.append(copyCurrentCommand)
 
     # Refresh - update "time ago" text for last copied timestamp
-    refresh_command = gtk.MenuItem("Refresh last timestamp")
-    refresh_command.connect("activate", refresh)
-    menu.append(refresh_command)
+    refreshCommand = gtk.MenuItem("Show last timestamp")
+    refreshCommand.connect("activate", showLastTimestamp_command)
+    menu.append(refreshCommand)
 
     # Clear command
-    clear_command = gtk.MenuItem("Clear")
-    clear_command.connect("activate", clear)
-    menu.append(clear_command)
+    clearCommand = gtk.MenuItem("Clear")
+    clearCommand.connect("activate", clear_command)
+    menu.append(clearCommand)
     
     # Exit command
-    exit_command = gtk.MenuItem('Exit')
-    exit_command.connect('activate', quit)
-    menu.append(exit_command)
+    exitCommand = gtk.MenuItem('Exit')
+    exitCommand.connect('activate', quit_command)
+    menu.append(exitCommand)
 
     menu.show_all()
     return menu
 
+def copyCurrentTimestamp_command(_):
+    timestamp = int(time.time())
+    text = str(timestamp)
+
+    p = Popen(["xsel", "-bi"], stdin=PIPE)
+    p.communicate(input=text)
+
+    refreshView(timestamp)
+
 # clear label text. Can be used if app is configured to not clear automatically
-def clear(_):
+def clear_command(_):
     indicator.set_label(LABEL_EMPTY, "")
 
 # update "time ago" text for last copied timestamp
-def refresh(_):
-    if USE_RELATIVE_TIME:
-        showRelativeTime(lastTimestamp)
-    else:
-        showDatetime(lastTimestamp)
+def showLastTimestamp_command(_):
+    refreshView(lastTimestamp)
 
-def quit(_):
+def quit_command(_):
   gtk.main_quit()
 
 # monitor selection changes and update label
@@ -121,7 +131,7 @@ def selectionMonitor():
     while True:
         os.popen(CLIPNOTIFY_PATH) # wait for selection to change, to avoid manual polling
         selection = os.popen("xsel -o").read()
-        # print selection
+        # print(selection)
 
         selection = selection.strip()
         regexResult = re.match(TIMESTAMP_REGEX, selection)
@@ -131,11 +141,7 @@ def selectionMonitor():
                 indicator.set_label(LABEL_EMPTY, "")
             continue
         else:
-            global lastTimestamp
-            lastTimestamp = selection
-            
-            labelText = formatTimestamp(selection)
-            indicator.set_label(labelText, "")
+            refreshView(selection)
 
 # Get data for showing relative time
 # Automatically chooses second/minute/day/month/year units
@@ -145,7 +151,6 @@ def selectionMonitor():
 # Returns [int diff, float diff, string unitName]
 def getRelativeTime(timestamp):
     diff = abs(int(time.time()) - timestamp)
-    print(diff)
 
     if diff < 60: # up to 60 seconds, return seconds
         return [diff, float(diff), "s"]
@@ -173,7 +178,7 @@ def getDayOrdinal(timestamp):
     else:
         return "th"
 
-# The main method for all formatting stuff: get timestamp, return ready-to-print string
+# The main method for all formatting stuff: receive timestamp, return ready-to-print string
 def formatTimestamp(timestamp):
     timestamp = int(timestamp)
 
@@ -211,6 +216,16 @@ def formatTimestamp(timestamp):
     text = datetime.datetime.fromtimestamp(timestamp).strftime(text)
 
     return text
+
+# Refresh tray icon label to show given timestamp
+def refreshView(timestamp):
+    timestamp = int(timestamp)
+
+    global lastTimestamp
+    lastTimestamp = timestamp
+            
+    labelText = formatTimestamp(timestamp)
+    indicator.set_label(labelText, "")
 
 if __name__ == "__main__":
     main()
