@@ -1,39 +1,34 @@
 import os
 from abc import ABCMeta
 import rumps
+from src.Helper.FilesystemHelper import FilesystemHelper
 from src.Service.StatusbarApp import StatusbarApp
 
 
+# TODO remove abstract class in case separate class won't be needed in linux
 class ConfigFileManager(metaclass=ABCMeta):
-    CONFIG_GLOBAL = 'config.yml'
-    CONFIG_LOCAL = 'config.local.yml'
-    CONFIG_LOCAL_EXAMPLE = 'config.local.example.yml'
+    CONFIG_APP_PATH: str
+    CONFIG_USER_PATH: str
+    CONFIG_USER_EXAMPLE_PATH: str
 
-    def getLocalConfigContent(self) -> str:
-        if not self._localConfigExists():
-            self._createLocalConfig()
+    def __init__(self):
+        self.CONFIG_APP_PATH = FilesystemHelper.getProjectDir() + '/config.app.yml'
+        self.CONFIG_USER_EXAMPLE_PATH = FilesystemHelper.getProjectDir() + '/config.user.example.yml'
+        self.CONFIG_USER_PATH = rumps.application_support(StatusbarApp.APP_NAME) + '/config.yml'
 
-        with open(self.getLocalConfigFullPath(), 'r') as localConfigFile:
-            return localConfigFile.read()
+    def getAppConfigContent(self) -> str:
+        with open(self.CONFIG_APP_PATH, 'r') as appConfigFile:
+            return appConfigFile.read()
 
-    def getGlobalConfigContent(self) -> str:
-        with open(self._getGlobalConfigFullPath(), 'r') as globalConfigFile:
-            return globalConfigFile.read()
+    def getUserConfigContent(self) -> str:
+        if not self._userConfigExists():
+            self._createUserConfig()
 
-    def getLocalConfigFullPath(self) -> str:
-        return f'{self._getTempFilesDirectory()}/{self.CONFIG_LOCAL}'
+        with open(self.CONFIG_USER_PATH, 'r') as userConfigFile:
+            return userConfigFile.read()
 
-    def _getTempFilesDirectory(self) -> str:
-        return rumps.application_support(StatusbarApp.APP_NAME)
+    def _userConfigExists(self) -> bool:
+        return os.path.isfile(self.CONFIG_USER_PATH)
 
-    def _localConfigExists(self) -> bool:
-        return os.path.isfile(self.getLocalConfigFullPath())
-
-    def _createLocalConfig(self) -> None:
-        copyFrom = '../' + self.CONFIG_LOCAL_EXAMPLE
-        copyTo = self.getLocalConfigFullPath()
-
-        os.popen(f'cp "{copyFrom}" "{copyTo}"')
-
-    def _getGlobalConfigFullPath(self) -> str:
-        return '../' + self.CONFIG_GLOBAL
+    def _createUserConfig(self) -> None:
+        os.popen(f'cp "{self.CONFIG_USER_EXAMPLE_PATH}" "{self.CONFIG_USER_PATH}"')

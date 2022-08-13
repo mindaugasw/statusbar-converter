@@ -16,8 +16,16 @@ class Configuration:
     DEBUG = 'debug'
 
     _configFileManager: ConfigFileManager
-    _configGlobal: dict
-    _configLocal: dict
+    _configApp: dict
+    """
+    Default config of the application.
+    Located in the project directory, should never be changed by the user.
+    """
+    _configUser: dict
+    """
+    End-user overrides of app config.
+    Located in user temp files directory, can be changed by the user.
+    """
     _configInitialized = False
 
     def __init__(self, configFileManager: ConfigFileManager):
@@ -26,22 +34,26 @@ class Configuration:
     def get(self, key: str):
         self._initializeConfig()
 
-        localValue = self._getFromConfigData(key, self._configLocal)
+        userValue = self._getFromConfigData(key, self._configUser)
 
-        if localValue is not None:
-            return localValue
+        if userValue is not None:
+            return userValue
 
-        return self._getFromConfigData(key, self._configGlobal)
+        return self._getFromConfigData(key, self._configApp)
 
     def _initializeConfig(self) -> None:
         if self._configInitialized:
             return
 
-        globalConfigContent = self._configFileManager.getGlobalConfigContent()
-        self._configGlobal = yaml.load(globalConfigContent, yaml.Loader)
+        self._configApp = yaml.load(
+            self._configFileManager.getAppConfigContent(),
+            yaml.Loader,
+        )
 
-        localConfigContent = self._configFileManager.getLocalConfigContent()
-        self._configLocal = yaml.load(localConfigContent, yaml.Loader)
+        self._configUser = yaml.load(
+            self._configFileManager.getUserConfigContent(),
+            yaml.Loader,
+        )
 
         self._configInitialized = True
 

@@ -11,14 +11,15 @@ from src.Service.StatusbarApp import StatusbarApp
 from src.Service.TimestampParser import TimestampParser
 from src.Service.TimestampTextFormatter import TimestampTextFormatter
 import src.events as events
+from src.Helper.FilesystemHelper import FilesystemHelper
 from src.Entity.Timestamp import Timestamp
 
 
 class StatusbarAppMacOs(StatusbarApp):
     WEBSITE = 'https://github.com/mindaugasw/timestamp-statusbar-converter'
-    ICON_DEFAULT = '../assets/icon.png'
-    ICON_FLASH = '../assets/icon_flash.png'
     ICON_FLASH_DURATION = 0.35
+    ICON_DEFAULT: str
+    ICON_FLASH: str
 
     _formatter: TimestampTextFormatter
     _clipboard: ClipboardManager
@@ -39,6 +40,9 @@ class StatusbarAppMacOs(StatusbarApp):
         config: Configuration,
         configFileManager: ConfigFileManager,
     ):
+        self.ICON_DEFAULT = FilesystemHelper.getProjectDir() + '/assets/icon.png'
+        self.ICON_FLASH = FilesystemHelper.getProjectDir() + '/assets/icon_flash.png'
+
         self._formatter = formatter
         self._clipboard = clipboard
         self._timestampParser = timestampParser
@@ -126,7 +130,7 @@ class StatusbarAppMacOs(StatusbarApp):
         events.timestampCleared()
 
     def _onMenuClickEditConfiguration(self, item: MenuItem) -> None:
-        configFilePath = self._configFileManager.getLocalConfigFullPath()
+        configFilePath = self._configFileManager.CONFIG_USER_PATH
 
         alertResult = rumps.alert(
             title='Edit configuration',
@@ -134,7 +138,7 @@ class StatusbarAppMacOs(StatusbarApp):
             f'{configFilePath}\n\n'
             'After editing, the application must be restarted.\n\n'
             'All supported configuration can be found at:\n'
-            'https://github.com/mindaugasw/timestamp-statusbar-converter/blob/master/config.yml',
+            'https://github.com/mindaugasw/timestamp-statusbar-converter/blob/master/config.app.yml',
             ok='Open in default editor',
             cancel='Close',
             icon_path=self.ICON_FLASH,
@@ -149,7 +153,10 @@ class StatusbarAppMacOs(StatusbarApp):
         # https://stackoverflow.com/a/4217323/4110469
 
     def _onMenuClickRestart(self, item: MenuItem) -> None:
-        os.execl(sys.executable, os.path.abspath(__file__), *sys.argv)
+        # When launching app from command line, PYTHONPATH= env var should be
+        # included, pointing to project directory. Here it's not needed since
+        # new process inherits environment of old one
+        os.execl(sys.executable, '-m src.main', *sys.argv)
 
     def _flashIcon(self) -> None:
         self._rumpsApp.icon = self.ICON_FLASH
