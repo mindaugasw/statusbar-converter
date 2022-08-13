@@ -12,13 +12,14 @@ class TimestampParser:
     REGEX_PATTERN = '^\\d{1,14}$'
     MILLIS_MIN_CHARACTERS = 12
     """
-    If number has this number of characters, it will be considered a millisecond timestamp
+    If a number has between MILLIS_MIN_CHARACTERS and MILLIS_MAX_CHARACTERS digits,
+    it will be considered millisecond timestamp. Otherwise regular timestamp.
     """
     MILLIS_MAX_CHARACTERS = 14
     AUTO_CLEAR_SLEEP_INTERVAL = 5
     """
     If configuration to automatically clear timestamp after time is enabled,
-    this defines interval in seconds between checks if it's time to perform clear
+    this defines interval in seconds between auto clear checks
     """
 
     _debug: Debug

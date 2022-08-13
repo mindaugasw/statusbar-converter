@@ -11,10 +11,8 @@ class Configuration:
     FLASH_ICON_ON_CHANGE = 'flash_icon_on_change'
     CLIPBOARD_POLLING_INTERVAL = 'clipboard_polling_interval'
     FORMAT_ICON = 'format_icon'
-    FORMAT_MENU_LAST_TIMESTAMP = 'format_menu_last_timestamp'
-    FORMAT_MENU_LAST_DATETIME = 'format_menu_last_datetime'
-    FORMAT_MENU_CURRENT_TIMESTAMP = 'format_menu_current_timestamp'
-    FORMAT_MENU_CURRENT_DATETIME = 'format_menu_current_datetime'
+    MENU_ITEMS_LAST_TIMESTAMP = 'menu_items_last_timestamp'
+    MENU_ITEMS_CURRENT_TIMESTAMP = 'menu_items_current_timestamp'
     DEBUG = 'debug'
 
     _configFileManager: ConfigFileManager

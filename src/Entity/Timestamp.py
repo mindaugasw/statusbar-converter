@@ -1,8 +1,14 @@
+import time
+
+
 class Timestamp:
     seconds: int
     milliseconds: int | None
 
-    def __init__(self, seconds: int, milliseconds: int | None = None):
+    def __init__(self, seconds: int | None = None, milliseconds: int | None = None):
+        if seconds is None:
+            seconds = int(time.time())
+
         self.seconds = seconds
         self.milliseconds = milliseconds
 

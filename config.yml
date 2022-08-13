@@ -56,14 +56,17 @@ format_icon:
     # Must be last element in the list
     default: "{ts} - {r_float}"
 
-# Format to use for menu items "Last timestamp" and "Last datetime"
-format_menu_last_timestamp: "{ts_ms}"
-format_menu_last_datetime: "%Y-%m-%d %H:%M:%S"
+# Formatting template to use for menu items under "Last timestamp".
+# Supports the same formats as in "format_icon" configuration.
+menu_items_last_timestamp:
+    Last timestamp: "{ts_ms}"
+    Last datetime: "%Y-%m-%d %H:%M:%S"
 
-# Format for menu items "Current timestamp" and "Current datetime".
-# Will only affect copied value on click but not shown text in menu.
-format_menu_current_timestamp: "{ts}"
-format_menu_current_datetime: "%Y-%m-%d %H:%M:%S"
+# Formatting template to use for menu items under "Current timestamp".
+# Supports the same formats as in "format_icon" configuration.
+menu_items_current_timestamp:
+    Current timestamp: "{ts_ms}"
+    Current datetime: "%Y-%m-%d %H:%M:%S"
 
 # If enabled, will log additional info to the console
 debug: false
