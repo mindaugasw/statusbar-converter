@@ -1,6 +1,5 @@
 import os
-# TODO remove
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
 import rumps
 from src.Service.StatusbarApp import StatusbarApp
 
