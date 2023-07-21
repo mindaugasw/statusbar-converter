@@ -8,6 +8,8 @@ from src.Entity.Timestamp import Timestamp
 
 class TimestampParser:
     REGEX_PATTERN = '^\\d{1,14}$'
+    MIN_VALUE = 100000000  # 1973-03-03
+    MAX_VALUE = 9999999999  # 2286-11-20
     MILLIS_MIN_CHARACTERS = 12
     """
     If a number has between MILLIS_MIN_CHARACTERS and MILLIS_MAX_CHARACTERS digits,
@@ -16,8 +18,6 @@ class TimestampParser:
     MILLIS_MAX_CHARACTERS = 14
 
     _debug: Debug
-    _minValue: int
-    _maxValue: int
     _clearOnChange: bool
     _clearAfterTime: int
     _timestampSetAt: int | None = None
@@ -25,8 +25,6 @@ class TimestampParser:
     def __init__(self, config: Configuration, debug: Debug):
         self._debug = debug
 
-        self._minValue = config.get(config.TIMESTAMP_MIN)
-        self._maxValue = config.get(config.TIMESTAMP_MAX)
         self._clearOnChange = config.get(config.CLEAR_ON_CHANGE)
         self._clearAfterTime = config.get(config.CLEAR_AFTER_TIME)
 
@@ -73,7 +71,7 @@ class TimestampParser:
             seconds = number
             milliseconds = None
 
-        if self._minValue <= seconds <= self._maxValue:
+        if self.MIN_VALUE <= seconds <= self.MAX_VALUE:
             return Timestamp(seconds, milliseconds)
 
         return None
@@ -85,7 +83,7 @@ class TimestampParser:
         self._timestampSetAt = None
 
     def _clearTimestampAfterTime(self) -> None:
-        if self._clearAfterTime <= 0:
+        if self._clearAfterTime <= 0 or not self._timestampSetAt:
             return
 
         if int(time.time()) - self._timestampSetAt < self._clearAfterTime:

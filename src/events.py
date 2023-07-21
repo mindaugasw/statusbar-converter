@@ -10,8 +10,6 @@ Content is not yet parsed, so it's not necessarily a valid timestamp.
 @param content: New clipboard content
 """
 
-# Raised after clipboard change, if a valid timestamp was found.
-# Passed a Timestamp object
 timestampChanged = Event()
 """Raised when clipboard content changes, after parsing it and finding a valid timestamp.
 

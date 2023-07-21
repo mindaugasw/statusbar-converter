@@ -21,7 +21,7 @@ class ClipboardManagerMacOs(ClipboardManager):
         content = self._pb.get_contents(type=pasteboard.String, diff=True)
 
         # On the first call Pasteboard will return content copied before
-        # opening the app, which is we should not parse
+        # opening the app, which we should not parse
         if self._firstIteration:
             self._firstIteration = False
 
@@ -32,8 +32,8 @@ class ClipboardManagerMacOs(ClipboardManager):
         if content is None:
             return
 
+        # Avoid parsing huge texts to not impact performance
         if len(content) > self.MAX_CONTENT_LENGTH:
-            # Avoid parsing huge texts to not impact performance
             return
 
         events.clipboardChanged(content.strip())
@@ -42,5 +42,4 @@ class ClipboardManagerMacOs(ClipboardManager):
         try:
             self._pb.set_contents(content)
         except Exception as e:
-            # TODO create a custom exception class that allows passing previous exception
             raise Exception('Could not set clipboard content.\nOriginal exception: ' + str(e))

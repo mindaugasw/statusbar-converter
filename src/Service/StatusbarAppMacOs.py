@@ -1,23 +1,25 @@
 import os
 import subprocess
 import sys
-import threading
 import time
 from rumps import App, MenuItem, rumps
+import src.events as events
+from src.Service.AppLoop import AppLoop
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
 from src.Service.StatusbarApp import StatusbarApp
 from src.Service.TimestampParser import TimestampParser
 from src.Service.TimestampTextFormatter import TimestampTextFormatter
-import src.events as events
-from src.Helper.FilesystemHelper import FilesystemHelper
+from src.Service.FilesystemHelper import FilesystemHelper
 from src.Entity.Timestamp import Timestamp
+
+# TODO configure pycharm to use python venv
+# TODO install venv with virtualenv package
 
 
 class StatusbarAppMacOs(StatusbarApp):
-    WEBSITE = 'https://github.com/mindaugasw/timestamp-statusbar-converter'
-    ICON_FLASH_DURATION = 0.35
+    WEBSITE = 'https://github.com/mindaugasw/statusbar-converter'
     ICON_DEFAULT: str
     ICON_FLASH: str
 
@@ -31,6 +33,7 @@ class StatusbarAppMacOs(StatusbarApp):
     _menuTemplatesLastTimestamp: dict[str, str]
     _menuTemplatesCurrentTimestamp: dict[str, str]
     _flashIconOnChange: bool
+    _flashIconSetAt: float | None = None
 
     def __init__(
         self,
@@ -39,9 +42,10 @@ class StatusbarAppMacOs(StatusbarApp):
         timestampParser: TimestampParser,
         config: Configuration,
         configFileManager: ConfigFileManager,
+        filesystemHelper: FilesystemHelper
     ):
-        self.ICON_DEFAULT = FilesystemHelper.getProjectDir() + '/assets/icon.png'
-        self.ICON_FLASH = FilesystemHelper.getProjectDir() + '/assets/icon_flash.png'
+        self.ICON_DEFAULT = filesystemHelper.getAssetsDir() + '/icon.png'
+        self.ICON_FLASH = filesystemHelper.getAssetsDir() + '/icon_flash.png'
 
         self._formatter = formatter
         self._clipboard = clipboard
@@ -53,7 +57,8 @@ class StatusbarAppMacOs(StatusbarApp):
         self._flashIconOnChange = config.get(config.FLASH_ICON_ON_CHANGE)
 
         events.timestampChanged.append(self._onTimestampChange)
-        events.timestampCleared.append(self._onTimestampClear)
+        events.timestampClear.append(self._onTimestampClear)
+        events.appLoopIteration.append(self._clearIconFlash)
 
     def createApp(self) -> None:
         self._menuItems = self._createMenuItems()
@@ -110,8 +115,21 @@ class StatusbarAppMacOs(StatusbarApp):
             self._menuItems[key].title = self._formatter.format(timestamp, template)
 
         if self._flashIconOnChange:
-            # TODO investigate if it can be solved without threading to remove new thread overhead. Use tasks maybe?
-            threading.Thread(target=self._flashIcon).start()
+            self._rumpsApp.icon = self.ICON_FLASH
+            self._flashIconSetAt = time.time()
+
+    def _clearIconFlash(self) -> None:
+        if not self._flashIconSetAt:
+            return
+
+        if (time.time() - self._flashIconSetAt) < (AppLoop.LOOP_INTERVAL / 2):
+            # After starting icon flash, the script would try to immediately
+            # turn it off in the same app loop iteration. So we ensure that at
+            # least some time has passed since flash start
+            return
+
+        self._rumpsApp.icon = self.ICON_DEFAULT
+        self._flashIconSetAt = None
 
     def _onTimestampClear(self) -> None:
         self._rumpsApp.title = None
@@ -123,11 +141,10 @@ class StatusbarAppMacOs(StatusbarApp):
         template = self._menuTemplatesCurrentTimestamp[item.title]
         text = self._formatter.format(Timestamp(), template)
 
-        self._timestampParser.skipNextTimestamp(text)
         self._clipboard.setClipboardContent(text)
 
     def _onMenuClickClearTimestamp(self, item: MenuItem) -> None:
-        events.timestampCleared()
+        events.timestampClear()
 
     def _onMenuClickEditConfiguration(self, item: MenuItem) -> None:
         configFilePath = self._configFileManager.CONFIG_USER_PATH
@@ -153,12 +170,9 @@ class StatusbarAppMacOs(StatusbarApp):
         # https://stackoverflow.com/a/4217323/4110469
 
     def _onMenuClickRestart(self, item: MenuItem) -> None:
+        # TODO change this to the new way that the app should be launched
+
         # When launching app from command line, PYTHONPATH= env var should be
         # included, pointing to project directory. Here it's not needed since
         # new process inherits environment of old one
         os.execl(sys.executable, '-m src.main', *sys.argv)
-
-    def _flashIcon(self) -> None:
-        self._rumpsApp.icon = self.ICON_FLASH
-        time.sleep(self.ICON_FLASH_DURATION)
-        self._rumpsApp.icon = self.ICON_DEFAULT
