@@ -114,7 +114,7 @@ class StatusbarAppMacOs(StatusbarApp):
 
     def _onTimestampChange(self, timestamp: Timestamp) -> None:
         title = self._formatter.formatForIcon(timestamp)
-        self._debug.log('Changing statusbar to: ' + title)
+        self._debug.log(f'Changing statusbar to: {title}')
         self._rumpsApp.title = title
 
         for key, template in self._menuTemplatesLastTimestamp.items():

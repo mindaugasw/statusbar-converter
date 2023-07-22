@@ -1,22 +1,22 @@
 import os
+import rumps
+from src.Service.StatusbarApp import StatusbarApp
 
 
 class FilesystemHelper:
+    def __init__(self):
+        # Debug service is not yet initialized, so we simply always print debug information
+        print(f'Project dir: `{self._getProjectDir()}`')
+        print(f'User data dir: `{self.getUserDataDir()}`')
+
     def getAssetsDir(self) -> str:
-        return self.getProjectDir() + '/assets'
+        return self._getProjectDir() + '/assets'
 
     def getConfigDir(self) -> str:
-        pass
+        return self._getProjectDir() + '/config'
 
-    # TODO rename add _
-    def getProjectDir(self) -> str:
-        """
-        Absolute path of project directory
+    def getUserDataDir(self) -> str:
+        return rumps.application_support(StatusbarApp.APP_NAME)
 
-        Relevant only in dev environment, since after packaging the app code is
-        moved to a different directory relative to the project
-        """
-
+    def _getProjectDir(self) -> str:
         return os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + '/../..')
-
-# TODO add here method to get temp files path, move from ConfigFileManager
