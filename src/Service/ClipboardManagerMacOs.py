@@ -34,6 +34,7 @@ class ClipboardManagerMacOs(ClipboardManager):
 
         # Avoid parsing huge texts to not impact performance
         if len(content) > self.MAX_CONTENT_LENGTH:
+            self._debug.log('Too long clipboard content, skipping')
             return
 
         events.clipboardChanged(content.strip())

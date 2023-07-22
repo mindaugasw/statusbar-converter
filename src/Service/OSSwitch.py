@@ -19,6 +19,7 @@ class OSSwitch:
     def isLinux(self) -> bool:
         return self.os == self.OS_LINUX
 
+    # TODO remove? not used anywhere
     def switch(self, onMacOS: callable, onLinux: callable):
         if self.isMacOS():
             return onMacOS()

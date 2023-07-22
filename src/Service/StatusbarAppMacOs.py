@@ -4,6 +4,7 @@ import sys
 import time
 from rumps import App, MenuItem, rumps
 import src.events as events
+from src.Service.Debug import Debug
 from src.Service.AppLoop import AppLoop
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager
@@ -27,6 +28,7 @@ class StatusbarAppMacOs(StatusbarApp):
     _clipboard: ClipboardManager
     _timestampParser: TimestampParser
     _configFileManager: ConfigFileManager
+    _debug: Debug
     _rumpsApp: App
 
     _menuItems: dict[str, MenuItem | None]
@@ -42,7 +44,8 @@ class StatusbarAppMacOs(StatusbarApp):
         timestampParser: TimestampParser,
         config: Configuration,
         configFileManager: ConfigFileManager,
-        filesystemHelper: FilesystemHelper
+        filesystemHelper: FilesystemHelper,
+        debug: Debug
     ):
         self.ICON_DEFAULT = filesystemHelper.getAssetsDir() + '/icon.png'
         self.ICON_FLASH = filesystemHelper.getAssetsDir() + '/icon_flash.png'
@@ -51,6 +54,7 @@ class StatusbarAppMacOs(StatusbarApp):
         self._clipboard = clipboard
         self._timestampParser = timestampParser
         self._configFileManager = configFileManager
+        self._debug = debug
 
         self._menuTemplatesLastTimestamp = config.get(config.MENU_ITEMS_LAST_TIMESTAMP)
         self._menuTemplatesCurrentTimestamp = config.get(config.MENU_ITEMS_CURRENT_TIMESTAMP)
@@ -109,7 +113,9 @@ class StatusbarAppMacOs(StatusbarApp):
         return menu
 
     def _onTimestampChange(self, timestamp: Timestamp) -> None:
-        self._rumpsApp.title = self._formatter.formatForIcon(timestamp)
+        title = self._formatter.formatForIcon(timestamp)
+        self._debug.log('Changing statusbar to: ' + title)
+        self._rumpsApp.title = title
 
         for key, template in self._menuTemplatesLastTimestamp.items():
             self._menuItems[key].title = self._formatter.format(timestamp, template)

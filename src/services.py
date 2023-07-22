@@ -31,6 +31,7 @@ if osSwitch.isMacOS():
         config,
         configFileManager,
         filesystemHelper,
+        debug,
     )
 else:
     from src.Service.ClipboardManagerLinux import ClipboardManagerLinux
