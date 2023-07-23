@@ -1,0 +1,6 @@
+pasteboard==0.3.3
+PyYAML==6.0
+rumps==0.4.0
+pyinstaller
+# Pillow is needed for pyinstaller to be able to convert .png image to .icns to allow to use as macOS file icon
+Pillow

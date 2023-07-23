@@ -1,0 +1,61 @@
+# If enabled, text in the statusbar will be cleared after copying anything else
+clear_on_change: false
+
+# Automatically clear text in the status bar after this time, in seconds.
+# 0 to disable automatic clearing.
+clear_after_time: 300
+
+# Parse text on highlighting it, without having to copy it.
+# Supported only on Linux, ignored on macOS. # TODO
+# Highlight detection may not work in some apps, in which case you can still copy the text to manually trigger timestamp update
+update_on_highlight: true # TODO
+
+# If enabled, will shortly flash status bar icon on timestamp change
+flash_icon_on_change: true
+
+# Formatting template for main text on the statusbar.
+# Will use first template found where key is less than relative time difference
+# in seconds.
+#
+# Templates must be ordered ascending by time difference in their key.
+#
+# Templates support all standard strftime() codes:
+# https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
+# and these custom codes for relative time:
+# - {ts} - unix timestamp. Milliseconds (if copied timestamp with milliseconds) will be separated with a dot for better readability.
+# - {ts_ms} - unix timestamp. Milliseconds won't be separated to allow copying a valid timestamp.
+# - {r_int} - relative time with integer number, e.g. '5 h ago'.
+# - {r_float} - relative time with float number, e.g. '5.5 h ago'.
+# TODO name this somehow better
+format_icon:
+    # Up to 60 s, e.g. "1619295908 - 59 s ago"
+    60: "{ts} - {r_int}"
+    # 1 min - 10 min, e.g. "1619295908 - 5 min ago"
+    600: "{ts} - {r_int}"
+    # 10 min - 1 hour, e.g. "1619295908 - 29 min ago (15:10)"
+    3600: "{ts} - {r_float} (%H:%M)"
+    # 1 hour - 1 day, e.g. "1619295908 - 5.5 h ago (12:00)"
+    86400: "{ts} - {r_float} (%H:%M)"
+    # 1 day - 1 month, e.g. "1619295908 - 5.5 days ago (08-05 12:00)"
+    2678400: "{ts} - {r_float} (%m-%d  %H:%M)"
+    # 1 month - 1 year, e.g. "1619295908 - 9.2 months ago"
+    31536000: "{ts} - {r_float} (%m-%d  %H:%M)"
+    # 1 year - 75 years, e.g. "1619295908 - 5.8 years ago ('15)"
+    2365200000: "{ts} - {r_float} ('%y)"
+    # Default if no other format matches. Must be last element in the list
+    default: "{ts} - {r_float}"
+
+# Formatting template to use for menu items under "Last timestamp".
+# Supports the same formats as in "format_icon" configuration.
+menu_items_last_timestamp:
+    Last timestamp: "{ts_ms}"
+    Last datetime: "%Y-%m-%d %H:%M:%S"
+
+# Formatting template to use for menu items under "Current timestamp".
+# Supports the same formats as in "format_icon" configuration.
+menu_items_current_timestamp:
+    Current timestamp: "{ts_ms}"
+    Current datetime: "%Y-%m-%d %H:%M:%S"
+
+# If enabled, will log additional info to the console
+debug: false

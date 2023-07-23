@@ -1,3 +1,17 @@
 .vscode
-test-data.txt
+.idea
+# TODO remove clipnotify
 clipnotify
+docs/notes
+
+# virtualenv artifacts
+.eggs
+.venv*
+
+# runtime artifacts
+**/__pycache__
+
+# build artifacts
+build
+dist
+*.spec
