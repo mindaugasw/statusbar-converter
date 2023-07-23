@@ -15,9 +15,6 @@ from src.Service.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Entity.Timestamp import Timestamp
 
-# TODO configure pycharm to use python venv
-# TODO install venv with virtualenv package
-
 
 class StatusbarAppMacOs(StatusbarApp):
     WEBSITE = 'https://github.com/mindaugasw/statusbar-converter'
@@ -105,7 +102,7 @@ class StatusbarAppMacOs(StatusbarApp):
         menu.update({
             'clear_timestamp': MenuItem('Clear timestamp', self._onMenuClickClearTimestamp),
             'edit_config': MenuItem('Edit configuration', self._onMenuClickEditConfiguration),
-            'check_for_updates': MenuItem('Check for updates'),  # TODO
+            'check_for_updates': MenuItem('Check for updates'),  # TODO implement check for updates
             'open_website': MenuItem('Open website', self._onMenuClickOpenWebsite),
             'restart': MenuItem('Restart application', self._onMenuClickRestart),
         })
@@ -176,9 +173,4 @@ class StatusbarAppMacOs(StatusbarApp):
         # https://stackoverflow.com/a/4217323/4110469
 
     def _onMenuClickRestart(self, item: MenuItem) -> None:
-        # TODO change this to the new way that the app should be launched
-
-        # When launching app from command line, PYTHONPATH= env var should be
-        # included, pointing to project directory. Here it's not needed since
-        # new process inherits environment of old one
         os.execl(sys.executable, '-m src.main', *sys.argv)

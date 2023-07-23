@@ -29,7 +29,6 @@ class Configuration:
         self._configFileManager = configFileManager
 
     def get(self, key: str):
-        # TODO do not load config if in build mode?
         self._initializeConfig()
 
         userValue = self._queryConfigDictionary(key, self._configUser)
