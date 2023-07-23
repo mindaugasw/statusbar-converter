@@ -88,45 +88,12 @@ build() {(set -e
     _createZip $arch
 )}
 
-_createDmg() {(set -e
-    # No longer used. .dmg image triggers additional safety measures for unsigned apps:
-    # - Chrome warns about unsafe file when downloading. .zip avoids this problem
-    # - Still need to manually un-quarantine app with `xattr -d com.apple.quarantine path.app`
-    #   For .dmg it's always needed for download. .zip seems to avoid quarantine
-    #   after download but only on the same machine that it was built on
-
-    # `create-dmg` in path is required
-    # `brew install create-dmg`
-
-    arch=$1 # architecture name, `arm64` | `x86_64`
-
-    _log "Packing into dmg image for $arch"
-
-    fileName="Statusbar_Converter_macOS_$arch.dmg"
-
-    cd dist/$arch
-
-    # create-dmg includes all files in the directory. So we copy only the needed stuff to a new directory
-    rm -rf dmg/ ./*.dmg
-    mkdir dmg
-    cp -r 'Statusbar Converter.app' 'dmg/Statusbar Converter.app'
-
-    create-dmg \
-        --volname 'Statusbar Converter' \
-        --icon-size 80 \
-        --text-size 14 \
-        --icon 'Statusbar Converter.app' 190 0 \
-        --app-drop-link 0 0 \
-        --hide-extension 'Statusbar Converter.app' \
-        $fileName \
-        dmg/
-
-    rm -rf dmg/
-
-    _log "Successfully packed into dmg image \"$fileName\""
-)}
-
 _createZip() {(set -e
+    # Compress app to .zip archive.
+    # Previously there was also a script for packing into .dmg image (see git history).
+    # But .dmg triggers additional security measures: because of missing app signature,
+    # Chrome warns about unsafe app when downloading. So .zip is more convenient.
+
     arch=$1 # architecture name, `arm64` | `x86_64`
 
     cd "build/dist-$arch"
