@@ -1,13 +1,22 @@
-# Timestamp tray converter
+# Statusbar Converter
 
-It's a small tool to easily convert timestamp to human-readable time. Just highlight the timestamp and it will automatically show as time in the tray. See demo below: 
- 
-![demo](/docs/demo.gif)
+A small tool to easily convert timestamp to human-readable time. Just copy the
+timestamp and it will automatically show as time in the statusbar: 
 
-## Usage
-Currently works only on Linux. Requires Python and xsel package.  
-- `git clone https://github.com/mindaugasw/timestamp-tray-converter.git`
-- `cd timestamp-tray-converter`
-- `make`
-- Optionally change app configuration in `timestamp-tray-converter.py`
-- Run `python ./timestamp-tray-converter.py` or add it to your startup items
+![demo](/docs/demo-2.gif)
+
+
+## Installation
+
+- Download the latest release from [GitHub](https://github.com/mindaugasw/statusbar-converter/releases)  
+- Extract zip  
+- On macOS you must manually remove quarantine attribute, because the app is not signed:  
+  `xattr -d com.apple.quarantine /Applications/Statusbar\ Converter.app/`
+- Start the app. A new icon will appear on the statusbar
+- To automatically launch the app on boot, go to System Preferences, search for `Login items` and add the app
+- _Tip:_ on macOS you can change icon order on the statusbar with Cmd-click
+
+
+## Building locally
+
+[See documentation for building locally.](/docs/building.md)
