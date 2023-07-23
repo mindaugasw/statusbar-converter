@@ -7,13 +7,13 @@ Install `python3.10`
 > Python from Homebrew will support only your current architecture.
 
 Create virtualenv with:
-- `./builder.sh install arm python3.10` (`arm64` native)
-- `./builder.sh install intel python3.10` (`x86_64` native)
-- `./builder.sh install intel python3.10-intel64` (building `x86_64` on `arm64`)
+- `./builder.sh install arm64 python3.10` (`arm64` native)
+- `./builder.sh install x86_64 python3.10` (`x86_64` native)
+- `./builder.sh install x86_64 python3.10-intel64` (building `x86_64` on `arm64`)
 
 Run app:
-- `source .venv-arm/bin/activate`
+- `source .venv-arm64/bin/activate`
 - `python start.py`
 
 Build distributable:
-- `./builder.sh build arm`
+- `./builder.sh build arm64`

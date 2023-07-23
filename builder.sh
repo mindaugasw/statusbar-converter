@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
 # Usage examples:
-# `install arm python3.10` or `install intel python3.10-intel64`
-# `build arm` or `build intel`
+# `install arm64 python3.10` or `install x86_64 python3.10-intel64`
+# `build arm64` or `build x86_64`
 
 install() {(set -e
     # Prepare virtualenv for given architecture
 
-    arch=$1 # architecture name, `arm` | `intel`
+    arch=$1 # architecture name, `arm64` | `x86_64`
     pythonExec=$2 # python executable name, e.g. `python3.10` or `python3.10-intel64`
 
     _validateArchArg $arch
@@ -33,18 +33,17 @@ install() {(set -e
 )}
 
 build() {(set -e
-    arch=$1 # architecture name, `arm` | `intel`
+    arch=$1 # architecture name, `arm64` | `x86_64`
 
     _validateArchArg $arch
-    fullArchName=$(_getFullArchName $arch)
     venvPath=".venv-$arch"
-    distPath="dist/$fullArchName"
+    distPath="dist/$arch"
 
     source "$venvPath/bin/activate"
 
     rm -rf ./$distPath ./build/ ./*.spec
 
-    _log "Starting build for $fullArchName"
+    _log "Starting build for $arch"
 
     $venvPath/bin/pyinstaller \
         --clean \
@@ -57,13 +56,13 @@ build() {(set -e
         --workpath "$distPath/build" \
         --specpath "$distPath" \
         --icon '../../assets/icon.png' \
-        --target-arch "$fullArchName" \
+        --target-arch "$arch" \
         --osx-bundle-identifier 'com.mindaugasw.statusbar_converter' \
         start.py
 
-    _log "Successfully built for $fullArchName in $distPath"
+    _log "Successfully built for $arch in $distPath"
 
-    _createZip $fullArchName
+    _createZip $arch
 )}
 
 _createDmg() {(set -e
@@ -76,7 +75,7 @@ _createDmg() {(set -e
     # `create-dmg` in path is required
     # `brew install create-dmg`
 
-    arch=$1 # full architecture name, `arm64` | `x86_64`
+    arch=$1 # architecture name, `arm64` | `x86_64`
 
     _log "Packing into dmg image for $arch"
 
@@ -105,7 +104,7 @@ _createDmg() {(set -e
 )}
 
 _createZip() {(set -e
-    arch=$1 # full architecture name, `arm64` | `x86_64`
+    arch=$1 # architecture name, `arm64` | `x86_64`
 
     cd "dist/$arch"
     fileName="Statusbar_Converter_macOS_$arch.app.zip"
@@ -117,15 +116,12 @@ _createZip() {(set -e
 )}
 
 _validateExecutableArchitecture() {(set -e
-    arch=$1 # architecture name, `arm` | `intel`
+    arch=$1 # architecture name, `arm64` | `x86_64`
     pythonExec=$2 # python executable name, e.g. `python3.10` or `python3.10-intel64`
 
-    _validateArchArg $arch
-
     platform=$($pythonExec -c 'import platform; print(platform.platform())')
-    needle=$(_getFullArchName $arch)
 
-    if [[ "$platform" != *"$needle"* ]]; then
+    if [[ "$platform" != *"$arch"* ]]; then
         _logError "Requested architecture ($arch) does not match provided python executable ($platform)"
         exit 1
     else
@@ -136,21 +132,8 @@ _validateExecutableArchitecture() {(set -e
 _validateArchArg() {(set -e
     # $1 - architecture name
 
-    if [ "$1" != 'arm' ] && [ "$1" != 'intel' ]; then
-        _logError 'Argument must be either "arm" or "intel"'
-        exit 1
-    fi
-)}
-
-_getFullArchName() {(set -e
-    # $1 - architecture name
-
-    if [ "$1" == 'arm' ]; then
-        printf 'arm64'
-    elif [ "$1" == 'intel' ]; then
-        printf 'x86_64'
-    else
-        _logError 'Argument must be either "arm" or "intel"'
+    if [ "$1" != 'arm64' ] && [ "$1" != 'x86_64' ]; then
+        _logError 'Argument must be either "arm64" or "x86_64"'
         exit 1
     fi
 )}
