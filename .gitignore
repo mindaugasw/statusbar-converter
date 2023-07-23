@@ -12,6 +12,4 @@ docs/notes
 **/__pycache__
 
 # build artifacts
-build
-dist
-*.spec
+build/dist*

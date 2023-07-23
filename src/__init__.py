@@ -5,9 +5,6 @@ from src.Service.StatusbarApp import StatusbarApp
 
 
 def main():
-    if services.osSwitch.isMacOS():
-        _hideMacOSDockIcon()
-
     # TODO print app version as well
     print(
         f'\n{StatusbarApp.APP_NAME}\n'
@@ -18,12 +15,6 @@ def main():
 
     services.appLoop.startLoop()
     services.statusbarApp.createApp()
-
-
-def _hideMacOSDockIcon():
-    import AppKit
-    info = AppKit.NSBundle.mainBundle().infoDictionary()
-    info['LSBackgroundOnly'] = '1'
 
 
 main()

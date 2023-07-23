@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
-# Usage examples:
+# Usage:
 # `install arm64 python3.10` or `install x86_64 python3.10-intel64`
-# `build arm64` or `build x86_64`
+# `buildSpec arm64`
+# Modify spec file as needed
+# `build arm64`
 
 install() {(set -e
     # Prepare virtualenv for given architecture
@@ -32,33 +34,54 @@ install() {(set -e
     _log "Successfully installed virtualenv to \"$venvPath\""
 )}
 
+buildSpec() {(set -e
+    arch=$1 # architecture name, `arm64` | `x86_64`
+
+    _validateArchArg $arch
+
+    _log "Generating spec for $arch"
+
+    venvPath=".venv-$arch"
+    specFilePath="build/spec-$arch.spec"
+    rm -f $specFilePath
+
+    source "$venvPath/bin/activate"
+
+    $venvPath/bin/pyi-makespec \
+        --name "Statusbar Converter" \
+        --onedir \
+        --windowed \
+        --add-data '../assets:assets' \
+        --add-data '../config:config' \
+        --icon '../assets/icon.png' \
+        --target-arch "$arch" \
+        --osx-bundle-identifier 'com.mindaugasw.statusbar_converter' \
+        --specpath 'build' \
+        start.py
+
+    mv "build/Statusbar Converter.spec" $specFilePath
+
+    _log "Successfully generated spec for $arch at $specFilePath"
+)}
+
 build() {(set -e
     arch=$1 # architecture name, `arm64` | `x86_64`
 
     _validateArchArg $arch
     venvPath=".venv-$arch"
-    distPath="dist/$arch"
+    distPath="build/dist-$arch"
 
     source "$venvPath/bin/activate"
 
-    rm -rf ./$distPath ./build/ ./*.spec
+    rm -rf ./$distPath
 
     _log "Starting build for $arch"
 
     $venvPath/bin/pyinstaller \
         --clean \
-        --name "Statusbar Converter" \
-        --onedir \
-        --windowed \
-        --add-data '../../assets:assets' \
-        --add-data '../../config:config' \
         --distpath "$distPath" \
         --workpath "$distPath/build" \
-        --specpath "$distPath" \
-        --icon '../../assets/icon.png' \
-        --target-arch "$arch" \
-        --osx-bundle-identifier 'com.mindaugasw.statusbar_converter' \
-        start.py
+        build/spec-$arch.spec
 
     _log "Successfully built for $arch in $distPath"
 
@@ -106,11 +129,11 @@ _createDmg() {(set -e
 _createZip() {(set -e
     arch=$1 # architecture name, `arm64` | `x86_64`
 
-    cd "dist/$arch"
+    cd "build/dist-$arch"
     fileName="Statusbar_Converter_macOS_$arch.app.zip"
     _log "Compressing into zip for $arch"
 
-    zip -r "$fileName" "Statusbar Converter.app"
+    zip -qr "$fileName" "Statusbar Converter.app"
 
     _log "Successfully compressed into \"$fileName\""
 )}
