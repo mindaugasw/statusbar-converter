@@ -51,17 +51,15 @@ build() {(set -e
         --name "Statusbar Converter" \
         --onedir \
         --windowed \
-        --add-data 'assets:assets' \
-        --add-data 'config:config' \
+        --add-data '../../assets:assets' \
+        --add-data '../../config:config' \
         --distpath "$distPath" \
         --workpath "$distPath/build" \
-        --icon 'assets/icon.png' \
+        --specpath "$distPath" \
+        --icon '../../assets/icon.png' \
         --target-arch "$fullArchName" \
         --osx-bundle-identifier 'com.mindaugasw.statusbar_converter' \
         start.py
-
-    # .spec is no longer needed, since it's regenerated each time. To keep root directory cleaner, we move it to dist
-    mv "Statusbar Converter.spec" "$distPath/Statusbar Converter.spec"
 
     _log "Successfully built for $fullArchName in $distPath"
 
