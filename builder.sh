@@ -24,6 +24,8 @@ install() {(set -e
 
     os=$(_getOsName)
     venvPath=".venv-$os-$arch"
+    # ${var:?} needed to safeguard against deleting /* if variable is empty
+    rm -rf "${venvPath:?}/*"
     _log "Installing virtualenv to \"$venvPath\""
 
     $pythonExec -m venv "$venvPath" --clear --copies
@@ -32,6 +34,21 @@ install() {(set -e
 
     pip install wheel
     pip install -r "requirements_$os.txt"
+
+    # TODO move this out to a method
+    if [[ "$os" == 'linux' ]]; then
+        _log "Installing clipnotify"
+
+        clipnotifyPath="binaries/clipnotify"
+        rm -rf "$clipnotifyPath"
+        git clone https://github.com/cdown/clipnotify.git "$clipnotifyPath"
+        make -C "$clipnotifyPath"
+
+        _log "Successfully installed clipnotify"
+
+        # TODO apply more permanent solution
+        cp -r /usr/lib/python3/dist-packages/gi "$venvPath/lib/python3.10/site-packages/gi"
+    fi
 
     _log "Successfully installed virtualenv to \"$venvPath\""
 )}

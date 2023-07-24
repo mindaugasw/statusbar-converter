@@ -45,6 +45,6 @@ else:
     from src.Service.StatusbarAppLinux import StatusbarAppLinux
 
     clipboardManager = ClipboardManagerLinux(debug)
-    statusbarApp = StatusbarAppLinux()
+    statusbarApp = StatusbarAppLinux(debug)
 
 appLoop = AppLoop()

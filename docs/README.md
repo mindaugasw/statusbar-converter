@@ -6,7 +6,7 @@ timestamp and it will automatically show as time in the statusbar:
 ![demo](/docs/demo-2.gif)
 
 
-## Installation
+## Installation on macOS
 
 - Download the latest release from [GitHub](https://github.com/mindaugasw/statusbar-converter/releases)  
 - Extract zip  
@@ -16,6 +16,10 @@ timestamp and it will automatically show as time in the statusbar:
 - To automatically launch the app on boot, go to System Preferences, search for `Login items` and add the app
 - _Tip:_ on macOS you can change icon order on the statusbar with Cmd-click
 
+
+## Installation on Linux
+
+TODO mention about xsel
 
 ## Building locally
 

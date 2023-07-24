@@ -1,5 +1,7 @@
-vext
+# Note vext must be before vext.gi. Otherwise, it triggers deprecation for some reason
+# When manually installing, the order is reversed: first vext, then vext.gi
 vext.gi
+vext
 PyYAML==6.0
 pyinstaller
 # Pillow is needed for pyinstaller to be able to convert .png image to .icns to allow to use as macOS file icon

@@ -18,13 +18,11 @@ from src.Entity.Timestamp import Timestamp
 
 class StatusbarAppMacOs(StatusbarApp):
     WEBSITE = 'https://github.com/mindaugasw/statusbar-converter'
-    ICON_FLASH_DURATION = 0.35
 
     _formatter: TimestampTextFormatter
     _clipboard: ClipboardManager
     _timestampParser: TimestampParser
     _configFileManager: ConfigFileManager
-    _debug: Debug
     _rumpsApp: App
 
     _menuItems: dict[str, MenuItem | None]
@@ -41,8 +39,10 @@ class StatusbarAppMacOs(StatusbarApp):
         timestampParser: TimestampParser,
         config: Configuration,
         configFileManager: ConfigFileManager,
-        debug: Debug
+        debug: Debug,
     ):
+        super().__init__(debug)
+
         self._iconDefault = FilesystemHelper.getAssetsDir() + '/icon.png'
         self._iconFlash = FilesystemHelper.getAssetsDir() + '/icon_flash.png'
 
@@ -56,10 +56,10 @@ class StatusbarAppMacOs(StatusbarApp):
         self._menuTemplatesCurrentTimestamp = config.get(config.MENU_ITEMS_CURRENT_TIMESTAMP)
         self._flashIconOnChange = config.get(config.FLASH_ICON_ON_CHANGE)
 
+    def createApp(self) -> None:
         events.timestampChanged.append(self._onTimestampChange)
         events.timestampClear.append(self._onTimestampClear)
 
-    def createApp(self) -> None:
         self._menuItems = self._createMenuItems()
         self._rumpsApp = App(
             StatusbarApp.APP_NAME,
