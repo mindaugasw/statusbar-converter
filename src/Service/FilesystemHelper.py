@@ -21,5 +21,9 @@ class FilesystemHelper(metaclass=ABCMeta):
         pass
 
     @staticmethod
+    def getBinariesDir() -> str:
+        return FilesystemHelper._getProjectDir() + '/binaries'
+
+    @staticmethod
     def _getProjectDir() -> str:
         return os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + '/../..')

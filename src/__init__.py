@@ -13,6 +13,7 @@ def main():
         f'Python: {sys.version}\n'
     )
 
+    services.clipboardManager.initializeClipboardWatch()
     services.appLoop.startLoop()
     services.statusbarApp.createApp()
 
