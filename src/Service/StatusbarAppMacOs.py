@@ -1,11 +1,11 @@
 import os
 import subprocess
 import sys
+import threading
 import time
 from rumps import App, MenuItem, rumps
 import src.events as events
 from src.Service.Debug import Debug
-from src.Service.AppLoop import AppLoop
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
@@ -18,6 +18,7 @@ from src.Entity.Timestamp import Timestamp
 
 class StatusbarAppMacOs(StatusbarApp):
     WEBSITE = 'https://github.com/mindaugasw/statusbar-converter'
+    ICON_FLASH_DURATION = 0.35
     ICON_DEFAULT: str
     ICON_FLASH: str
 
@@ -32,7 +33,6 @@ class StatusbarAppMacOs(StatusbarApp):
     _menuTemplatesLastTimestamp: dict[str, str]
     _menuTemplatesCurrentTimestamp: dict[str, str]
     _flashIconOnChange: bool
-    _flashIconSetAt: float | None = None
 
     def __init__(
         self,
@@ -58,7 +58,6 @@ class StatusbarAppMacOs(StatusbarApp):
 
         events.timestampChanged.append(self._onTimestampChange)
         events.timestampClear.append(self._onTimestampClear)
-        events.appLoopIteration.append(self._clearIconFlash)
 
     def createApp(self) -> None:
         self._menuItems = self._createMenuItems()
@@ -117,21 +116,12 @@ class StatusbarAppMacOs(StatusbarApp):
             self._menuItems[key].title = self._formatter.format(timestamp, template)
 
         if self._flashIconOnChange:
-            self._rumpsApp.icon = self.ICON_FLASH
-            self._flashIconSetAt = time.time()
+            threading.Thread(target=self._flashIcon).start()
 
-    def _clearIconFlash(self) -> None:
-        if not self._flashIconSetAt:
-            return
-
-        if (time.time() - self._flashIconSetAt) < (AppLoop.LOOP_INTERVAL / 2):
-            # After starting icon flash, the script would try to immediately
-            # turn it off in the same app loop iteration. So we ensure that at
-            # least some time has passed since flash start
-            return
-
+    def _flashIcon(self) -> None:
+        self._rumpsApp.icon = self.ICON_FLASH
+        time.sleep(self.ICON_FLASH_DURATION)
         self._rumpsApp.icon = self.ICON_DEFAULT
-        self._flashIconSetAt = None
 
     def _onTimestampClear(self) -> None:
         self._rumpsApp.title = None
