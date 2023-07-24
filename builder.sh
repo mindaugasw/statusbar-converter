@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 # Usage:
+# TODO update
 # `install arm64 python3.10` or `install x86_64 python3.10-intel64`
 # `buildSpec arm64`
 # Modify spec file as needed
@@ -21,15 +22,16 @@ install() {(set -e
 
     _validateExecutableArchitecture "$arch" "$pythonExec"
 
-    venvPath=".venv-$arch"
+    os=$(_getOsName)
+    venvPath=".venv-$os-$arch"
     _log "Installing virtualenv to \"$venvPath\""
 
-    $pythonExec -m venv ".venv-$arch" --clear --copies
+    $pythonExec -m venv "$venvPath" --clear --copies
 
     source "$venvPath/bin/activate"
 
     pip install wheel
-    pip install -r requirements_macos.txt
+    pip install -r "requirements_$os.txt"
 
     _log "Successfully installed virtualenv to \"$venvPath\""
 )}
@@ -128,18 +130,31 @@ _validateArchArg() {(set -e
     fi
 )}
 
+_getOsName() {(set -e
+    name=$(uname)
+
+    if [ "$name" == 'Linux' ]; then
+        echo 'linux'
+    elif [ "$name" == 'Darwin' ]; then
+        echo 'macos'
+    else
+        _logError "Unsupported OS type: $name"
+        exit 1
+    fi
+)}
+
 _log() {(set -e
     yellowCode='\033[0;33m'
     resetCode='\033[0m'
 
-    printf "%s> %s%s\n" "$yellowCode" "$1" "$resetCode"
+    echo -e "$yellowCode> $1$resetCode"
 )}
 
 _logError() {(set -e
     redCode='\033[0;31m'
     resetCode='\033[0m'
 
-    printf "%s\nERROR: %s%s\n" "$redCode" "$1" "$resetCode"
+    echo -e "$redCode> ERROR: $1$resetCode"
 )}
 
 # This will call function name from the first argument
