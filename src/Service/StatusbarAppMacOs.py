@@ -41,11 +41,10 @@ class StatusbarAppMacOs(StatusbarApp):
         timestampParser: TimestampParser,
         config: Configuration,
         configFileManager: ConfigFileManager,
-        filesystemHelper: FilesystemHelper,
         debug: Debug
     ):
-        self.ICON_DEFAULT = filesystemHelper.getAssetsDir() + '/icon.png'
-        self.ICON_FLASH = filesystemHelper.getAssetsDir() + '/icon_flash.png'
+        self.ICON_DEFAULT = FilesystemHelper.getAssetsDir() + '/icon.png'
+        self.ICON_FLASH = FilesystemHelper.getAssetsDir() + '/icon_flash.png'
 
         self._formatter = formatter
         self._clipboard = clipboard

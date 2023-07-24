@@ -10,7 +10,15 @@ from src.Service.StatusbarApp import StatusbarApp
 from src.Service.AppLoop import AppLoop
 
 osSwitch = OSSwitch()
-filesystemHelper = FilesystemHelper()
+filesystemHelper: FilesystemHelper
+
+if osSwitch.isMacOS():
+    from src.Service.FilesystemHelperMacOs import FilesystemHelperMacOs
+    filesystemHelper = FilesystemHelperMacOs()
+else:
+    from src.Service.FilesystemHelperLinux import FilesystemHelperLinux
+    filesystemHelper = FilesystemHelperLinux()
+
 configFileManager = ConfigFileManager(filesystemHelper)
 config = Configuration(configFileManager)
 debug = Debug(config)
@@ -30,7 +38,6 @@ if osSwitch.isMacOS():
         timestampParser,
         config,
         configFileManager,
-        filesystemHelper,
         debug,
     )
 else:
