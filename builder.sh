@@ -12,19 +12,19 @@ install() {(set -e
     arch=$1 # architecture name, `arm64` | `x86_64`
     pythonExec=$2 # python executable name, e.g. `python3.10` or `python3.10-intel64`
 
-    _validateArchArg $arch
+    _validateArchArg "$arch"
 
     if [ -z "$pythonExec" ]; then
         _logError 'Python executable must be provided as argument (e.g. "python3.10" or "python3.10-intel64")'
         exit 1
     fi
 
-    _validateExecutableArchitecture $arch $pythonExec
+    _validateExecutableArchitecture "$arch" "$pythonExec"
 
     venvPath=".venv-$arch"
     _log "Installing virtualenv to \"$venvPath\""
 
-    $pythonExec -m venv .venv-$arch --clear --copies
+    $pythonExec -m venv ".venv-$arch" --clear --copies
 
     source "$venvPath/bin/activate"
 
@@ -37,17 +37,17 @@ install() {(set -e
 buildSpec() {(set -e
     arch=$1 # architecture name, `arm64` | `x86_64`
 
-    _validateArchArg $arch
+    _validateArchArg "$arch"
 
     _log "Generating spec for $arch"
 
     venvPath=".venv-$arch"
     specFilePath="build/spec-$arch.spec"
-    rm -f $specFilePath
+    rm -f "$specFilePath"
 
     source "$venvPath/bin/activate"
 
-    $venvPath/bin/pyi-makespec \
+    "$venvPath/bin/pyi-makespec" \
         --name "Statusbar Converter" \
         --onedir \
         --windowed \
@@ -59,7 +59,7 @@ buildSpec() {(set -e
         --specpath 'build' \
         start.py
 
-    mv "build/Statusbar Converter.spec" $specFilePath
+    mv "build/Statusbar Converter.spec" "$specFilePath"
 
     _log "Successfully generated spec for $arch at $specFilePath"
 )}
@@ -67,25 +67,25 @@ buildSpec() {(set -e
 build() {(set -e
     arch=$1 # architecture name, `arm64` | `x86_64`
 
-    _validateArchArg $arch
+    _validateArchArg "$arch"
     venvPath=".venv-$arch"
     distPath="build/dist-$arch"
 
     source "$venvPath/bin/activate"
 
-    rm -rf ./$distPath
+    rm -rf "./$distPath"
 
     _log "Starting build for $arch"
 
-    $venvPath/bin/pyinstaller \
+    "$venvPath/bin/pyinstaller" \
         --clean \
         --distpath "$distPath" \
         --workpath "$distPath/build" \
-        build/spec-$arch.spec
+        "build/spec-$arch.spec"
 
     _log "Successfully built for $arch in $distPath"
 
-    _createZip $arch
+    _createZip "$arch"
 )}
 
 _createZip() {(set -e
@@ -132,14 +132,14 @@ _log() {(set -e
     yellowCode='\033[0;33m'
     resetCode='\033[0m'
 
-    printf "$yellowCode> $1$resetCode\n"
+    printf "%s> %s%s\n" "$yellowCode" "$1" "$resetCode"
 )}
 
 _logError() {(set -e
     redCode='\033[0;31m'
     resetCode='\033[0m'
 
-    printf "$redCode\nERROR: $1$resetCode\n"
+    printf "%s\nERROR: %s%s\n" "$redCode" "$1" "$resetCode"
 )}
 
 # This will call function name from the first argument
