@@ -5,6 +5,7 @@ from src.Service.TimestampParser import TimestampParser
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.Debug import Debug
+from src.Service.UpdateManager import UpdateManager
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.StatusbarApp import StatusbarApp
 from src.Service.AppLoop import AppLoop
@@ -16,6 +17,7 @@ config = Configuration(configFileManager)
 debug = Debug(config)
 timestampParser = TimestampParser(config, debug)
 timestampTextFormatter = TimestampTextFormatter(config)
+updateManager = UpdateManager(config, filesystemHelper, debug)
 clipboardManager: ClipboardManager
 statusbarApp: StatusbarApp
 
@@ -31,6 +33,7 @@ if osSwitch.isMacOS():
         config,
         configFileManager,
         filesystemHelper,
+        updateManager,
         debug,
     )
 else:

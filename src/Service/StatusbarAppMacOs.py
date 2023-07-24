@@ -13,6 +13,7 @@ from src.Service.StatusbarApp import StatusbarApp
 from src.Service.TimestampParser import TimestampParser
 from src.Service.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.FilesystemHelper import FilesystemHelper
+from src.Service.UpdateManager import UpdateManager
 from src.Entity.Timestamp import Timestamp
 
 
@@ -25,6 +26,7 @@ class StatusbarAppMacOs(StatusbarApp):
     _clipboard: ClipboardManager
     _timestampParser: TimestampParser
     _configFileManager: ConfigFileManager
+    _updateManager: UpdateManager
     _debug: Debug
     _rumpsApp: App
 
@@ -42,7 +44,8 @@ class StatusbarAppMacOs(StatusbarApp):
         config: Configuration,
         configFileManager: ConfigFileManager,
         filesystemHelper: FilesystemHelper,
-        debug: Debug
+        updateManager: UpdateManager,
+        debug: Debug,
     ):
         self.ICON_DEFAULT = filesystemHelper.getAssetsDir() + '/icon.png'
         self.ICON_FLASH = filesystemHelper.getAssetsDir() + '/icon_flash.png'
@@ -51,6 +54,7 @@ class StatusbarAppMacOs(StatusbarApp):
         self._clipboard = clipboard
         self._timestampParser = timestampParser
         self._configFileManager = configFileManager
+        self._updateManager = updateManager
         self._debug = debug
 
         self._menuTemplatesLastTimestamp = config.get(config.MENU_ITEMS_LAST_TIMESTAMP)
@@ -102,7 +106,10 @@ class StatusbarAppMacOs(StatusbarApp):
         menu.update({
             'clear_timestamp': MenuItem('Clear timestamp', self._onMenuClickClearTimestamp),
             'edit_config': MenuItem('Edit configuration', self._onMenuClickEditConfiguration),
-            'check_for_updates': MenuItem('Check for updates'),  # TODO implement check for updates
+            'check_for_updates': MenuItem(
+                'Check for updates',
+                lambda menuItem: self._updateManager.checkForUpdatesAsync(),
+            ),
             'open_website': MenuItem('Open website', self._onMenuClickOpenWebsite),
             'restart': MenuItem('Restart application', self._onMenuClickRestart),
         })

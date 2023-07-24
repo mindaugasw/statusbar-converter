@@ -12,6 +12,9 @@ class Configuration:
     MENU_ITEMS_CURRENT_TIMESTAMP = 'menu_items_current_timestamp'
     DEBUG = 'debug'
 
+    # Data keys
+    DATA_UPDATE_CHECK_SKIP_VERSION = 'update_check_skip_version'
+
     _configFileManager: ConfigFileManager
     _configApp: dict
     """
@@ -23,6 +26,12 @@ class Configuration:
     User overrides of app config.
     Located in user temp files directory, can be changed by the user.
     """
+    _stateData: dict
+    """
+    App internal state.
+    Writable by the app itself and should not be modified by the user
+    """
+
     _configInitialized = False
 
     def __init__(self, configFileManager: ConfigFileManager):
@@ -38,6 +47,10 @@ class Configuration:
 
         return self._queryConfigDictionary(key, self._configApp)
 
+    def setState(self, key: str, value) -> None:
+        self._stateData[key] = value
+        # TODO write to file
+
     def _initializeConfig(self) -> None:
         if self._configInitialized:
             return
@@ -49,6 +62,11 @@ class Configuration:
 
         self._configUser = yaml.load(
             self._configFileManager.getUserConfigContent(),
+            yaml.Loader,
+        )
+
+        self._stateData = yaml.load(
+            self._configFileManager.getStateDataContent(),
             yaml.Loader,
         )
 
