@@ -14,7 +14,7 @@ class OSSwitch:
             raise Exception('Unsupported OS: ' + self.os)
 
     def isMacOS(self) -> bool:
-        return self.os == self.OS_MAC_OS
+        return self.os == OSSwitch.OS_MAC_OS
 
     def isLinux(self) -> bool:
-        return self.os == self.OS_LINUX
+        return self.os == OSSwitch.OS_LINUX

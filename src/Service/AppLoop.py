@@ -18,4 +18,4 @@ class AppLoop:
     def _processIteration(self) -> None:
         while True:
             events.appLoopIteration()
-            time.sleep(self.LOOP_INTERVAL)
+            time.sleep(AppLoop.LOOP_INTERVAL)

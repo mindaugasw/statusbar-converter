@@ -19,8 +19,6 @@ from src.Entity.Timestamp import Timestamp
 class StatusbarAppMacOs(StatusbarApp):
     WEBSITE = 'https://github.com/mindaugasw/statusbar-converter'
     ICON_FLASH_DURATION = 0.35
-    ICON_DEFAULT: str
-    ICON_FLASH: str
 
     _formatter: TimestampTextFormatter
     _clipboard: ClipboardManager
@@ -33,6 +31,8 @@ class StatusbarAppMacOs(StatusbarApp):
     _menuTemplatesLastTimestamp: dict[str, str]
     _menuTemplatesCurrentTimestamp: dict[str, str]
     _flashIconOnChange: bool
+    _iconDefault: str
+    _iconFlash: str
 
     def __init__(
         self,
@@ -43,8 +43,8 @@ class StatusbarAppMacOs(StatusbarApp):
         configFileManager: ConfigFileManager,
         debug: Debug
     ):
-        self.ICON_DEFAULT = FilesystemHelper.getAssetsDir() + '/icon.png'
-        self.ICON_FLASH = FilesystemHelper.getAssetsDir() + '/icon_flash.png'
+        self._iconDefault = FilesystemHelper.getAssetsDir() + '/icon.png'
+        self._iconFlash = FilesystemHelper.getAssetsDir() + '/icon_flash.png'
 
         self._formatter = formatter
         self._clipboard = clipboard
@@ -64,7 +64,7 @@ class StatusbarAppMacOs(StatusbarApp):
         self._rumpsApp = App(
             StatusbarApp.APP_NAME,
             None,
-            self.ICON_DEFAULT,
+            self._iconDefault,
             True,
             self._menuItems.values(),
         )
@@ -119,9 +119,9 @@ class StatusbarAppMacOs(StatusbarApp):
             threading.Thread(target=self._flashIcon).start()
 
     def _flashIcon(self) -> None:
-        self._rumpsApp.icon = self.ICON_FLASH
-        time.sleep(self.ICON_FLASH_DURATION)
-        self._rumpsApp.icon = self.ICON_DEFAULT
+        self._rumpsApp.icon = self._iconFlash
+        time.sleep(StatusbarAppMacOs.ICON_FLASH_DURATION)
+        self._rumpsApp.icon = self._iconDefault
 
     def _onTimestampClear(self) -> None:
         self._rumpsApp.title = None
@@ -139,7 +139,7 @@ class StatusbarAppMacOs(StatusbarApp):
         events.timestampClear()
 
     def _onMenuClickEditConfiguration(self, item: MenuItem) -> None:
-        configFilePath = self._configFileManager.CONFIG_USER_PATH
+        configFilePath = self._configFileManager.configUserPath
 
         alertResult = rumps.alert(
             title='Edit configuration',
@@ -150,14 +150,14 @@ class StatusbarAppMacOs(StatusbarApp):
             'https://github.com/mindaugasw/timestamp-statusbar-converter/blob/master/config.app.yml',
             ok='Open in default editor',
             cancel='Close',
-            icon_path=self.ICON_FLASH,
+            icon_path=self._iconFlash,
         )
 
         if alertResult == 1:
             subprocess.Popen(['open', configFilePath])
 
     def _onMenuClickOpenWebsite(self, item: MenuItem) -> None:
-        subprocess.Popen(['open', self.WEBSITE])
+        subprocess.Popen(['open', StatusbarAppMacOs.WEBSITE])
         # TODO use xdg-open on Linux
         # https://stackoverflow.com/a/4217323/4110469
 

@@ -45,7 +45,7 @@ class TimestampParser:
         events.timestampChanged(timestamp)
 
     def _extractTimestamp(self, content: str) -> Timestamp | None:
-        regexResult = re.match(self.REGEX_PATTERN, content)
+        regexResult = re.match(TimestampParser.REGEX_PATTERN, content)
 
         if regexResult is None:
             return None
@@ -64,14 +64,14 @@ class TimestampParser:
 
         numberString = str(number)
 
-        if self.MILLIS_MIN_CHARACTERS <= len(numberString) <= self.MILLIS_MAX_CHARACTERS:
+        if TimestampParser.MILLIS_MIN_CHARACTERS <= len(numberString) <= TimestampParser.MILLIS_MAX_CHARACTERS:
             seconds = int(numberString[:-3])
             milliseconds = int(numberString[-3:])
         else:
             seconds = number
             milliseconds = None
 
-        if self.MIN_VALUE <= seconds <= self.MAX_VALUE:
+        if TimestampParser.MIN_VALUE <= seconds <= TimestampParser.MAX_VALUE:
             return Timestamp(seconds, milliseconds)
 
         return None
