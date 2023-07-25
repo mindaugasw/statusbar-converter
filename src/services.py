@@ -47,4 +47,4 @@ else:
     clipboardManager = ClipboardManagerLinux(debug)
     statusbarApp = StatusbarAppLinux(timestampTextFormatter, config, debug)
 
-appLoop = AppLoop()
+appLoop = AppLoop(osSwitch)
