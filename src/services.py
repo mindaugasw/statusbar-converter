@@ -33,6 +33,7 @@ if osSwitch.isMacOS():
 
     clipboardManager = ClipboardManagerMacOs(debug)
     statusbarApp = StatusbarAppMacOs(
+        osSwitch,
         timestampTextFormatter,
         clipboardManager,
         timestampParser,
@@ -45,6 +46,12 @@ else:
     from src.Service.StatusbarAppLinux import StatusbarAppLinux
 
     clipboardManager = ClipboardManagerLinux(debug)
-    statusbarApp = StatusbarAppLinux(timestampTextFormatter, config, debug)
+    statusbarApp = StatusbarAppLinux(
+        osSwitch,
+        timestampTextFormatter,
+        clipboardManager,
+        config,
+        debug,
+    )
 
 appLoop = AppLoop(osSwitch)

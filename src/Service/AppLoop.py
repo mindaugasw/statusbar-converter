@@ -18,7 +18,7 @@ class AppLoop:
         # make interval way longer
         self._loopInterval = 0.33 if self._osSwitch.isMacOS() else 5
 
-        threading.Thread(target=self._processIteration).start()
+        threading.Thread(target=self._processIteration, daemon=True).start()
 
     def _processIteration(self) -> None:
         while True:

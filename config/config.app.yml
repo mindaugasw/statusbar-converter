@@ -5,11 +5,6 @@ clear_on_change: false
 # 0 to disable automatic clearing.
 clear_after_time: 300
 
-# Parse text on highlighting it, without having to copy it.
-# Supported only on Linux, ignored on macOS. # TODO
-# Highlight detection may not work in some apps, in which case you can still copy the text to manually trigger timestamp update
-update_on_highlight: true # TODO
-
 # If enabled, will shortly flash status bar icon on timestamp change
 flash_icon_on_change: true
 
@@ -22,11 +17,13 @@ flash_icon_on_change: true
 # Templates support all standard strftime() codes:
 # https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
 # and these custom codes for relative time:
+# TODO add simple timestamp without milliseconds
 # - {ts} - unix timestamp. Milliseconds (if copied timestamp with milliseconds) will be separated with a dot for better readability.
 # - {ts_ms} - unix timestamp. Milliseconds won't be separated to allow copying a valid timestamp.
 # - {r_int} - relative time with integer number, e.g. '5 h ago'.
 # - {r_float} - relative time with float number, e.g. '5.5 h ago'.
 # TODO name this somehow better
+# TODO refactor config structure to allow for multiple parsers
 format_icon:
     # Up to 60 s, e.g. "1619295908 - 59 s ago"
     60: "{ts} - {r_int}"

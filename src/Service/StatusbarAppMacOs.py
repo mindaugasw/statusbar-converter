@@ -9,6 +9,7 @@ from src.Service.Debug import Debug
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
+from src.Service.OSSwitch import OSSwitch
 from src.Service.StatusbarApp import StatusbarApp
 from src.Service.TimestampParser import TimestampParser
 from src.Service.TimestampTextFormatter import TimestampTextFormatter
@@ -25,11 +26,10 @@ class StatusbarAppMacOs(StatusbarApp):
     _app: App
 
     _menuItems: dict[str, MenuItem | None]
-    _menuTemplatesLastTimestamp: dict[str, str]
-    _menuTemplatesCurrentTimestamp: dict[str, str]
 
     def __init__(
         self,
+        osSwitch: OSSwitch,
         formatter: TimestampTextFormatter,
         clipboard: ClipboardManager,
         timestampParser: TimestampParser,
@@ -37,7 +37,7 @@ class StatusbarAppMacOs(StatusbarApp):
         configFileManager: ConfigFileManager,
         debug: Debug,
     ):
-        super().__init__(formatter, config, debug)
+        super().__init__(osSwitch, formatter, clipboard, config, debug)
 
         self._iconPathDefault = FilesystemHelper.getAssetsDir() + '/icon_macos.png'
         self._iconPathFlash = FilesystemHelper.getAssetsDir() + '/icon_macos_flash.png'
@@ -46,9 +46,6 @@ class StatusbarAppMacOs(StatusbarApp):
         self._timestampParser = timestampParser
         self._configFileManager = configFileManager
         self._debug = debug
-
-        self._menuTemplatesLastTimestamp = config.get(config.MENU_ITEMS_LAST_TIMESTAMP)
-        self._menuTemplatesCurrentTimestamp = config.get(config.MENU_ITEMS_CURRENT_TIMESTAMP)
 
     def createApp(self) -> None:
         events.timestampChanged.append(self._onTimestampChange)
@@ -110,7 +107,7 @@ class StatusbarAppMacOs(StatusbarApp):
             self._menuItems[key].title = self._formatter.format(timestamp, template)
 
         if self._flashIconOnChange:
-            threading.Thread(target=self._flashIcon).start()
+            threading.Thread(target=self._flashIcon, daemon=True).start()
 
     def _flashIcon(self) -> None:
         self._app.icon = self._iconPathFlash

@@ -7,10 +7,12 @@ from src.Service.FilesystemHelperLinux import FilesystemHelperLinux
 
 class ClipboardManagerLinux(ClipboardManager):
     def initializeClipboardWatch(self) -> None:
-        threading.Thread(target=self._watchClipboard).start()
+        threading.Thread(target=self._watchClipboard, daemon=True).start()
 
     def setClipboardContent(self, content: str) -> None:
-        raise Exception('not impl')
+        # TODO this still seems to sometimes not work nicely together with xsel detec
+        subprocess.run(['xsel', '-ib'], input=content, text=True)
+        subprocess.run(['xsel', '-ip'], input=content, text=True)
 
     def _watchClipboard(self) -> None:
         clipnotifyPath = FilesystemHelperLinux.getBinariesDir() + '/clipnotify/clipnotify'
@@ -22,5 +24,6 @@ class ClipboardManagerLinux(ClipboardManager):
             subprocess.call([clipnotifyPath], stdout=None, stderr=None)
 
             selection = os.popen('xsel -o').read()
+            # selection = os.popen('xsel -obp').read()
 
             self._handleChangedClipboard(selection)

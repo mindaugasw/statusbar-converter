@@ -15,6 +15,12 @@ class ClipboardManagerMacOs(ClipboardManager):
     def initializeClipboardWatch(self) -> None:
         events.appLoopIteration.append(self._checkClipboard)
 
+    def setClipboardContent(self, content: str) -> None:
+        try:
+            self._pb.set_contents(content)
+        except Exception as e:
+            raise Exception('Could not set clipboard content.\nOriginal exception: ' + str(e))
+
     def _checkClipboard(self) -> None:
         content = self._pb.get_contents(type=pasteboard.String, diff=True)
 
@@ -30,9 +36,3 @@ class ClipboardManagerMacOs(ClipboardManager):
             return
 
         self._handleChangedClipboard(content)
-
-    def setClipboardContent(self, content: str) -> None:
-        try:
-            self._pb.set_contents(content)
-        except Exception as e:
-            raise Exception('Could not set clipboard content.\nOriginal exception: ' + str(e))

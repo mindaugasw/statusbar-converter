@@ -3,10 +3,13 @@ import time
 import gi
 import signal
 import src.events as events
+from src.Entity.MenuItem import MenuItem
 from src.Entity.Timestamp import Timestamp
+from src.Service.ClipboardManager import ClipboardManager
 from src.Service.Configuration import Configuration
 from src.Service.Debug import Debug
 from src.Service.FilesystemHelper import FilesystemHelper
+from src.Service.OSSwitch import OSSwitch
 from src.Service.StatusbarApp import StatusbarApp
 from src.Service.TimestampTextFormatter import TimestampTextFormatter
 
@@ -27,6 +30,9 @@ Documentation:
 - `libappindicator-doc` package
     From https://askubuntu.com/a/1019338/1152277
     Access at file:///usr/share/gtk-doc/html/libappindicator/index.html
+- https://launchpad.net/stackapplet
+    https://bazaar.launchpad.net/~george-edison55/stackapplet/trunk/view/head:/src/stackapplet.py
+    More usage examples, including some undocumented features
 
 Other menu alternatives, instead of using Gtk directly:
 - Pystray - much simpler and easier to use, supports all 3 OS: Linux, macOS, Windows.
@@ -40,11 +46,13 @@ class StatusbarAppLinux(StatusbarApp):
 
     def __init__(
         self,
+        osSwitch: OSSwitch,
         formatter: TimestampTextFormatter,
+        clipboard: ClipboardManager,
         config: Configuration,
         debug: Debug,
     ):
-        super().__init__(formatter, config, debug)
+        super().__init__(osSwitch, formatter, clipboard, config, debug)
 
         self._iconPathDefault = FilesystemHelper.getAssetsDir() + '/icon_linux.png'
         self._iconPathFlash = FilesystemHelper.getAssetsDir() + '/icon_linux_flash.png'
@@ -68,33 +76,75 @@ class StatusbarAppLinux(StatusbarApp):
         # Set text shown on the statusbar
         # https://lazka.github.io/pgi-docs/#AyatanaAppIndicator3-0.1/classes/Indicator.html#AyatanaAppIndicator3.Indicator.set_label
         self._app.set_label('', '')
-        self._app.set_menu(Gtk.Menu())
-        self._app.set_menu(self._createMenuItems())
+        menu = self._createOsNativeMenu(self._createCommonMenu())
+        self._app.set_menu(menu)
 
         # Needed because without this the app exits with errors on app close
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
         Gtk.main()
 
-    def _createMenuItems(self) -> Gtk.Menu:
+    def _createOsNativeMenu(self, commonMenu: dict[str, MenuItem]) -> Gtk.Menu:
         menu = Gtk.Menu()
 
-        menuItem1 = Gtk.MenuItem('Item 1')
-        # activate = item click
-        menuItem1.connect('activate', lambda: self._debug.log('item 1 click'))
+        item: MenuItem
+        for key, item in commonMenu.items():
+            if item.isSeparator:
+                nativeItem = Gtk.SeparatorMenuItem()
+                menu.append(nativeItem)
 
-        menu.append(menuItem1)
+                continue
+
+            nativeItem = Gtk.MenuItem(item.label)
+
+            if item.isDisabled:
+                nativeItem.set_sensitive(False)
+
+            if item.callback:
+                nativeItem.connect('activate', item.callback)
+
+            item.setNativeItem(nativeItem)
+            menu.append(nativeItem)
+
         menu.show_all()
 
         return menu
 
-    def _onTimestampChange(self, timestamp: Timestamp) -> None:
-        title = self._formatter.formatForIcon(timestamp)
-        self._debug.log(f'Changing statusbar to: {title}')
-        self._app.set_label(title, '')
+    def _onMenuClickLastTimestamp(self, menuItem: Gtk.MenuItem) -> None:
+        label = menuItem.get_label()
+        self._clipboard.setClipboardContent(label)
 
+    def _onMenuClickCurrentTimestamp(self, menuItem: Gtk.MenuItem) -> None:
+        template = self._menuTemplatesCurrentTimestamp[menuItem.get_label()]
+        text = self._formatter.format(Timestamp(), template)
+
+        self._clipboard.setClipboardContent(text)
+
+    def _onMenuClickClearTimestamp(self, menuItem: Gtk.MenuItem) -> None:
+        events.timestampClear()
+
+    def _onMenuClickQuit(self, menuItem) -> None:
+        Gtk.main_quit()
+        exit()
+
+    def _onTimestampChange(self, timestamp: Timestamp) -> None:
+        # Icon flash must be first action. Otherwise, it's visible how text is
+        # updated first and icon later, and looks bad
         if self._flashIconOnChange:
-            threading.Thread(target=self._flashIcon).start()
+            threading.Thread(target=self._flashIcon, daemon=True).start()
+
+        iconLabel = self._formatter.formatForIcon(timestamp)
+        self._debug.log(f'Changing statusbar to: {iconLabel}')
+        self._app.set_label(iconLabel, '')
+
+        for key, template in self._menuTemplatesLastTimestamp.items():
+            lastTimestampLabel = self._formatter.format(timestamp, template)
+            self._menuItems[key].nativeItem.set_label(lastTimestampLabel)
+
+            # There was a bug where it seems like menu items were not being
+            # actually updated when changing them too fast. So adding this
+            # delay hoping it'll fix it
+            time.sleep(0.1)
 
     def _flashIcon(self) -> None:
         self._app.set_icon(FilesystemHelper.getAssetsDir() + '/icon_linux_flash.png')
