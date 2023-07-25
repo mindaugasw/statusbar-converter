@@ -72,7 +72,7 @@ buildSpec() {(set -e
         --windowed \
         --add-data '../assets:assets' \
         --add-data '../config:config' \
-        --icon '../assets/icon.png' \
+        --icon '../assets/icon_macos.png' \
         --target-arch "$arch" \
         --osx-bundle-identifier 'com.mindaugasw.statusbar_converter' \
         --specpath 'build' \

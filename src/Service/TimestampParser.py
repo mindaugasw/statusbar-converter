@@ -33,8 +33,14 @@ class TimestampParser:
         events.timestampClear.append(self._onTimestampClear)
         events.appLoopIteration.append(self._clearTimestampAfterTime)
 
-    def _processChangedClipboard(self, content: str) -> None:
-        timestamp = self._extractTimestamp(content)
+    def _processChangedClipboard(self, content: str | None) -> None:
+        """
+        @param content: clipboard content or None, if content is too long or
+            should not be parsed for other reasons. But this method is still
+            called to allow clearing on change clipboard
+        """
+
+        timestamp = self._extractTimestamp(content) if content else None
 
         if timestamp is None:
             if self._clearOnChange and self._timestampSetAt:

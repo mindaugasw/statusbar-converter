@@ -24,6 +24,7 @@ class ClipboardManager(metaclass=ABCMeta):
         # Avoid parsing huge texts to not impact performance
         if len(content) > ClipboardManager.MAX_CONTENT_LENGTH:
             self._debug.log('Too long clipboard content, skipping')
+            events.clipboardChanged(None)
 
             return
 
@@ -31,6 +32,7 @@ class ClipboardManager(metaclass=ABCMeta):
 
         if len(trimmed) > ClipboardManager.MAX_CONTENT_LENGTH_TRIMMED:
             self._debug.log('Too long clipboard content after trimming, skipping')
+            events.clipboardChanged(None)
 
             return
 

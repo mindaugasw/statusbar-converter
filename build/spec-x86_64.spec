@@ -37,7 +37,7 @@ exe = EXE(
     target_arch='x86_64',
     codesign_identity=None,
     entitlements_file=None,
-    icon=['../assets/icon.png'],
+    icon=['../assets/icon_macos.png'],
 )
 coll = COLLECT(
     exe,
@@ -52,7 +52,7 @@ coll = COLLECT(
 app = BUNDLE(
     coll,
     name='Statusbar Converter.app',
-    icon='../assets/icon.png',
+    icon='../assets/icon_macos.png',
     bundle_identifier='com.mindaugasw.statusbar_converter',
     info_plist={
         # These keys are needed to completely hide the dock icon
