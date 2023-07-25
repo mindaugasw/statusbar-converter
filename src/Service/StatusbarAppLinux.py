@@ -40,7 +40,8 @@ Documentation:
 Other menu alternatives, instead of using Gtk directly:
 - Pystray - much simpler and easier to use, supports all 3 OS: Linux, macOS, Windows.
     Likely much better portability than using Gtk directly.
-    But setting icon text/title is bugged and completely doesn't work. 
+    But setting icon text/title is bugged and completely doesn't work.
+    See experimental StatusbarAppPystray in git history.
 """
 
 
