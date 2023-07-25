@@ -1,7 +1,10 @@
+import os
+import sys
 from abc import ABCMeta, abstractmethod
 from src.Entity.MenuItem import MenuItem
 from src.Entity.Timestamp import Timestamp
 from src.Service.ClipboardManager import ClipboardManager
+from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
 from src.Service.Debug import Debug
 from src.Service.OSSwitch import OSSwitch
@@ -10,6 +13,7 @@ from src.Service.TimestampTextFormatter import TimestampTextFormatter
 
 class StatusbarApp(metaclass=ABCMeta):
     APP_NAME = 'Statusbar Converter'
+    WEBSITE = 'https://github.com/mindaugasw/statusbar-converter'
     ICON_FLASH_DURATION = 0.35
 
     _osSwitch: OSSwitch
@@ -23,6 +27,7 @@ class StatusbarApp(metaclass=ABCMeta):
     _iconPathDefault: str
     _iconPathFlash: str
     _flashIconOnChange: bool
+    _configFilePath: str
 
     def __init__(
         self,
@@ -30,12 +35,15 @@ class StatusbarApp(metaclass=ABCMeta):
         formatter: TimestampTextFormatter,
         clipboard: ClipboardManager,
         config: Configuration,
+        configFileManager: ConfigFileManager,
         debug: Debug,
     ):
         self._osSwitch = osSwitch
         self._formatter = formatter
         self._clipboard = clipboard
         self._debug = debug
+
+        self._configFilePath = configFileManager.configUserPath
 
         self._menuTemplatesLastTimestamp = config.get(config.MENU_ITEMS_LAST_TIMESTAMP)
         self._menuTemplatesCurrentTimestamp = config.get(config.MENU_ITEMS_CURRENT_TIMESTAMP)
@@ -74,15 +82,20 @@ class StatusbarApp(metaclass=ABCMeta):
 
         items.update({
             'clear_timestamp': MenuItem('Clear timestamp', callback=self._onMenuClickClearTimestamp),
-            'edit_config': MenuItem('Edit configuration'),
-            'open_website': MenuItem('Open website'),
-            'restart': MenuItem('Restart application'),
+            'edit_config': MenuItem('Edit configuration', callback=self._onMenuClickEditConfiguration),
+            'open_website': MenuItem('Open website', callback=self._onMenuClickOpenWebsite),
         })
 
-        # On macOS Quit button is automatically created by rumps app
-        if self._osSwitch.isLinux():
+        if self._osSwitch.isMacOS():
+            # On Linux restart button throws error on 2nd restart, so we add the button only for macOS
             items.update({
-                'quit': MenuItem('Quit', callback=self._onMenuClickQuit)
+                'restart': MenuItem('Restart application', callback=self._onMenuClickRestart),
+            })
+
+        if self._osSwitch.isLinux():
+            # On macOS Quit button is automatically created by rumps app
+            items.update({
+                'quit': MenuItem('Quit', callback=self._onMenuClickQuit),
             })
 
         self._menuItems = items
@@ -105,5 +118,17 @@ class StatusbarApp(metaclass=ABCMeta):
     def _onMenuClickClearTimestamp(self, menuItem) -> None:
         pass
 
-    def _onMenuClickQuit(self, menuItem) -> None:
+    @abstractmethod
+    def _onMenuClickEditConfiguration(self, menuItem) -> None:
         pass
+
+    @abstractmethod
+    def _onMenuClickOpenWebsite(self, menuItem) -> None:
+        pass
+
+    def _onMenuClickRestart(self, menuItem) -> None:
+        # On Linux this fails on 2nd restart, sys.executable is not set after the 1st restart
+        os.execl(sys.executable, '-m src.main', *sys.argv)
+
+    def _onMenuClickQuit(self, menuItem) -> None:
+        raise Exception('Not implemented')

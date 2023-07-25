@@ -1,11 +1,14 @@
+import subprocess
 import threading
 import time
+import webbrowser
 import gi
 import signal
 import src.events as events
 from src.Entity.MenuItem import MenuItem
 from src.Entity.Timestamp import Timestamp
 from src.Service.ClipboardManager import ClipboardManager
+from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
 from src.Service.Debug import Debug
 from src.Service.FilesystemHelper import FilesystemHelper
@@ -50,9 +53,10 @@ class StatusbarAppLinux(StatusbarApp):
         formatter: TimestampTextFormatter,
         clipboard: ClipboardManager,
         config: Configuration,
+        configFileManager: ConfigFileManager,
         debug: Debug,
     ):
-        super().__init__(osSwitch, formatter, clipboard, config, debug)
+        super().__init__(osSwitch, formatter, clipboard, config, configFileManager, debug)
 
         self._iconPathDefault = FilesystemHelper.getAssetsDir() + '/icon_linux.png'
         self._iconPathFlash = FilesystemHelper.getAssetsDir() + '/icon_linux_flash.png'
@@ -63,18 +67,13 @@ class StatusbarAppLinux(StatusbarApp):
 
         # https://lazka.github.io/pgi-docs/#AyatanaAppIndicator3-0.1/classes/Indicator.html#AyatanaAppIndicator3.Indicator.new
         self._app = AppIndicator3.Indicator.new(
-            'com.mindaugasw.statusbar_converter',
+            StatusbarAppLinux.APP_NAME,
             # Icons can be also used from `/usr/share/icons`, e.g. 'clock-app'
             FilesystemHelper.getAssetsDir() + '/icon_linux.png',
             AppIndicator3.IndicatorCategory.APPLICATION_STATUS,
         )
 
-        # Enable the indicator
-        # https://lazka.github.io/pgi-docs/#AyatanaAppIndicator3-0.1/classes/Indicator.html#AyatanaAppIndicator3.Indicator.set_status
         self._app.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
-
-        # Set text shown on the statusbar
-        # https://lazka.github.io/pgi-docs/#AyatanaAppIndicator3-0.1/classes/Indicator.html#AyatanaAppIndicator3.Indicator.set_label
         self._app.set_label('', '')
         menu = self._createOsNativeMenu(self._createCommonMenu())
         self._app.set_menu(menu)
@@ -122,6 +121,30 @@ class StatusbarAppLinux(StatusbarApp):
 
     def _onMenuClickClearTimestamp(self, menuItem: Gtk.MenuItem) -> None:
         events.timestampClear()
+
+    def _onMenuClickEditConfiguration(self, menuItem: Gtk.MenuItem | None) -> None:
+        dialog = Gtk.MessageDialog(
+            message_type=Gtk.MessageType.OTHER,
+            buttons=Gtk.ButtonsType.YES_NO,
+            text="Edit configuration",
+        )
+
+        dialog.format_secondary_markup(
+            'Configuration can be edited in the file: \n'
+            f'<tt>{self._configFilePath}</tt>\n\n'
+            'After editing, the application must be restarted.\n\n'
+            'Open configuration file in default text editor?',
+        )
+
+        response = dialog.run()
+
+        if response == Gtk.ResponseType.YES:
+            subprocess.call(['xdg-open', self._configFilePath])
+
+        dialog.destroy()
+
+    def _onMenuClickOpenWebsite(self, menuItem: Gtk.MenuItem) -> None:
+        webbrowser.open(StatusbarAppLinux.WEBSITE)
 
     def _onMenuClickQuit(self, menuItem) -> None:
         Gtk.main_quit()

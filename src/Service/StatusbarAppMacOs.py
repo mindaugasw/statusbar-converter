@@ -18,8 +18,6 @@ from src.Entity.Timestamp import Timestamp
 
 
 class StatusbarAppMacOs(StatusbarApp):
-    WEBSITE = 'https://github.com/mindaugasw/statusbar-converter'
-
     _clipboard: ClipboardManager
     _timestampParser: TimestampParser
     _configFileManager: ConfigFileManager
@@ -37,7 +35,7 @@ class StatusbarAppMacOs(StatusbarApp):
         configFileManager: ConfigFileManager,
         debug: Debug,
     ):
-        super().__init__(osSwitch, formatter, clipboard, config, debug)
+        super().__init__(osSwitch, formatter, clipboard, config, configFileManager, debug)
 
         self._iconPathDefault = FilesystemHelper.getAssetsDir() + '/icon_macos.png'
         self._iconPathFlash = FilesystemHelper.getAssetsDir() + '/icon_macos_flash.png'
@@ -130,27 +128,20 @@ class StatusbarAppMacOs(StatusbarApp):
         events.timestampClear()
 
     def _onMenuClickEditConfiguration(self, item: MenuItem) -> None:
-        configFilePath = self._configFileManager.configUserPath
-
         alertResult = rumps.alert(
             title='Edit configuration',
             message='Configuration can be edited in the file: \n'
-            f'{configFilePath}\n\n'
+            f'{self._configFilePath}\n\n'
             'After editing, the application must be restarted.\n\n'
             'All supported configuration can be found at:\n'
-            'https://github.com/mindaugasw/timestamp-statusbar-converter/blob/master/config.app.yml',
+            f'{StatusbarAppMacOs.WEBSITE}/blob/master/config.app.yml',
             ok='Open in default editor',
             cancel='Close',
             icon_path=self._iconPathFlash,
         )
 
         if alertResult == 1:
-            subprocess.Popen(['open', configFilePath])
+            subprocess.Popen(['open', self._configFilePath])
 
     def _onMenuClickOpenWebsite(self, item: MenuItem) -> None:
         subprocess.Popen(['open', StatusbarAppMacOs.WEBSITE])
-        # TODO use xdg-open on Linux
-        # https://stackoverflow.com/a/4217323/4110469
-
-    def _onMenuClickRestart(self, item: MenuItem) -> None:
-        os.execl(sys.executable, '-m src.main', *sys.argv)

@@ -51,6 +51,7 @@ else:
         timestampTextFormatter,
         clipboardManager,
         config,
+        configFileManager,
         debug,
     )
 
