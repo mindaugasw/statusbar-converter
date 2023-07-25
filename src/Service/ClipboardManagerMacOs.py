@@ -29,20 +29,7 @@ class ClipboardManagerMacOs(ClipboardManager):
         if content is None:
             return
 
-        # Avoid parsing huge texts to not impact performance
-        if len(content) > ClipboardManagerMacOs.MAX_CONTENT_LENGTH:
-            self._debug.log('Too long clipboard content, skipping')
-
-            return
-
-        trimmed = content.strip()
-
-        if len(trimmed) > ClipboardManagerMacOs.MAX_CONTENT_LENGTH_TRIMMED:
-            self._debug.log('Too long clipboard content after trimming, skipping')
-
-            return
-
-        events.clipboardChanged(content.strip())
+        self._handleChangedClipboard(content)
 
     def setClipboardContent(self, content: str) -> None:
         try:

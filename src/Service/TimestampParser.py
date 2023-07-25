@@ -89,5 +89,5 @@ class TimestampParser:
         if int(time.time()) - self._timestampSetAt < self._clearAfterTime:
             return
 
-        self._debug.log('Auto clearing timestamp after timeout')
+        self._debug.log(f'Auto clearing timestamp after timeout ({self._clearAfterTime})')
         events.timestampClear()
