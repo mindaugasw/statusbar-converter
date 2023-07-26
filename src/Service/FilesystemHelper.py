@@ -5,16 +5,16 @@ from abc import ABCMeta, abstractmethod
 class FilesystemHelper(metaclass=ABCMeta):
     def __init__(self):
         # Debug service is not yet initialized, so we simply always print debug information
-        print(f'Project dir: `{FilesystemHelper._getProjectDir()}`')
+        print(f'Project dir: `{FilesystemHelper.getProjectDir()}`')
         print(f'User data dir: `{self.getUserDataDir()}`')
 
     @staticmethod
     def getAssetsDir() -> str:
-        return FilesystemHelper._getProjectDir() + '/assets'
+        return FilesystemHelper.getProjectDir() + '/assets'
 
     @staticmethod
     def getConfigDir() -> str:
-        return FilesystemHelper._getProjectDir() + '/config'
+        return FilesystemHelper.getProjectDir() + '/config'
 
     @abstractmethod
     def getUserDataDir(self) -> str:
@@ -22,8 +22,8 @@ class FilesystemHelper(metaclass=ABCMeta):
 
     @staticmethod
     def getBinariesDir() -> str:
-        return FilesystemHelper._getProjectDir() + '/binaries'
+        return FilesystemHelper.getProjectDir() + '/binaries'
 
     @staticmethod
-    def _getProjectDir() -> str:
+    def getProjectDir() -> str:
         return os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + '/../..')

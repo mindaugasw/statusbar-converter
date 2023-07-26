@@ -10,7 +10,6 @@ class ClipboardManagerLinux(ClipboardManager):
         threading.Thread(target=self._watchClipboard, daemon=True).start()
 
     def setClipboardContent(self, content: str) -> None:
-        # TODO this still seems to sometimes not work nicely together with xsel detec
         subprocess.run(['xsel', '-ib'], input=content, text=True)
         subprocess.run(['xsel', '-ip'], input=content, text=True)
 

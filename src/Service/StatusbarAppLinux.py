@@ -147,6 +147,17 @@ class StatusbarAppLinux(StatusbarApp):
     def _onMenuClickOpenWebsite(self, menuItem: Gtk.MenuItem) -> None:
         webbrowser.open(StatusbarAppLinux.WEBSITE)
 
+    def _onMenuClickAbout(self, menuItem: Gtk.MenuItem) -> None:
+        dialog = Gtk.MessageDialog(
+            message_type=Gtk.MessageType.OTHER,
+            buttons=Gtk.ButtonsType.OK,
+            text=StatusbarAppLinux.APP_NAME,
+        )
+
+        dialog.format_secondary_markup('Version: ' + self.appVersion)
+        dialog.run()
+        dialog.destroy()
+
     def _onMenuClickQuit(self, menuItem) -> None:
         Gtk.main_quit()
         exit()

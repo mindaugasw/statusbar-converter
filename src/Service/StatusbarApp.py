@@ -7,6 +7,7 @@ from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
 from src.Service.Debug import Debug
+from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.OSSwitch import OSSwitch
 from src.Service.TimestampTextFormatter import TimestampTextFormatter
 
@@ -15,6 +16,8 @@ class StatusbarApp(metaclass=ABCMeta):
     APP_NAME = 'Statusbar Converter'
     WEBSITE = 'https://github.com/mindaugasw/statusbar-converter'
     ICON_FLASH_DURATION = 0.35
+
+    appVersion: str
 
     _osSwitch: OSSwitch
     _formatter: TimestampTextFormatter
@@ -48,6 +51,9 @@ class StatusbarApp(metaclass=ABCMeta):
         self._menuTemplatesLastTimestamp = config.get(config.MENU_ITEMS_LAST_TIMESTAMP)
         self._menuTemplatesCurrentTimestamp = config.get(config.MENU_ITEMS_CURRENT_TIMESTAMP)
         self._flashIconOnChange = config.get(config.FLASH_ICON_ON_CHANGE)
+
+        with open(FilesystemHelper.getProjectDir() + '/version', 'r') as versionFile:
+            self.appVersion = versionFile.read().strip()
 
     @abstractmethod
     def createApp(self) -> None:
@@ -84,6 +90,7 @@ class StatusbarApp(metaclass=ABCMeta):
             'clear_timestamp': MenuItem('Clear timestamp', callback=self._onMenuClickClearTimestamp),
             'edit_config': MenuItem('Edit configuration', callback=self._onMenuClickEditConfiguration),
             'open_website': MenuItem('Open website', callback=self._onMenuClickOpenWebsite),
+            'about': MenuItem('About', callback=self._onMenuClickAbout)
         })
 
         if self._osSwitch.isMacOS():
@@ -124,6 +131,10 @@ class StatusbarApp(metaclass=ABCMeta):
 
     @abstractmethod
     def _onMenuClickOpenWebsite(self, menuItem) -> None:
+        pass
+
+    @abstractmethod
+    def _onMenuClickAbout(self, menuItem) -> None:
         pass
 
     def _onMenuClickRestart(self, menuItem) -> None:

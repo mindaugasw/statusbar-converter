@@ -89,7 +89,6 @@ class StatusbarAppMacOs(StatusbarApp):
         menu.update({
             'clear_timestamp': MenuItem('Clear timestamp', self._onMenuClickClearTimestamp),
             'edit_config': MenuItem('Edit configuration', self._onMenuClickEditConfiguration),
-            'check_for_updates': MenuItem('Check for updates'),  # TODO implement check for updates
             'open_website': MenuItem('Open website', self._onMenuClickOpenWebsite),
             'restart': MenuItem('Restart application', self._onMenuClickRestart),
         })

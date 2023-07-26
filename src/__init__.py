@@ -5,9 +5,8 @@ from src.Service.StatusbarApp import StatusbarApp
 
 
 def main():
-    # TODO print app version as well
     print(
-        f'\n{StatusbarApp.APP_NAME}\n'
+        f'\n{StatusbarApp.APP_NAME} v{services.statusbarApp.appVersion}\n'
         f'Platform: {platform.platform()}\n'
         f'Detected OS: {services.osSwitch.os}\n'
         f'Python: {sys.version}\n'
