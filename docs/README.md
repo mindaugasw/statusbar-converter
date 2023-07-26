@@ -10,7 +10,7 @@ timestamp and it will automatically show as time in the statusbar:
 
 - Download the latest release from [GitHub](https://github.com/mindaugasw/statusbar-converter/releases)
 - Extract zip into `Applications`
-- On macOS you must manually remove quarantine attribute, because the app is not signed:
+- On macOS you must manually remove quarantine attribute, because the app is not signed:  
   `xattr -d com.apple.quarantine /Applications/Statusbar\ Converter.app/`
 - Start the app. A new icon will appear on the statusbar
 - To automatically launch the app on boot, go to System Preferences, search for `Login items` and add the app
