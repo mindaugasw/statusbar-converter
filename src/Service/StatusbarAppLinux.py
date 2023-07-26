@@ -1,4 +1,5 @@
 import subprocess
+import sys
 import threading
 import time
 import webbrowser
@@ -160,7 +161,7 @@ class StatusbarAppLinux(StatusbarApp):
 
     def _onMenuClickQuit(self, menuItem) -> None:
         Gtk.main_quit()
-        exit()
+        sys.exit()
 
     def _onTimestampChange(self, timestamp: Timestamp) -> None:
         # Icon flash must be first action. Otherwise, it's visible how text is

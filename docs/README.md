@@ -8,9 +8,9 @@ timestamp and it will automatically show as time in the statusbar:
 
 ## Installation on macOS
 
-- Download the latest release from [GitHub](https://github.com/mindaugasw/statusbar-converter/releases)  
-- Extract zip  
-- On macOS you must manually remove quarantine attribute, because the app is not signed:  
+- Download the latest release from [GitHub](https://github.com/mindaugasw/statusbar-converter/releases)
+- Extract zip into `Applications`
+- On macOS you must manually remove quarantine attribute, because the app is not signed:
   `xattr -d com.apple.quarantine /Applications/Statusbar\ Converter.app/`
 - Start the app. A new icon will appear on the statusbar
 - To automatically launch the app on boot, go to System Preferences, search for `Login items` and add the app
@@ -19,7 +19,12 @@ timestamp and it will automatically show as time in the statusbar:
 
 ## Installation on Linux
 
-TODO mention about xsel
+- Run `sudo apt-get install xsel gir1.2-appindicator3-0.1`
+- Download the latest release from [GitHub](https://github.com/mindaugasw/statusbar-converter/releases)
+- Extract zip
+- Start the app. A new icon will appear on the statusbar
+- To automatically launch the app on boot, open `Startup Applications Preferences` and add the app
+
 
 ## Building locally
 

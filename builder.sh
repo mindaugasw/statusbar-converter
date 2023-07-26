@@ -2,7 +2,10 @@
 
 # Usage:
 # TODO update
-# `install arm64 python3.10` or `install x86_64 python3.10-intel64`
+# `install arm64 python3.10` (arm64 native on macOS)
+# `install x86_64 python3.10` (x86_64 native on macOS/Linux)
+# `install x86_64 python3.10-intel64` (building x86_64 on arm64 on macOS)
+#
 # `buildSpec arm64`
 # Modify spec file as needed
 # `build arm64`
@@ -35,91 +38,129 @@ install() {(set -e
     pip install wheel
     pip install -r "requirements_$os.txt"
 
-    # TODO move this out to a method
     if [[ "$os" == 'linux' ]]; then
-        _log "Installing clipnotify"
-
-        clipnotifyPath="binaries/clipnotify"
-        rm -rf "$clipnotifyPath"
-        git clone https://github.com/cdown/clipnotify.git "$clipnotifyPath"
-        make -C "$clipnotifyPath"
-
-        _log "Successfully installed clipnotify"
-
-        # TODO apply more permanent solution
-        cp -r /usr/lib/python3/dist-packages/gi "$venvPath/lib/python3.10/site-packages/gi"
+        _installLinux "$venvPath"
     fi
 
     _log "Successfully installed virtualenv to \"$venvPath\""
 )}
 
+_installLinux() {(set -e
+    # $1 - virtualenv path
+    venvPath=$1
+
+    _log "Installing clipnotify"
+
+    clipnotifyPath="binaries/clipnotify"
+    rm -rf "$clipnotifyPath"
+    git clone https://github.com/cdown/clipnotify.git "$clipnotifyPath"
+    make -C "$clipnotifyPath"
+
+    _log "Successfully installed clipnotify"
+
+    # TODO solve this somehow better. Installing PyGObject directly into virtualenv seems not possible
+    cp -r /usr/lib/python3/dist-packages/gi "$venvPath/lib/python3.10/site-packages/gi"
+)}
+
 buildSpec() {(set -e
     arch=$1 # architecture name, `arm64` | `x86_64`
+    os=$(_getOsName)
 
     _validateArchArg "$arch"
 
-    _log "Generating spec for $arch"
+    _log "Generating spec for $os-$arch"
 
-    venvPath=".venv-$arch"
-    specFilePath="build/spec-$arch.spec"
+    venvPath=".venv-$os-$arch"
+    specFilePath="build/spec-$os-$arch.spec"
     rm -f "$specFilePath"
 
     source "$venvPath/bin/activate"
 
-    "$venvPath/bin/pyi-makespec" \
-        --name "Statusbar Converter" \
-        --onedir \
-        --windowed \
-        --add-data '../assets:assets' \
-        --add-data '../config:config' \
-        --icon '../assets/icon_macos.png' \
-        --target-arch "$arch" \
-        --osx-bundle-identifier 'com.mindaugasw.statusbar_converter' \
-        --specpath 'build' \
-        start.py
+    if [ "$os" == 'macos' ]; then
+        "$venvPath/bin/pyi-makespec" \
+            --name "Statusbar Converter" \
+            --onedir \
+            --windowed \
+            --add-data '../assets:assets' \
+            --add-data '../config:config' \
+            --add-data '../version:.' \
+            --icon '../assets/icon_macos.png' \
+            --target-arch "$arch" \
+            --osx-bundle-identifier 'com.mindaugasw.statusbar_converter' \
+            --specpath 'build' \
+            start.py
+    else
+        "$venvPath/bin/pyi-makespec" \
+            --name "Statusbar Converter" \
+            --onefile \
+            --add-data '../assets:assets' \
+            --add-data '../config:config' \
+            --add-data '../version:.' \
+            --add-binary '../binaries/clipnotify/clipnotify:binaries/clipnotify' \
+            --icon '../assets/icon_linux.png' \
+            --specpath 'build' \
+            start.py
+    fi
 
     mv "build/Statusbar Converter.spec" "$specFilePath"
 
-    _log "Successfully generated spec for $arch at $specFilePath"
+    _log "Successfully generated spec at $specFilePath"
+    _log "Build the executable by running \`./builder.sh build $arch\`"
 )}
 
 build() {(set -e
     arch=$1 # architecture name, `arm64` | `x86_64`
+    os=$(_getOsName)
 
     _validateArchArg "$arch"
-    venvPath=".venv-$arch"
-    distPath="build/dist-$arch"
+    venvPath=".venv-$os-$arch"
+    distPath="build/dist-$os-$arch"
 
     source "$venvPath/bin/activate"
 
     rm -rf "./$distPath"
 
-    _log "Starting build for $arch"
+    _log "Starting build for $os-$arch"
 
     "$venvPath/bin/pyinstaller" \
         --clean \
         --distpath "$distPath" \
         --workpath "$distPath/build" \
-        "build/spec-$arch.spec"
+        "build/spec-$os-$arch.spec"
 
-    _log "Successfully built for $arch in $distPath"
+    _log "Successfully built in $distPath"
 
-    _createZip "$arch"
+    _createZip "$arch" "$os"
 )}
 
 _createZip() {(set -e
     # Compress app to .zip archive.
-    # Previously there was also a script for packing into .dmg image (see git history).
+    # Previously there was also a script for packing into .dmg image for macOS (see git history).
     # But .dmg triggers additional security measures: because of missing app signature,
     # Chrome warns about unsafe app when downloading. So .zip is more convenient.
 
     arch=$1 # architecture name, `arm64` | `x86_64`
+    os=$2 # OS name, `linux` | `macos`
+    version=$(cat 'version' | xargs)
 
-    cd "build/dist-$arch"
-    fileName="Statusbar_Converter_macOS_$arch.app.zip"
-    _log "Compressing into zip for $arch"
+    cd "build/dist-$os-$arch"
 
-    zip -qr "$fileName" "Statusbar Converter.app"
+    if [ "$os" == 'macos' ]; then
+        compressContent='Statusbar Converter.app'
+
+        if [ "$arch" == 'arm64' ]; then
+            fileName=$(printf 'Statusbar_Converter_v%s_macOS_AppleSilicon_%s.app.zip' "$version" "$arch")
+        else
+            fileName=$(printf 'Statusbar_Converter_v%s_macOS_intel_%s.app.zip' "$version" "$arch")
+        fi
+    else
+        compressContent='Statusbar Converter'
+        fileName=$(printf 'Statusbar_Converter_v%s_linux_%s.zip' "$version" "$arch")
+    fi
+
+    _log "Compressing into zip for $os-$arch"
+
+    zip -qr "$fileName" "$compressContent"
 
     _log "Successfully compressed into \"$fileName\""
 )}
