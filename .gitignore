@@ -1,7 +1,7 @@
 .vscode
 .idea
-# TODO remove clipnotify
-clipnotify
+
+binaries
 docs/notes
 
 # virtualenv artifacts
@@ -12,6 +12,4 @@ docs/notes
 **/__pycache__
 
 # build artifacts
-build
-dist
-*.spec
+build/dist*

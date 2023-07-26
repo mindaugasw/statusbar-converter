@@ -33,8 +33,14 @@ class TimestampParser:
         events.timestampClear.append(self._onTimestampClear)
         events.appLoopIteration.append(self._clearTimestampAfterTime)
 
-    def _processChangedClipboard(self, content: str) -> None:
-        timestamp = self._extractTimestamp(content)
+    def _processChangedClipboard(self, content: str | None) -> None:
+        """
+        @param content: clipboard content or None, if content is too long or
+            should not be parsed for other reasons. But this method is still
+            called to allow clearing on change clipboard
+        """
+
+        timestamp = self._extractTimestamp(content) if content else None
 
         if timestamp is None:
             if self._clearOnChange and self._timestampSetAt:
@@ -45,7 +51,7 @@ class TimestampParser:
         events.timestampChanged(timestamp)
 
     def _extractTimestamp(self, content: str) -> Timestamp | None:
-        regexResult = re.match(self.REGEX_PATTERN, content)
+        regexResult = re.match(TimestampParser.REGEX_PATTERN, content)
 
         if regexResult is None:
             return None
@@ -64,14 +70,14 @@ class TimestampParser:
 
         numberString = str(number)
 
-        if self.MILLIS_MIN_CHARACTERS <= len(numberString) <= self.MILLIS_MAX_CHARACTERS:
+        if TimestampParser.MILLIS_MIN_CHARACTERS <= len(numberString) <= TimestampParser.MILLIS_MAX_CHARACTERS:
             seconds = int(numberString[:-3])
             milliseconds = int(numberString[-3:])
         else:
             seconds = number
             milliseconds = None
 
-        if self.MIN_VALUE <= seconds <= self.MAX_VALUE:
+        if TimestampParser.MIN_VALUE <= seconds <= TimestampParser.MAX_VALUE:
             return Timestamp(seconds, milliseconds)
 
         return None
@@ -89,5 +95,5 @@ class TimestampParser:
         if int(time.time()) - self._timestampSetAt < self._clearAfterTime:
             return
 
-        self._debug.log('Auto clearing timestamp after timeout')
+        self._debug.log(f'Auto clearing timestamp after timeout ({self._clearAfterTime})')
         events.timestampClear()

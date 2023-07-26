@@ -10,7 +10,15 @@ from src.Service.StatusbarApp import StatusbarApp
 from src.Service.AppLoop import AppLoop
 
 osSwitch = OSSwitch()
-filesystemHelper = FilesystemHelper()
+filesystemHelper: FilesystemHelper
+
+if osSwitch.isMacOS():
+    from src.Service.FilesystemHelperMacOs import FilesystemHelperMacOs
+    filesystemHelper = FilesystemHelperMacOs()
+else:
+    from src.Service.FilesystemHelperLinux import FilesystemHelperLinux
+    filesystemHelper = FilesystemHelperLinux()
+
 configFileManager = ConfigFileManager(filesystemHelper)
 config = Configuration(configFileManager)
 debug = Debug(config)
@@ -25,19 +33,25 @@ if osSwitch.isMacOS():
 
     clipboardManager = ClipboardManagerMacOs(debug)
     statusbarApp = StatusbarAppMacOs(
+        osSwitch,
         timestampTextFormatter,
         clipboardManager,
-        timestampParser,
         config,
         configFileManager,
-        filesystemHelper,
         debug,
     )
 else:
     from src.Service.ClipboardManagerLinux import ClipboardManagerLinux
     from src.Service.StatusbarAppLinux import StatusbarAppLinux
 
-    clipboardManager = ClipboardManagerLinux()
-    statusbarApp = StatusbarAppLinux()
+    clipboardManager = ClipboardManagerLinux(debug)
+    statusbarApp = StatusbarAppLinux(
+        osSwitch,
+        timestampTextFormatter,
+        clipboardManager,
+        config,
+        configFileManager,
+        debug,
+    )
 
-appLoop = AppLoop(clipboardManager)
+appLoop = AppLoop(osSwitch)

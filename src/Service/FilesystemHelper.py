@@ -1,22 +1,29 @@
 import os
-import rumps
-from src.Service.StatusbarApp import StatusbarApp
+from abc import ABCMeta, abstractmethod
 
 
-class FilesystemHelper:
+class FilesystemHelper(metaclass=ABCMeta):
     def __init__(self):
         # Debug service is not yet initialized, so we simply always print debug information
-        print(f'Project dir: `{self._getProjectDir()}`')
+        print(f'Project dir: `{FilesystemHelper.getProjectDir()}`')
         print(f'User data dir: `{self.getUserDataDir()}`')
 
-    def getAssetsDir(self) -> str:
-        return self._getProjectDir() + '/assets'
+    @staticmethod
+    def getAssetsDir() -> str:
+        return FilesystemHelper.getProjectDir() + '/assets'
 
-    def getConfigDir(self) -> str:
-        return self._getProjectDir() + '/config'
+    @staticmethod
+    def getConfigDir() -> str:
+        return FilesystemHelper.getProjectDir() + '/config'
 
+    @abstractmethod
     def getUserDataDir(self) -> str:
-        return rumps.application_support(StatusbarApp.APP_NAME)
+        pass
 
-    def _getProjectDir(self) -> str:
+    @staticmethod
+    def getBinariesDir() -> str:
+        return FilesystemHelper.getProjectDir() + '/binaries'
+
+    @staticmethod
+    def getProjectDir() -> str:
         return os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + '/../..')
