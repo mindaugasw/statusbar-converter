@@ -35,8 +35,13 @@ class TimestampTextFormatter:
         Formatter supports all standard strftime() codes:
         https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
         and these custom codes to for relative time:
-        - {ts} - unix timestamp. Milliseconds will be separated for better readability.
-        - {ts_ms} - unix timestamp. Milliseconds won't be separated to allow copying a valid timestamp.
+        - {ts} - unix timestamp. Without milliseconds.
+        - {ts_ms} - unix timestamp. With milliseconds, if millisecond timestamp was copied.
+                    Without milliseconds otherwise.
+                    Can be used to copy a valid millisecond timestamp.
+        - {ts_ms_sep} - unix timestamp. With milliseconds, separated by a dot, if millisecond
+                        timestamp was copied. Without milliseconds otherwise.
+                        Can be used for easier readability.
         - {r_int} - relative time with integer number, e.g. '5 h ago'.
         - {r_float} - relative time with float number, e.g. '5.5 h ago'.
         """
@@ -49,8 +54,9 @@ class TimestampTextFormatter:
         )
 
         formatted = template.format(
-            ts=timestamp.getStringPretty(),
-            ts_ms=timestamp.getStringValid(),
+            ts=timestamp.toString(False),
+            ts_ms=timestamp.toString(True, ''),
+            ts_ms_sep=timestamp.toString(True, '.'),
             r_int='%s%d %s%s' % relativeFormatArguments,
             r_float='%s%.1f %s%s' % relativeFormatArguments,
         )

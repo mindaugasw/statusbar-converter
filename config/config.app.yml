@@ -23,28 +23,32 @@ converters:
         # Templates support all standard strftime() codes:
         # https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
         # and these custom codes for relative time:
-        # TODO add simple timestamp without milliseconds
-        # - {ts} - unix timestamp. Milliseconds (if copied timestamp with milliseconds) will be separated with a dot for better readability.
-        # - {ts_ms} - unix timestamp. Milliseconds won't be separated to allow copying a valid timestamp.
+        # - {ts} - unix timestamp. Without milliseconds.
+        # - {ts_ms} - unix timestamp. With milliseconds, if millisecond timestamp was copied.
+        #             Without milliseconds otherwise.
+        #             Can be used to copy a valid millisecond timestamp.
+        # - {ts_ms_sep} - unix timestamp. With milliseconds, separated by a dot, if millisecond
+        #                 timestamp was copied. Without milliseconds otherwise.
+        #                 Can be used for easier readability.
         # - {r_int} - relative time with integer number, e.g. '5 h ago'.
         # - {r_float} - relative time with float number, e.g. '5.5 h ago'.
         icon_text_format:
             # Up to 60 s, e.g. "1619295908 - 59 s ago"
-            60: "{ts} - {r_int}"
+            60: "{ts_ms_sep} - {r_int}"
             # 1 min - 10 min, e.g. "1619295908 - 5 min ago"
-            600: "{ts} - {r_int}"
+            600: "{ts_ms_sep} - {r_int}"
             # 10 min - 1 hour, e.g. "1619295908 - 29 min ago (15:10)"
-            3600: "{ts} - {r_float} (%H:%M)"
+            3600: "{ts_ms_sep} - {r_float} (%H:%M)"
             # 1 hour - 1 day, e.g. "1619295908 - 5.5 h ago (12:00)"
-            86400: "{ts} - {r_float} (%H:%M)"
+            86400: "{ts_ms_sep} - {r_float} (%H:%M)"
             # 1 day - 1 month, e.g. "1619295908 - 5.5 days ago (08-05 12:00)"
-            2678400: "{ts} - {r_float} (%m-%d  %H:%M)"
+            2678400: "{ts_ms_sep} - {r_float} (%m-%d  %H:%M)"
             # 1 month - 1 year, e.g. "1619295908 - 9.2 months ago"
-            31536000: "{ts} - {r_float} (%m-%d  %H:%M)"
+            31536000: "{ts_ms_sep} - {r_float} (%m-%d  %H:%M)"
             # 1 year - 75 years, e.g. "1619295908 - 5.8 years ago ('15)"
-            2365200000: "{ts} - {r_float} ('%y)"
+            2365200000: "{ts_ms_sep} - {r_float} ('%y)"
             # Default if no other format matches. Must be last element in the list
-            default: "{ts} - {r_float}"
+            default: "{ts_ms_sep} - {r_float}"
 
         # Menu items to create under "Last timestamp" category.
         # Each item can be clicked to copy its value.
@@ -57,5 +61,5 @@ converters:
         # Each item can be clicked to copy its value.
         # Supports the same formats as in "icon_text_format".
         menu_items_current_timestamp:
-            Current timestamp: "{ts_ms}"
+            Current timestamp: "{ts}"
             Current datetime: "%Y-%m-%d %H:%M:%S"

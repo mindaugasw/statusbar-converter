@@ -13,20 +13,10 @@ class Timestamp:
         self.milliseconds = milliseconds
 
     def __str__(self) -> str:
-        return self.getStringPretty()
+        return self.toString(True, '.')
 
-    def getStringPretty(self) -> str:
-        """Get timestamp with milliseconds separated for better readability"""
-
-        return self._getString('.')
-
-    def getStringValid(self) -> str:
-        """Get valid timestamp, without milliseconds separation"""
-
-        return self._getString('')
-
-    def _getString(self, msSeparator: str) -> str:
-        if self.milliseconds is None:
+    def toString(self, includeMs=True, msSeparator='.'):
+        if self.milliseconds is None or not includeMs:
             return str(self.seconds)
-        else:
-            return '%d%s%03d' % (self.seconds, msSeparator, self.milliseconds)
+
+        return '%d%s%03d' % (self.seconds, msSeparator, self.milliseconds)
