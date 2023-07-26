@@ -1,6 +1,7 @@
 import os
 import sys
 from abc import ABCMeta, abstractmethod
+import src.events as events
 from src.Entity.MenuItem import MenuItem
 from src.Entity.Timestamp import Timestamp
 from src.Service.ClipboardManager import ClipboardManager
@@ -121,9 +122,8 @@ class StatusbarApp(metaclass=ABCMeta):
     def _onMenuClickCurrentTimestamp(self, menuItem) -> None:
         pass
 
-    @abstractmethod
     def _onMenuClickClearTimestamp(self, menuItem) -> None:
-        pass
+        events.timestampClear()
 
     @abstractmethod
     def _onMenuClickEditConfiguration(self, menuItem) -> None:

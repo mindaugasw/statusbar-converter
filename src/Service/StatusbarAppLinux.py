@@ -121,9 +121,6 @@ class StatusbarAppLinux(StatusbarApp):
 
         self._clipboard.setClipboardContent(text)
 
-    def _onMenuClickClearTimestamp(self, menuItem: Gtk.MenuItem) -> None:
-        events.timestampClear()
-
     def _onMenuClickEditConfiguration(self, menuItem: Gtk.MenuItem | None) -> None:
         dialog = Gtk.MessageDialog(
             message_type=Gtk.MessageType.OTHER,

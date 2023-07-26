@@ -36,7 +36,6 @@ if osSwitch.isMacOS():
         osSwitch,
         timestampTextFormatter,
         clipboardManager,
-        timestampParser,
         config,
         configFileManager,
         debug,
