@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 # Usage:
-# TODO update
 # `install arm64 python3.10` (arm64 native on macOS)
 # `install x86_64 python3.10` (x86_64 native on macOS/Linux)
 # `install x86_64 python3.10-intel64` (building x86_64 on arm64 on macOS)
