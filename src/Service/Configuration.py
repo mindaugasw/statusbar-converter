@@ -7,10 +7,10 @@ class Configuration:
     CLEAR_ON_CHANGE = 'clear_on_change'
     CLEAR_AFTER_TIME = 'clear_after_time'
     FLASH_ICON_ON_CHANGE = 'flash_icon_on_change'
-    FORMAT_ICON = 'format_icon'
-    MENU_ITEMS_LAST_TIMESTAMP = 'menu_items_last_timestamp'
-    MENU_ITEMS_CURRENT_TIMESTAMP = 'menu_items_current_timestamp'
     DEBUG = 'debug'
+    FORMAT_ICON = ['converters', 'timestamp', 'icon_text_format']
+    MENU_ITEMS_LAST_TIMESTAMP = ['converters', 'timestamp', 'menu_items_last_timestamp']
+    MENU_ITEMS_CURRENT_TIMESTAMP = ['converters', 'timestamp', 'menu_items_current_timestamp']
 
     _configFileManager: ConfigFileManager
     _configApp: dict
@@ -28,8 +28,11 @@ class Configuration:
     def __init__(self, configFileManager: ConfigFileManager):
         self._configFileManager = configFileManager
 
-    def get(self, key: str):
+    def get(self, key: str | list[str]):
         self._initializeConfig()
+
+        if isinstance(key, str):
+            key = [key]
 
         userValue = self._queryConfigDictionary(key, self._configUser)
 
@@ -54,8 +57,16 @@ class Configuration:
 
         self._configInitialized = True
 
-    def _queryConfigDictionary(self, key: str, config: dict):
+    def _queryConfigDictionary(self, key: list[str], config: dict):
         if config is None:
             return None
 
-        return config.get(key)
+        valuePartial = config
+
+        for keyPartial in key:
+            valuePartial = valuePartial.get(keyPartial)
+
+            if valuePartial is None:
+                return None
+
+        return valuePartial
