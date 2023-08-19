@@ -1,38 +1,41 @@
-import pasteboard
+from AppKit import NSPasteboard, NSStringPboardType, NSArray
 from src.Service.ClipboardManager import ClipboardManager
-from src.Service.Debug import Debug
 import src.events as events
 
 
 class ClipboardManagerMacOs(ClipboardManager):
-    _pb: pasteboard.Pasteboard
-    _firstIteration = True
+    _pasteboard: NSPasteboard
 
-    def __init__(self, debug: Debug):
-        super().__init__(debug)
-        self._pb = pasteboard.Pasteboard()
+    _changeCount = -1
 
     def initializeClipboardWatch(self) -> None:
-        events.appLoopIteration.append(self._checkClipboard)
+        self._pasteboard = NSPasteboard.generalPasteboard()
+        self._changeCount = self._pasteboard.changeCount()
+        events.appLoopIteration.append(self._checkClipboardNew)
 
     def setClipboardContent(self, content: str) -> None:
         try:
-            self._pb.set_contents(content)
+            # From https://stackoverflow.com/a/3555675/4110469
+            self._pasteboard.clearContents()
+            contentArray = NSArray.arrayWithObject_(content)
+            self._pasteboard.writeObjects_(contentArray)
         except Exception as e:
             raise Exception('Could not set clipboard content.\nOriginal exception: ' + str(e))
 
-    def _checkClipboard(self) -> None:
-        content = self._pb.get_contents(type=pasteboard.String, diff=True)
+    def _checkClipboardNew(self) -> None:
+        # From https://stackoverflow.com/a/8317794/4110469
+        # Apple documentation: https://developer.apple.com/documentation/appkit/nspasteboard
 
-        # On the first call Pasteboard will return content copied before
-        # opening the app, which we should not parse
-        if self._firstIteration:
-            self._firstIteration = False
+        newChangeCount = self._pasteboard.changeCount()
 
+        if newChangeCount == self._changeCount:
             return
 
-        # If content did not change between 2 polls, pb.get_contents() will return None
+        self._changeCount = newChangeCount
+        content = self._pasteboard.stringForType_(NSStringPboardType)
+
         if content is None:
+            # None can be returned when copied content was not string type (e.g. picture, file)
             return
 
         self._handleChangedClipboard(content)
