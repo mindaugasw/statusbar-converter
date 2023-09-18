@@ -99,7 +99,7 @@ class StatusbarAppMacOs(StatusbarApp):
     def _onMenuClickAbout(self, menuItem: rumps.MenuItem) -> None:
         rumps.alert(
             title=StatusbarAppMacOs.APP_NAME,
-            message='Version: ' + self.appVersion,
+            message='Version: ' + self.appVersion + '\n\nApp icon made by iconsax at flaticon.com',
             icon_path=self._iconPathDefault,
         )
 

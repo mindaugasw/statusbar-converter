@@ -152,7 +152,8 @@ class StatusbarAppLinux(StatusbarApp):
             text=StatusbarAppLinux.APP_NAME,
         )
 
-        dialog.format_secondary_markup('Version: ' + self.appVersion)
+        # TODO add link to flaticon.com
+        dialog.format_secondary_markup('Version: ' + self.appVersion + '\n\nApp icon made by iconsax at flaticon.com')
         dialog.run()
         dialog.destroy()
 
