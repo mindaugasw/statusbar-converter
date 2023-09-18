@@ -10,6 +10,7 @@ def main():
         f'Platform: {platform.platform()}\n'
         f'Detected OS: {services.osSwitch.os}\n'
         f'Python: {sys.version}\n'
+        f'Debug: {"enabled" if services.debug.isDebugEnabled() else "disabled"}'
     )
 
     services.clipboardManager.initializeClipboardWatch()

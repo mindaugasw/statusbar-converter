@@ -13,7 +13,10 @@ Create virtualenv with:
 
 Run app:
 - `source .venv-macos-arm64/bin/activate`
-- `python start.py`
+- `python start.py [--debug]`
 
 Build distributable:
 - `./builder.sh build arm64`
+
+To run distributable from the command line:
+- `"/Applications/Statusbar Converter.app/Contents/MacOS/Statusbar Converter"`

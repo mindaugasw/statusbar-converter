@@ -8,7 +8,8 @@ clear_after_time: 300
 # If enabled, will shortly flash status bar icon on timestamp change
 flash_icon_on_change: true
 
-# If enabled, will log additional info when running from the terminal
+# If enabled, will log additional info when running from the terminal.
+# Alternatively, can be enabled with --debug option when running from the command line.
 debug: false
 
 converters:
