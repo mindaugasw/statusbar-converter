@@ -76,39 +76,30 @@ class StatusbarAppMacOs(StatusbarApp):
         # Can't be called from the main thread because of async request.
         # Also, automatic update check can't trigger dialog from rumps main thread
 
+        if version is None:
+            self._showDialog(
+                f'No new version found.\\n'
+                f'Current app version is v{self._config.getAppVersion()}.',
+                ['Ok'],
+            )
+
+            return
+
         buttons = {
             'download': 'Download update',
             'skip': 'Skip this version',
             'later': 'Remind me later',
         }
 
-        if version is None:
-            dialogCommand =\
-                f'osascript -e \'Tell application "System Events" to display dialog ' \
-                f'"No new version found.\\n' \
-                f'Current app version is v{self._config.getAppVersion()}." ' \
-                f'with title "{StatusbarAppMacOs.APP_NAME}" ' \
-                f'buttons {{"Ok"}} ' \
-                f'default button "Ok" ' \
-                f'with icon POSIX file "{self._iconPathDefault}"\''
-        else:
-            dialogCommand =\
-                f'osascript -e \'Tell application "System Events" to display dialog ' \
-                f'"New app update found: {version}.\\n' \
-                f'Current app version is v{self._config.getAppVersion()}.\\n' \
-                f'Release notes available on the download page.\\n\\n' \
-                f'Download update?" ' \
-                f'with title "{StatusbarAppMacOs.APP_NAME}" ' \
-                f'buttons {{"{buttons["download"]}", "{buttons["skip"]}", "{buttons["later"]}"}} ' \
-                f'default button "Download update" ' \
-                f'with icon POSIX file "{self._iconPathDefault}"\''
+        result = self._showDialog(
+            f'New app update found: {version}.\\n'
+            f'Current app version is v{self._config.getAppVersion()}.\\n'
+            f'Release notes available on the download page.\\n\\n'
+            f'Download update?',
+            buttons,
+        )
 
-        result = os.popen(dialogCommand).read()
-        result = result.strip().replace('button returned:', '')
         self._debug.log(f'Update check: user action: {result}')
-
-        if version is None:
-            return
 
         if result == buttons['download']:
             subprocess.Popen(['open', f'{StatusbarAppMacOs.WEBSITE}/releases/tag/{version}'])
@@ -129,31 +120,32 @@ class StatusbarAppMacOs(StatusbarApp):
         self._clipboard.setClipboardContent(text)
 
     def _onMenuClickEditConfiguration(self, menuItem: rumps.MenuItem) -> None:
-        # TODO replace with applescript
-        alertResult = rumps.alert(
-            title='Edit configuration',
-            message='Configuration can be edited in the file: \n'
-            f'{self._configFilePath}\n\n'
-            'After editing, the application must be restarted.\n\n'
-            'All supported configuration can be found at:\n'
+        buttons = {
+            'open': 'Open in default editor',
+            'close': 'Close',
+        }
+
+        result = self._showDialog(
+            f'Configuration can be edited in the file:\\n'
+            f'{self._configFilePath}\\n\\n'
+            f'After editing, the application must be restarted.\\n\\n'
+            f'All supported configuration can be found at:\\n'
             f'{StatusbarAppMacOs.WEBSITE}/blob/master/config.app.yml',
-            ok='Open in default editor',
-            cancel='Close',
-            icon_path=self._iconPathDefault,
+            buttons,
         )
 
-        if alertResult == 1:
+        if result == buttons['open']:
             subprocess.Popen(['open', self._configFilePath])
 
     def _onMenuClickOpenWebsite(self, menuItem: rumps.MenuItem) -> None:
         subprocess.Popen(['open', StatusbarAppMacOs.WEBSITE])
 
     def _onMenuClickAbout(self, menuItem: rumps.MenuItem) -> None:
-        # TODO replace with applescript
-        rumps.alert(
-            title=StatusbarAppMacOs.APP_NAME,
-            message='Version: ' + self._config.getAppVersion() + '\n\nApp icon made by iconsax at flaticon.com',
-            icon_path=self._iconPathDefault,
+        self._showDialog(
+            f'Version: {self._config.getAppVersion()}\\n\\n'
+            f'App website: {StatusbarAppMacOs.WEBSITE}\\n\\n'
+            f'App icon made by iconsax at flaticon.com',
+            ['Ok'],
         )
 
     def _onTimestampChange(self, timestamp: Timestamp) -> None:
@@ -174,3 +166,28 @@ class StatusbarAppMacOs(StatusbarApp):
 
     def _onTimestampClear(self) -> None:
         self._app.title = None
+
+    def _showDialog(self, message: str, buttons: list | dict) -> str:
+        if isinstance(buttons, dict):
+            buttons = list(buttons.values())
+
+        buttonsText = '", "'.join(buttons)
+        dialogCommand =\
+            f'osascript -e \'Tell application "System Events" to display dialog ' \
+            f'"{message}" ' \
+            f'with title "{StatusbarAppMacOs.APP_NAME}" ' \
+            f'buttons {{"{buttonsText}"}} ' \
+            f'default button "{buttons[0]}" ' \
+            f'with icon POSIX file "{self._iconPathDefault}" ' \
+            f'giving up after 60\''
+
+        # "giving up after" clause would not be needed, but after 120 seconds
+        # AppleEvent timeouts with an exception.
+        # So to prevent that we put on a limit to automatically dismiss the dialog
+
+        result = os.popen(dialogCommand).read().strip()
+
+        for replaceText in ['button returned:', ', gave up:false', ', gave up:true']:
+            result = result.replace(replaceText, '')
+
+        return result
