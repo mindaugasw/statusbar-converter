@@ -1,3 +1,4 @@
+import os
 import subprocess
 import threading
 import time
@@ -12,6 +13,7 @@ from src.Service.OSSwitch import OSSwitch
 from src.Service.StatusbarApp import StatusbarApp
 from src.Service.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.FilesystemHelper import FilesystemHelper
+from src.Service.UpdateManager import UpdateManager
 from src.Entity.Timestamp import Timestamp
 
 
@@ -25,9 +27,10 @@ class StatusbarAppMacOs(StatusbarApp):
         clipboard: ClipboardManager,
         config: Configuration,
         configFileManager: ConfigFileManager,
+        updateManager: UpdateManager,
         debug: Debug,
     ):
-        super().__init__(osSwitch, formatter, clipboard, config, configFileManager, debug)
+        super().__init__(osSwitch, formatter, clipboard, config, configFileManager, updateManager, debug)
 
         self._iconPathDefault = FilesystemHelper.getAssetsDir() + '/icon_macos.png'
         self._iconPathFlash = FilesystemHelper.getAssetsDir() + '/icon_macos_flash.png'
@@ -68,6 +71,54 @@ class StatusbarAppMacOs(StatusbarApp):
 
         return menu
 
+    def _showAppUpdateDialog(self, version: str | None) -> None:
+        # Here dialog cannot be shown by rumps because it's called from a different thread.
+        # Can't be called from the main thread because of async request.
+        # Also, automatic update check can't trigger dialog from rumps main thread
+
+        buttons = {
+            'download': 'Download update',
+            'skip': 'Skip this version',
+            'later': 'Remind me later',
+        }
+
+        if version is None:
+            dialogCommand =\
+                f'osascript -e \'Tell application "System Events" to display dialog ' \
+                f'"No new version found.\\n' \
+                f'Current app version is v{self._config.getAppVersion()}." ' \
+                f'with title "{StatusbarAppMacOs.APP_NAME}" ' \
+                f'buttons {{"Ok"}} ' \
+                f'default button "Ok" ' \
+                f'with icon POSIX file "{self._iconPathDefault}"\''
+        else:
+            dialogCommand =\
+                f'osascript -e \'Tell application "System Events" to display dialog ' \
+                f'"New app update found: {version}.\\n' \
+                f'Current app version is v{self._config.getAppVersion()}.\\n' \
+                f'Release notes available on the download page.\\n\\n' \
+                f'Download update?" ' \
+                f'with title "{StatusbarAppMacOs.APP_NAME}" ' \
+                f'buttons {{"{buttons["download"]}", "{buttons["skip"]}", "{buttons["later"]}"}} ' \
+                f'default button "Download update" ' \
+                f'with icon POSIX file "{self._iconPathDefault}"\''
+
+        result = os.popen(dialogCommand).read()
+        result = result.strip().replace('button returned:', '')
+        self._debug.log(f'Update check: user action: {result}')
+
+        if version is None:
+            return
+
+        if result == buttons['download']:
+            subprocess.Popen(['open', f'{StatusbarAppMacOs.WEBSITE}/releases/tag/{version}'])
+        elif result == buttons['skip']:
+            self._config.setState(Configuration.DATA_UPDATE_SKIP_VERSION, version)
+        elif result == buttons['later']:
+            return
+        else:
+            self._debug.log(f'Update check: unknown user action: {result}')
+
     def _onMenuClickLastTimestamp(self, menuItem: rumps.MenuItem) -> None:
         self._clipboard.setClipboardContent(menuItem.title)
 
@@ -78,6 +129,7 @@ class StatusbarAppMacOs(StatusbarApp):
         self._clipboard.setClipboardContent(text)
 
     def _onMenuClickEditConfiguration(self, menuItem: rumps.MenuItem) -> None:
+        # TODO replace with applescript
         alertResult = rumps.alert(
             title='Edit configuration',
             message='Configuration can be edited in the file: \n'
@@ -97,9 +149,10 @@ class StatusbarAppMacOs(StatusbarApp):
         subprocess.Popen(['open', StatusbarAppMacOs.WEBSITE])
 
     def _onMenuClickAbout(self, menuItem: rumps.MenuItem) -> None:
+        # TODO replace with applescript
         rumps.alert(
             title=StatusbarAppMacOs.APP_NAME,
-            message='Version: ' + self.appVersion + '\n\nApp icon made by iconsax at flaticon.com',
+            message='Version: ' + self._config.getAppVersion() + '\n\nApp icon made by iconsax at flaticon.com',
             icon_path=self._iconPathDefault,
         )
 

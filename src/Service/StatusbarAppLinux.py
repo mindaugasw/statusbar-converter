@@ -16,6 +16,7 @@ from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.OSSwitch import OSSwitch
 from src.Service.StatusbarApp import StatusbarApp
 from src.Service.TimestampTextFormatter import TimestampTextFormatter
+from src.Service.UpdateManager import UpdateManager
 
 gi.require_version('Gtk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
@@ -56,9 +57,10 @@ class StatusbarAppLinux(StatusbarApp):
         clipboard: ClipboardManager,
         config: Configuration,
         configFileManager: ConfigFileManager,
+        updateManager: UpdateManager,
         debug: Debug,
     ):
-        super().__init__(osSwitch, formatter, clipboard, config, configFileManager, debug)
+        super().__init__(osSwitch, formatter, clipboard, config, configFileManager, updateManager, debug)
 
         self._iconPathDefault = FilesystemHelper.getAssetsDir() + '/icon_linux.png'
         self._iconPathFlash = FilesystemHelper.getAssetsDir() + '/icon_linux_flash.png'
@@ -111,6 +113,10 @@ class StatusbarAppLinux(StatusbarApp):
 
         return menu
 
+    def _showAppUpdateDialog(self, version: str | None) -> None:
+        # TODO implement
+        pass
+
     def _onMenuClickLastTimestamp(self, menuItem: Gtk.MenuItem) -> None:
         label = menuItem.get_label()
         self._clipboard.setClipboardContent(label)
@@ -153,7 +159,11 @@ class StatusbarAppLinux(StatusbarApp):
         )
 
         # TODO add link to flaticon.com
-        dialog.format_secondary_markup('Version: ' + self.appVersion + '\n\nApp icon made by iconsax at flaticon.com')
+        dialog.format_secondary_markup(
+            'Version: '
+            + self._config.getAppVersion()
+            + '\n\nApp icon made by iconsax at flaticon.com',
+        )
         dialog.run()
         dialog.destroy()
 

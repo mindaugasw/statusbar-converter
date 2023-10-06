@@ -6,11 +6,11 @@ from src.Service.StatusbarApp import StatusbarApp
 
 def main():
     print(
-        f'\n{StatusbarApp.APP_NAME} v{services.statusbarApp.appVersion}\n'
+        f'\n{StatusbarApp.APP_NAME} v{services.config.getAppVersion()}\n'
         f'Platform: {platform.platform()}\n'
         f'Detected OS: {services.osSwitch.os}\n'
         f'Python: {sys.version}\n'
-        f'Debug: {"enabled" if services.debug.isDebugEnabled() else "disabled"}'
+        f'Debug: {"enabled" if services.debug.isDebugEnabled() else "disabled"}\n'
     )
 
     services.clipboardManager.initializeClipboardWatch()

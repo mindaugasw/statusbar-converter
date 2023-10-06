@@ -19,4 +19,4 @@ Build distributable:
 - `./builder.sh build arm64`
 
 To run distributable from the command line:
-- `"/Applications/Statusbar Converter.app/Contents/MacOS/Statusbar Converter"`
+- `"/Applications/Statusbar Converter.app/Contents/MacOS/Statusbar Converter [--debug]"`
