@@ -21,3 +21,13 @@ timestampChanged = Event()
 
 timestampClear = Event()
 """Raised when statusbar clear was triggered."""
+
+updateCheckCompleted = Event()
+"""Raised when check for app updates is completed.
+
+This could be instead directly coupled between UpdateManager <-> StatusbarApp, but then it
+causes circular import error, since both modules try to import each other.
+
+@param version version string or None if no new update was found
+@type version: str | None
+"""

@@ -4,11 +4,11 @@ from abc import ABCMeta, abstractmethod
 import src.events as events
 from src.Entity.MenuItem import MenuItem
 from src.Entity.Timestamp import Timestamp
+from src.Service.UpdateManager import UpdateManager
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
 from src.Service.Debug import Debug
-from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.OSSwitch import OSSwitch
 from src.Service.TimestampTextFormatter import TimestampTextFormatter
 
@@ -18,11 +18,11 @@ class StatusbarApp(metaclass=ABCMeta):
     WEBSITE = 'https://github.com/mindaugasw/statusbar-converter'
     ICON_FLASH_DURATION = 0.35
 
-    appVersion: str
-
     _osSwitch: OSSwitch
     _formatter: TimestampTextFormatter
     _clipboard: ClipboardManager
+    _config: Configuration
+    _updateManager: UpdateManager
     _debug: Debug
 
     _menuItems: dict[str, MenuItem]
@@ -40,11 +40,14 @@ class StatusbarApp(metaclass=ABCMeta):
         clipboard: ClipboardManager,
         config: Configuration,
         configFileManager: ConfigFileManager,
+        updateManager: UpdateManager,
         debug: Debug,
     ):
         self._osSwitch = osSwitch
         self._formatter = formatter
         self._clipboard = clipboard
+        self._config = config
+        self._updateManager = updateManager
         self._debug = debug
 
         self._configFilePath = configFileManager.configUserPath
@@ -53,8 +56,7 @@ class StatusbarApp(metaclass=ABCMeta):
         self._menuTemplatesCurrentTimestamp = config.get(config.MENU_ITEMS_CURRENT_TIMESTAMP)
         self._flashIconOnChange = config.get(config.FLASH_ICON_ON_CHANGE)
 
-        with open(FilesystemHelper.getProjectDir() + '/version', 'r') as versionFile:
-            self.appVersion = versionFile.read().strip()
+        events.updateCheckCompleted.append(self._showAppUpdateDialog)
 
     @abstractmethod
     def createApp(self) -> None:
@@ -90,6 +92,7 @@ class StatusbarApp(metaclass=ABCMeta):
         items.update({
             'clear_timestamp': MenuItem('Clear timestamp', callback=self._onMenuClickClearTimestamp),
             'edit_config': MenuItem('Edit configuration', callback=self._onMenuClickEditConfiguration),
+            'check_updates': MenuItem('Check for updates', callback=self._onMenuClickCheckUpdates),
             'open_website': MenuItem('Open website', callback=self._onMenuClickOpenWebsite),
             'about': MenuItem('About', callback=self._onMenuClickAbout)
         })
@@ -115,6 +118,10 @@ class StatusbarApp(metaclass=ABCMeta):
         pass
 
     @abstractmethod
+    def _showAppUpdateDialog(self, version: str | None) -> None:
+        pass
+
+    @abstractmethod
     def _onMenuClickLastTimestamp(self, menuItem) -> None:
         pass
 
@@ -128,6 +135,9 @@ class StatusbarApp(metaclass=ABCMeta):
     @abstractmethod
     def _onMenuClickEditConfiguration(self, menuItem) -> None:
         pass
+
+    def _onMenuClickCheckUpdates(self, menuItem) -> None:
+        self._updateManager.checkForUpdatesAsync(True)
 
     @abstractmethod
     def _onMenuClickOpenWebsite(self, menuItem) -> None:
@@ -143,3 +153,16 @@ class StatusbarApp(metaclass=ABCMeta):
 
     def _onMenuClickQuit(self, menuItem) -> None:
         raise Exception('Not implemented')
+
+    @abstractmethod
+    def _showDialog(self, message: str, buttons: list | dict) -> str:
+        """Create a dialog window
+
+        @param message: Main message. Can contain formatting on Linux. See supported
+            formatting example: https://python-gtk-3-tutorial.readthedocs.io/en/latest/label.html#example
+        @param buttons:
+
+        @return: Clicked button name. On macOS dialog window can time out and then
+            empty string will be returned
+        """
+        pass

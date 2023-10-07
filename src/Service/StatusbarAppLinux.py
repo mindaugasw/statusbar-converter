@@ -16,6 +16,7 @@ from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.OSSwitch import OSSwitch
 from src.Service.StatusbarApp import StatusbarApp
 from src.Service.TimestampTextFormatter import TimestampTextFormatter
+from src.Service.UpdateManager import UpdateManager
 
 gi.require_version('Gtk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
@@ -31,12 +32,18 @@ Usage examples: https://www.programcreek.com/python/example/103466/gi.repository
 Documentation: 
 - https://lazka.github.io/pgi-docs/#AyatanaAppIndicator3-0.1
     From https://askubuntu.com/a/1315648/1152277
+    Preferred documentation. In settings use filter to show only `AyatanaAppIndicator3 0.1` and `Gtk 3.0`
+
 - `libappindicator-doc` package
     From https://askubuntu.com/a/1019338/1152277
     Access at file:///usr/share/gtk-doc/html/libappindicator/index.html
+    
 - https://launchpad.net/stackapplet
     https://bazaar.launchpad.net/~george-edison55/stackapplet/trunk/view/head:/src/stackapplet.py
     More usage examples, including some undocumented features
+
+- https://python-gtk-3-tutorial.readthedocs.io/en/latest/label.html#example
+    Advanced text formatting example
 
 Other menu alternatives, instead of using Gtk directly:
 - Pystray - much simpler and easier to use, supports all 3 OS: Linux, macOS, Windows.
@@ -56,9 +63,10 @@ class StatusbarAppLinux(StatusbarApp):
         clipboard: ClipboardManager,
         config: Configuration,
         configFileManager: ConfigFileManager,
+        updateManager: UpdateManager,
         debug: Debug,
     ):
-        super().__init__(osSwitch, formatter, clipboard, config, configFileManager, debug)
+        super().__init__(osSwitch, formatter, clipboard, config, configFileManager, updateManager, debug)
 
         self._iconPathDefault = FilesystemHelper.getAssetsDir() + '/icon_linux.png'
         self._iconPathFlash = FilesystemHelper.getAssetsDir() + '/icon_linux_flash.png'
@@ -111,6 +119,42 @@ class StatusbarAppLinux(StatusbarApp):
 
         return menu
 
+    def _showAppUpdateDialog(self, version: str | None) -> None:
+        if version is None:
+            self._showDialog(
+                f'No new version found.\n'
+                f'Current app version is v{self._config.getAppVersion()}.',
+                ['Ok'],
+            )
+
+            return
+
+        buttons = {
+            'download': 'Download update',
+            'skip': 'Skip this version',
+            'later': 'Remind me later',
+        }
+        downloadPage = f'{StatusbarAppLinux.WEBSITE}/releases/tag/{version}'
+
+        result = self._showDialog(
+            f'New app update found: {version}.\n'
+            f'Current app version is v{self._config.getAppVersion()}.\n'
+            f'Release notes available on the <a href="{downloadPage}">download page</a>.\n\n'
+            f'Download update?',
+            buttons,
+        )
+
+        self._debug.log(f'Update check: user action: {result}')
+
+        if result == buttons['download']:
+            webbrowser.open(downloadPage)
+        elif result == buttons['skip']:
+            self._config.setState(Configuration.DATA_UPDATE_SKIP_VERSION, version)
+        elif result == buttons['later']:
+            return
+        else:
+            self._debug.log(f'Update check: unknown user action: {result}')
+
     def _onMenuClickLastTimestamp(self, menuItem: Gtk.MenuItem) -> None:
         label = menuItem.get_label()
         self._clipboard.setClipboardContent(label)
@@ -122,40 +166,34 @@ class StatusbarAppLinux(StatusbarApp):
         self._clipboard.setClipboardContent(text)
 
     def _onMenuClickEditConfiguration(self, menuItem: Gtk.MenuItem | None) -> None:
-        dialog = Gtk.MessageDialog(
-            message_type=Gtk.MessageType.OTHER,
-            buttons=Gtk.ButtonsType.YES_NO,
-            text="Edit configuration",
-        )
+        buttons = {
+            'open': 'Open in default editor',
+            'close': 'Cancel',
+        }
 
-        dialog.format_secondary_markup(
-            'Configuration can be edited in the file: \n'
+        response = self._showDialog(
+            f'Configuration can be edited in the file: \n'
             f'<tt>{self._configFilePath}</tt>\n\n'
-            'After editing, the application must be restarted.\n\n'
-            'Open configuration file in default text editor?',
+            f'After editing, the application must be restarted.\n\n'
+            f'All supported configuration can be found at:\n'
+            f'<a href="{StatusbarAppLinux.WEBSITE}">{StatusbarAppLinux.WEBSITE}</a>\n\n'
+            f'Open configuration file in default text editor?',
+            buttons,
         )
 
-        response = dialog.run()
-
-        if response == Gtk.ResponseType.YES:
+        if response == buttons['open']:
             subprocess.call(['xdg-open', self._configFilePath])
-
-        dialog.destroy()
 
     def _onMenuClickOpenWebsite(self, menuItem: Gtk.MenuItem) -> None:
         webbrowser.open(StatusbarAppLinux.WEBSITE)
 
     def _onMenuClickAbout(self, menuItem: Gtk.MenuItem) -> None:
-        dialog = Gtk.MessageDialog(
-            message_type=Gtk.MessageType.OTHER,
-            buttons=Gtk.ButtonsType.OK,
-            text=StatusbarAppLinux.APP_NAME,
+        self._showDialog(
+            f'Version: {self._config.getAppVersion()}\n\n'
+            f'App website: <a href="{StatusbarAppLinux.WEBSITE}">{StatusbarAppLinux.WEBSITE}</a>\n\n'
+            f'App icon made by <a href="https://www.flaticon.com/free-icons/convert">iconsax at flaticon.com</a>',
+            ['Ok'],
         )
-
-        # TODO add link to flaticon.com
-        dialog.format_secondary_markup('Version: ' + self.appVersion + '\n\nApp icon made by iconsax at flaticon.com')
-        dialog.run()
-        dialog.destroy()
 
     def _onMenuClickQuit(self, menuItem) -> None:
         Gtk.main_quit()
@@ -187,3 +225,23 @@ class StatusbarAppLinux(StatusbarApp):
 
     def _onTimestampClear(self) -> None:
         self._app.set_label('', '')
+
+    def _showDialog(self, message: str, buttons: list | dict) -> str:
+        if isinstance(buttons, dict):
+            buttons = list(buttons.values())
+
+        dialog = Gtk.MessageDialog(
+            message_type=Gtk.MessageType.OTHER,
+            buttons=Gtk.ButtonsType.NONE,
+            text=StatusbarAppLinux.APP_NAME,
+        )
+
+        dialog.format_secondary_markup(message)
+
+        for i, button in enumerate(buttons):
+            dialog.add_button(button, i)
+
+        response = dialog.run()
+        dialog.destroy()
+
+        return buttons[response]

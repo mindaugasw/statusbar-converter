@@ -8,11 +8,15 @@ class ConfigFileManager:
 
     _configAppPath: str
     _configUserExamplePath: str
+    _stateDataPath: str
+    _stateDataExamplePath: str
 
     def __init__(self, filesystemHelper: FilesystemHelper):
         self._configAppPath = filesystemHelper.getConfigDir() + '/config.app.yml'
         self._configUserExamplePath = filesystemHelper.getConfigDir() + '/config.user.example.yml'
         self.configUserPath = filesystemHelper.getUserDataDir() + '/config.user.yml'
+        self._stateDataPath = filesystemHelper.getUserDataDir() + '/app.data.yml'
+        self._stateDataExamplePath = filesystemHelper.getConfigDir() + '/app.data.example.yml'
 
     def getAppConfigContent(self) -> str:
         # Debug service is not yet initialized, so we simply always print debug information
@@ -25,21 +29,31 @@ class ConfigFileManager:
             return appConfigContent
 
     def getUserConfigContent(self) -> str:
-        if not self._userConfigExists():
-            self._createUserConfig()
+        return self._getUserFile('user config', self._configUserExamplePath, self.configUserPath)
 
-        print(f'Loading user config from `{self.configUserPath}` ... ', end='')
+    def getStateDataContent(self) -> str:
+        return self._getUserFile('state data', self._stateDataExamplePath, self._stateDataPath)
 
-        with open(self.configUserPath, 'r') as userConfigFile:
-            userConfigContent = userConfigFile.read()
+    def writeStateData(self, content: str) -> None:
+        with open(self._stateDataPath, 'w') as stateFile:
+            stateFile.write(content)
+
+    def _getUserFile(self, prettyName: str, exampleFilePath: str, targetFilePath: str) -> str:
+        if not self._userFileExists(targetFilePath):
+            self._createUserFile(prettyName, exampleFilePath, targetFilePath)
+
+        print(f'Loading {prettyName} from `{targetFilePath}` ... ', end='')
+
+        with open(targetFilePath, 'r') as userFile:
+            userFileContent = userFile.read()
             print('done')
 
-            return userConfigContent
+            return userFileContent
 
-    def _userConfigExists(self) -> bool:
-        return os.path.isfile(self.configUserPath)
+    def _userFileExists(self, path: str) -> bool:
+        return os.path.isfile(path)
 
-    def _createUserConfig(self) -> None:
-        print(f'Creating user config at `{self.configUserPath}` from `{self._configUserExamplePath}` ... ', end='')
-        shutil.copyfile(self._configUserExamplePath, self.configUserPath)
+    def _createUserFile(self, prettyName: str, exampleFilePath: str, targetFilePath: str) -> None:
+        print(f'Creating {prettyName} at `{targetFilePath}` from `{exampleFilePath}` ... ', end='')
+        shutil.copyfile(exampleFilePath, targetFilePath)
         print('done')
