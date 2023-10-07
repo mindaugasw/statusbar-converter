@@ -122,7 +122,7 @@ class StatusbarAppMacOs(StatusbarApp):
     def _onMenuClickEditConfiguration(self, menuItem: rumps.MenuItem) -> None:
         buttons = {
             'open': 'Open in default editor',
-            'close': 'Close',
+            'close': 'Cancel',
         }
 
         result = self._showDialog(
@@ -130,7 +130,8 @@ class StatusbarAppMacOs(StatusbarApp):
             f'{self._configFilePath}\\n\\n'
             f'After editing, the application must be restarted.\\n\\n'
             f'All supported configuration can be found at:\\n'
-            f'{StatusbarAppMacOs.WEBSITE}/blob/master/config.app.yml',
+            f'{StatusbarAppMacOs.WEBSITE}/blob/master/config.app.yml\\n\\n'
+            f'Open configuration file in default text editor?',
             buttons,
         )
 

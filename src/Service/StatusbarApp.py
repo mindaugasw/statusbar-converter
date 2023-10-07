@@ -153,3 +153,16 @@ class StatusbarApp(metaclass=ABCMeta):
 
     def _onMenuClickQuit(self, menuItem) -> None:
         raise Exception('Not implemented')
+
+    @abstractmethod
+    def _showDialog(self, message: str, buttons: list | dict) -> str:
+        """Create a dialog window
+
+        @param message: Main message. Can contain formatting on Linux. See supported
+            formatting example: https://python-gtk-3-tutorial.readthedocs.io/en/latest/label.html#example
+        @param buttons:
+
+        @return: Clicked button name. On macOS dialog window can time out and then
+            empty string will be returned
+        """
+        pass
