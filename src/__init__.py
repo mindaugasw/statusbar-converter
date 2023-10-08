@@ -13,6 +13,8 @@ def main():
         f'Debug: {"enabled" if services.debug.isDebugEnabled() else "disabled"}\n'
     )
 
+    services.autostartManager.setAppName(StatusbarApp.APP_NAME)
+    services.autostartManager.firstTimeSetup()
     services.clipboardManager.initializeClipboardWatch()
     services.appLoop.startLoop()
     services.statusbarApp.createApp()

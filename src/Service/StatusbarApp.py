@@ -5,6 +5,7 @@ import src.events as events
 from src.Entity.MenuItem import MenuItem
 from src.Entity.Timestamp import Timestamp
 from src.Service.UpdateManager import UpdateManager
+from src.Service.AutostartManager import AutostartManager
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
@@ -22,6 +23,7 @@ class StatusbarApp(metaclass=ABCMeta):
     _formatter: TimestampTextFormatter
     _clipboard: ClipboardManager
     _config: Configuration
+    _autostartManager: AutostartManager
     _updateManager: UpdateManager
     _debug: Debug
 
@@ -40,6 +42,7 @@ class StatusbarApp(metaclass=ABCMeta):
         clipboard: ClipboardManager,
         config: Configuration,
         configFileManager: ConfigFileManager,
+        autostartManager: AutostartManager,
         updateManager: UpdateManager,
         debug: Debug,
     ):
@@ -47,6 +50,7 @@ class StatusbarApp(metaclass=ABCMeta):
         self._formatter = formatter
         self._clipboard = clipboard
         self._config = config
+        self._autostartManager = autostartManager
         self._updateManager = updateManager
         self._debug = debug
 
@@ -92,6 +96,11 @@ class StatusbarApp(metaclass=ABCMeta):
         items.update({
             'clear_timestamp': MenuItem('Clear timestamp', callback=self._onMenuClickClearTimestamp),
             'edit_config': MenuItem('Edit configuration', callback=self._onMenuClickEditConfiguration),
+            'autostart': MenuItem(
+                'Run at login',
+                initialState=self._autostartManager.isEnabledAutostart(),
+                callback=self._onMenuClickRunAtLogin,
+            ),
             'check_updates': MenuItem('Check for updates', callback=self._onMenuClickCheckUpdates),
             'open_website': MenuItem('Open website', callback=self._onMenuClickOpenWebsite),
             'about': MenuItem('About', callback=self._onMenuClickAbout)
@@ -134,6 +143,10 @@ class StatusbarApp(metaclass=ABCMeta):
 
     @abstractmethod
     def _onMenuClickEditConfiguration(self, menuItem) -> None:
+        pass
+
+    @abstractmethod
+    def _onMenuClickRunAtLogin(self, menuItem) -> None:
         pass
 
     def _onMenuClickCheckUpdates(self, menuItem) -> None:

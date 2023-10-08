@@ -16,6 +16,7 @@ from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.OSSwitch import OSSwitch
 from src.Service.StatusbarApp import StatusbarApp
 from src.Service.TimestampTextFormatter import TimestampTextFormatter
+from src.Service.AutostartManager import AutostartManager
 from src.Service.UpdateManager import UpdateManager
 
 gi.require_version('Gtk', '3.0')
@@ -63,10 +64,20 @@ class StatusbarAppLinux(StatusbarApp):
         clipboard: ClipboardManager,
         config: Configuration,
         configFileManager: ConfigFileManager,
+        autostartManager: AutostartManager,
         updateManager: UpdateManager,
         debug: Debug,
     ):
-        super().__init__(osSwitch, formatter, clipboard, config, configFileManager, updateManager, debug)
+        super().__init__(
+            osSwitch,
+            formatter,
+            clipboard,
+            config,
+            configFileManager,
+            autostartManager,
+            updateManager,
+            debug,
+        )
 
         self._iconPathDefault = FilesystemHelper.getAssetsDir() + '/icon_linux.png'
         self._iconPathFlash = FilesystemHelper.getAssetsDir() + '/icon_linux_flash.png'
@@ -183,6 +194,10 @@ class StatusbarAppLinux(StatusbarApp):
 
         if response == buttons['open']:
             subprocess.call(['xdg-open', self._configFilePath])
+
+    def _onMenuClickRunAtLogin(self, menuItem) -> None:
+        # TODO implement
+        pass
 
     def _onMenuClickOpenWebsite(self, menuItem: Gtk.MenuItem) -> None:
         webbrowser.open(StatusbarAppLinux.WEBSITE)

@@ -27,3 +27,12 @@ class FilesystemHelper(metaclass=ABCMeta):
     @staticmethod
     def getProjectDir() -> str:
         return os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + '/../..')
+
+    @staticmethod
+    @abstractmethod
+    def getAppPath() -> str | None:
+        """Get path to the application file.
+
+        On macOS will return path to .app or None if code is not packaged into an app
+        """
+        pass

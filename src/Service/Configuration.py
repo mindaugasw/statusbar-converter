@@ -15,6 +15,7 @@ class Configuration:
 
     # Data keys
     DATA_UPDATE_SKIP_VERSION = ['update', 'skip_version']
+    DATA_AUTO_RUN_INITIAL_SETUP_COMPLETE = ['auto_run', 'initial_setup_complete']
 
     _configFileManager: ConfigFileManager
     _appVersion: str

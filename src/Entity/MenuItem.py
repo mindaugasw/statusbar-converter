@@ -6,6 +6,7 @@ class MenuItem:
     isDisabled: bool
     isSeparator: bool
     callback: Callable | None
+    initialState: bool | None
     nativeItem = None
 
     def __init__(
@@ -13,6 +14,7 @@ class MenuItem:
         label: str | None = None,
         isDisabled=False,
         isSeparator=False,
+        initialState: bool | None = None,
         callback: Callable | None = None,
     ):
         if isSeparator and (label or isDisabled or callback):
@@ -24,12 +26,10 @@ class MenuItem:
         if isDisabled and callback:
             raise Exception('Invalid MenuItem creation: disabled item cannot have callback')
 
-        # if not isDisabled and not callback:
-        #     raise Exception('Invalid MenuItem creation: non-disabled item must have callback')
-
         self.label = label
         self.isDisabled = isDisabled
         self.isSeparator = isSeparator
+        self.initialState = initialState
         self.callback = callback
 
     def setNativeItem(self, nativeItem) -> None:

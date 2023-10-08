@@ -9,3 +9,8 @@ class FilesystemHelperLinux(FilesystemHelper):
         os.makedirs(path, exist_ok=True)
 
         return path
+
+    @staticmethod
+    def getAppPath() -> str | None:
+        # TODO implement
+        pass

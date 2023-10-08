@@ -5,6 +5,7 @@ from src.Service.TimestampParser import TimestampParser
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.Debug import Debug
+from src.Service.AutostartManager import AutostartManager
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.StatusbarApp import StatusbarApp
 from src.Service.AppLoop import AppLoop
@@ -26,13 +27,16 @@ debug = Debug(config)
 timestampParser = TimestampParser(config, debug)
 timestampTextFormatter = TimestampTextFormatter(config)
 updateManager = UpdateManager(config, debug)
+autostartManager: AutostartManager
 clipboardManager: ClipboardManager
 statusbarApp: StatusbarApp
 
 if osSwitch.isMacOS():
+    from src.Service.AutostartManagerMacOS import AutostartManagerMacOS
     from src.Service.ClipboardManagerMacOs import ClipboardManagerMacOs
     from src.Service.StatusbarAppMacOs import StatusbarAppMacOs
 
+    autostartManager = AutostartManagerMacOS(config, debug)
     clipboardManager = ClipboardManagerMacOs(debug)
     statusbarApp = StatusbarAppMacOs(
         osSwitch,
@@ -40,13 +44,16 @@ if osSwitch.isMacOS():
         clipboardManager,
         config,
         configFileManager,
+        autostartManager,
         updateManager,
         debug,
     )
 else:
+    from src.Service.AutostartManagerLinux import AutostartManagerLinux
     from src.Service.ClipboardManagerLinux import ClipboardManagerLinux
     from src.Service.StatusbarAppLinux import StatusbarAppLinux
 
+    autostartManager = AutostartManagerLinux(config, debug)
     clipboardManager = ClipboardManagerLinux(debug)
     statusbarApp = StatusbarAppLinux(
         osSwitch,
@@ -54,6 +61,7 @@ else:
         clipboardManager,
         config,
         configFileManager,
+        autostartManager,
         updateManager,
         debug,
     )
