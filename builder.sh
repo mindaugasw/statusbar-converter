@@ -130,6 +130,7 @@ build() {(set -e
     _log "Successfully built in $distPath"
 
     _createZip "$arch" "$os"
+    _createDmg "$arch"
 )}
 
 _createZip() {(set -e
@@ -162,6 +163,43 @@ _createZip() {(set -e
     zip -qr "$fileName" "$compressContent"
 
     _log "Successfully compressed into \"$fileName\""
+)}
+
+_createDmg() {(set -e
+    # `create-dmg` in path is required
+    # `brew install create-dmg`
+
+    arch=$1 # architecture name, `arm64` | `x86_64`
+    version=$(cat 'version' | xargs)
+
+    _log "Packing into dmg image for $arch"
+
+    cd "build/dist-macos-$arch"
+
+    if [ "$arch" == 'arm64' ]; then
+        fileName=$(printf 'Statusbar_Converter_v%s_macOS_AppleSilicon_%s.dmg' "$version" "$arch")
+    else
+        fileName=$(printf 'Statusbar_Converter_v%s_macOS_intel_%s.dmg' "$version" "$arch")
+    fi
+
+    # create-dmg includes all files in the directory. So we copy only the needed stuff to a new directory
+    rm -rf dmg/ ./*.dmg
+    mkdir dmg
+    cp -r 'Statusbar Converter.app' 'dmg/Statusbar Converter.app'
+
+    create-dmg \
+        --volname 'Statusbar Converter' \
+        --icon-size 80 \
+        --text-size 14 \
+        --icon 'Statusbar Converter.app' 190 0 \
+        --app-drop-link 0 0 \
+        --hide-extension 'Statusbar Converter.app' \
+        $fileName \
+        dmg/
+
+    rm -rf dmg/
+
+    _log "Successfully packed into dmg image \"$fileName\""
 )}
 
 _validateExecutableArchitecture() {(set -e
