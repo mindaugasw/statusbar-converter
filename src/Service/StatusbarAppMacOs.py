@@ -14,6 +14,7 @@ from src.Service.StatusbarApp import StatusbarApp
 from src.Service.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.UpdateManager import UpdateManager
+from src.Service.AutostartManager import AutostartManager
 from src.Entity.Timestamp import Timestamp
 
 
@@ -27,10 +28,20 @@ class StatusbarAppMacOs(StatusbarApp):
         clipboard: ClipboardManager,
         config: Configuration,
         configFileManager: ConfigFileManager,
+        autostartManager: AutostartManager,
         updateManager: UpdateManager,
         debug: Debug,
     ):
-        super().__init__(osSwitch, formatter, clipboard, config, configFileManager, updateManager, debug)
+        super().__init__(
+            osSwitch,
+            formatter,
+            clipboard,
+            config,
+            configFileManager,
+            autostartManager,
+            updateManager,
+            debug,
+        )
 
         self._iconPathDefault = FilesystemHelper.getAssetsDir() + '/icon_macos.png'
         self._iconPathFlash = FilesystemHelper.getAssetsDir() + '/icon_macos_flash.png'
@@ -65,6 +76,9 @@ class StatusbarAppMacOs(StatusbarApp):
                 item.label,
                 None if item.isDisabled else item.callback,
             )
+
+            if item.initialState is not None:
+                nativeItem.state = item.initialState
 
             item.setNativeItem(nativeItem)
             menu.update({key: nativeItem})
@@ -137,6 +151,16 @@ class StatusbarAppMacOs(StatusbarApp):
 
         if result == buttons['open']:
             subprocess.Popen(['open', self._configFilePath])
+
+    def _onMenuClickRunAtLogin(self, menuItem: rumps.MenuItem) -> None:
+        if menuItem.state:
+            self._autostartManager.disableAutostart()
+            success = True
+        else:
+            success = self._autostartManager.enableAutostart()
+
+        if success:
+            menuItem.state = not menuItem.state
 
     def _onMenuClickOpenWebsite(self, menuItem: rumps.MenuItem) -> None:
         subprocess.Popen(['open', StatusbarAppMacOs.WEBSITE])
