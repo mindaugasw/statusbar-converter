@@ -4,4 +4,3 @@ pyinstaller
 requests
 # Pillow is needed for pyinstaller to be able to convert .png image to .icns to allow to use as macOS file icon
 Pillow
-mac-login-items

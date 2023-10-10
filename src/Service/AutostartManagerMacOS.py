@@ -4,6 +4,19 @@ from src.Service.FilesystemHelperMacOs import FilesystemHelperMacOs
 
 
 class AutostartManagerMacOS(AutostartManager):
+    def firstTimeSetup(self) -> None:
+        appPath = FilesystemHelperMacOs.getAppPath()
+
+        if appPath is None or 'Applications' not in appPath:
+            # Here we don't enable autostart automatically if not in /Applications because
+            # user may start the app for the first time from Downloads or some other location,
+            # and possibly later move it to /Applications, which will invalidate login item
+            self._debug.log('Autostart: app is not inside Applications directory, skipping initial setup')
+
+            return
+
+        super().firstTimeSetup()
+
     def enableAutostart(self) -> bool:
         appPath = FilesystemHelperMacOs.getAppPath()
 
@@ -12,26 +25,20 @@ class AutostartManagerMacOS(AutostartManager):
 
             return False
 
-        if 'Applications' not in appPath:
-            # Here we don't enable autostart if not in /Applications because user may
-            # start the app for the first time from Downloads or some other location, and
-            # possibly later move it to /Applications, which will invalidate login item
-            self._debug.log('Autostart: can\'t enable autostart, app is not inside Applications directory')
-
-            return False
-
-        os.popen(f'login-items add {appPath}')
+        command = 'osascript -e \'tell application "System Events" to make login item at end ' \
+                  f'with properties {{path:"{appPath}", hidden:false}}\''
+        os.popen(command)
         self._debug.log('Autostart: added login item')
 
         return True
 
     def disableAutostart(self) -> None:
-        os.popen(f'login-items rm "{self._appName}"')
+        os.popen(f'osascript -e \'tell application "System Events" to delete login item "{self._appName}"\'')
         self._debug.log('Autostart: removed login item')
 
     def isEnabledAutostart(self) -> bool:
-        loginItems = os.popen('login-items paths').read()
-        loginItems = loginItems.splitlines()
+        command = 'osascript -e \'tell application "System Events" to get the path of every login item\''
+        loginItems = os.popen(command).read().split(', ')
 
         for loginItem in loginItems:
             if self._appName in loginItem:
