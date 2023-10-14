@@ -24,7 +24,8 @@ timestamp and it will automatically show as time in the statusbar:
 - Extract zip
 - Run `sudo apt-get install xsel gir1.2-appindicator3-0.1`
 - Start the app. A new icon will appear on the statusbar
-- To automatically launch the app on boot, open `Startup Applications Preferences` and add the app
+
+The app was tested with Ubuntu, Gnome desktop environment.
 
 
 ## Building locally
