@@ -1,3 +1,4 @@
+from src.Service.ArgumentParser import ArgumentParser
 from src.Service.OSSwitch import OSSwitch
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Configuration import Configuration
@@ -23,7 +24,8 @@ else:
 
 configFileManager = ConfigFileManager(filesystemHelper)
 config = Configuration(configFileManager)
-debug = Debug(config)
+argumentParser = ArgumentParser()
+debug = Debug(config, argumentParser)
 timestampParser = TimestampParser(config, debug)
 timestampTextFormatter = TimestampTextFormatter(config)
 updateManager = UpdateManager(config, debug)

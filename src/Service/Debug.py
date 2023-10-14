@@ -1,5 +1,6 @@
 import time
-import sys
+
+from src.Service.ArgumentParser import ArgumentParser
 from src.Service.Configuration import Configuration
 import src.events as events
 
@@ -7,8 +8,8 @@ import src.events as events
 class Debug:
     _debugEnabled: bool
 
-    def __init__(self, config: Configuration):
-        self._debugEnabled = config.get(config.DEBUG) or '--debug' in sys.argv
+    def __init__(self, config: Configuration, argumentParser: ArgumentParser):
+        self._debugEnabled = config.get(config.DEBUG) or argumentParser.isDebugEnabled()
 
         if self._debugEnabled:
             events.clipboardChanged.append(lambda content: self.log('Clipboard changed: ' + str(content)))
