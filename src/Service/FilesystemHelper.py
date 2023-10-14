@@ -36,3 +36,8 @@ class FilesystemHelper(metaclass=ABCMeta):
         On macOS will return path to .app or None if code is not packaged into an app
         """
         pass
+
+    @staticmethod
+    @abstractmethod
+    def getStartupScriptDir() -> str:
+        pass

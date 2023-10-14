@@ -1,17 +1,23 @@
 from abc import ABCMeta, abstractmethod
 from src.Service.Debug import Debug
 from src.Service.Configuration import Configuration
+from src.Service.FilesystemHelper import FilesystemHelper
 
 
 class AutostartManager(metaclass=ABCMeta):
     _configuration: Configuration
+    _filesystemHelper: FilesystemHelper
     _debug: Debug
 
     _appName: str
+    _appPath: str | None
 
-    def __init__(self, configuration: Configuration, debug: Debug):
+    def __init__(self, configuration: Configuration, filesystemHelper: FilesystemHelper, debug: Debug):
         self._configuration = configuration
+        self._filesystemHelper = filesystemHelper
         self._debug = debug
+
+        self._appPath = filesystemHelper.getAppPath()
 
     def firstTimeSetup(self) -> None:
         if self._configuration.getState(Configuration.DATA_AUTO_RUN_INITIAL_SETUP_COMPLETE):

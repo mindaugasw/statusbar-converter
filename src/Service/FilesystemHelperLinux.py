@@ -1,4 +1,6 @@
 import os
+import sys
+
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.StatusbarApp import StatusbarApp
 
@@ -12,5 +14,15 @@ class FilesystemHelperLinux(FilesystemHelper):
 
     @staticmethod
     def getAppPath() -> str | None:
-        # TODO implement
-        pass
+        if not getattr(sys, "frozen", False):
+            # Frozen attribute is added to packaged app
+            return None
+
+        return sys.executable
+
+    @staticmethod
+    def getStartupScriptDir() -> str:
+        path = os.path.expanduser(f'~/.config/autostart')
+        os.makedirs(path, exist_ok=True)
+
+        return path

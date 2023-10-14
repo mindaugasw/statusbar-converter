@@ -19,3 +19,7 @@ class FilesystemHelperMacOs(FilesystemHelper):
             return None
 
         return result.group()
+
+    @staticmethod
+    def getStartupScriptDir() -> str:
+        raise Exception('Not implemented')

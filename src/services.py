@@ -38,7 +38,7 @@ if osSwitch.isMacOS():
     from src.Service.ClipboardManagerMacOs import ClipboardManagerMacOs
     from src.Service.StatusbarAppMacOs import StatusbarAppMacOs
 
-    autostartManager = AutostartManagerMacOS(config, debug)
+    autostartManager = AutostartManagerMacOS(config, filesystemHelper, debug)
     clipboardManager = ClipboardManagerMacOs(debug)
     statusbarApp = StatusbarAppMacOs(
         osSwitch,
@@ -55,7 +55,7 @@ else:
     from src.Service.ClipboardManagerLinux import ClipboardManagerLinux
     from src.Service.StatusbarAppLinux import StatusbarAppLinux
 
-    autostartManager = AutostartManagerLinux(config, debug)
+    autostartManager = AutostartManagerLinux(config, filesystemHelper, debug)
     clipboardManager = ClipboardManagerLinux(debug)
     statusbarApp = StatusbarAppLinux(
         osSwitch,

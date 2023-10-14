@@ -130,7 +130,10 @@ build() {(set -e
     _log "Successfully built in $distPath"
 
     _createZip "$arch" "$os"
-    _createDmg "$arch"
+
+    if [ "$os" == 'macos' ]; then
+        _createDmg "$arch"
+    fi
 )}
 
 _createZip() {(set -e

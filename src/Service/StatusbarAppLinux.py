@@ -55,6 +55,8 @@ Other menu alternatives, instead of using Gtk directly:
 
 
 class StatusbarAppLinux(StatusbarApp):
+    CHECK = '✔  '
+
     _app: AppIndicator3.Indicator
 
     def __init__(
@@ -116,6 +118,17 @@ class StatusbarAppLinux(StatusbarApp):
                 continue
 
             nativeItem = Gtk.MenuItem(item.label)
+
+            if item.initialState:
+                """
+                There is a Gtk.CheckMenuItem, but we don't use it because we
+                can't completely control check behavior then:
+                - button state is automatically changed by Gtk before calling callback
+                - if we then manually change state again, button callback is called again
+                So simulating check behavior with text is simpler
+                """
+
+                nativeItem.set_label(f'{self.CHECK}{item.label}')
 
             if item.isDisabled:
                 nativeItem.set_sensitive(False)
@@ -195,9 +208,17 @@ class StatusbarAppLinux(StatusbarApp):
         if response == buttons['open']:
             subprocess.call(['xdg-open', self._configFilePath])
 
-    def _onMenuClickRunAtLogin(self, menuItem) -> None:
-        # TODO implement
-        pass
+    def _onMenuClickRunAtLogin(self, menuItem: Gtk.MenuItem) -> None:
+        checked = self._isMenuItemChecked(menuItem)
+
+        if checked:
+            self._autostartManager.disableAutostart()
+            success = True
+        else:
+            success = self._autostartManager.enableAutostart()
+
+        if success:
+            menuItem.set_label(f'{"" if checked else self.CHECK}Run at login')
 
     def _onMenuClickOpenWebsite(self, menuItem: Gtk.MenuItem) -> None:
         webbrowser.open(StatusbarAppLinux.WEBSITE)
@@ -260,3 +281,6 @@ class StatusbarAppLinux(StatusbarApp):
         dialog.destroy()
 
         return buttons[response]
+
+    def _isMenuItemChecked(self, menuItem: Gtk.MenuItem) -> bool:
+        return menuItem.get_label().startswith(self.CHECK)
