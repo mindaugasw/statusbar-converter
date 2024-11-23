@@ -3,25 +3,31 @@ from abc import ABCMeta, abstractmethod
 
 
 class FilesystemHelper(metaclass=ABCMeta):
-    def __init__(self):
-        # Debug service is not yet initialized, so we simply always print debug information
-        print(f'Project dir: `{FilesystemHelper.getProjectDir()}`')
-        print(f'User data dir: `{self.getUserDataDir()}`')
+    def getInitializationLogs(self) -> str:
+        # We cannot directly use Logger because of circular imports, so we only return info to log
+        return (
+            f'Project dir: `{FilesystemHelper.getProjectDir()}`\n'
+            f'User data dir: `{self.getUserDataDir()}`\n'
+        )
 
     @staticmethod
     def getAssetsDir() -> str:
+        """Get Assets directory (inside project directory)"""
         return FilesystemHelper.getProjectDir() + '/assets'
 
     @staticmethod
     def getConfigDir() -> str:
+        """Get default app config directory (inside project directory)"""
         return FilesystemHelper.getProjectDir() + '/config'
 
     @abstractmethod
     def getUserDataDir(self) -> str:
+        """Get directory for user config, state, logs and other data"""
         pass
 
     @staticmethod
     def getBinariesDir() -> str:
+        """Get directory for embedded binaries"""
         return FilesystemHelper.getProjectDir() + '/binaries'
 
     @staticmethod
@@ -40,4 +46,5 @@ class FilesystemHelper(metaclass=ABCMeta):
     @staticmethod
     @abstractmethod
     def getStartupScriptDir() -> str:
+        """Get directory where scripts should be saved to enable auto-start on boot"""
         pass

@@ -1,6 +1,7 @@
-import os
 import re
+
 import rumps
+
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.StatusbarApp import StatusbarApp
 

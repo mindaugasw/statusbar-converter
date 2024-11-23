@@ -1,17 +1,18 @@
 import os
 import sys
 from abc import ABCMeta, abstractmethod
+
 import src.events as events
 from src.Entity.MenuItem import MenuItem
 from src.Entity.Timestamp import Timestamp
-from src.Service.UpdateManager import UpdateManager
 from src.Service.AutostartManager import AutostartManager
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
-from src.Service.Debug import Debug
+from src.Service.Logger import Logger
 from src.Service.OSSwitch import OSSwitch
 from src.Service.TimestampTextFormatter import TimestampTextFormatter
+from src.Service.UpdateManager import UpdateManager
 
 
 class StatusbarApp(metaclass=ABCMeta):
@@ -25,7 +26,7 @@ class StatusbarApp(metaclass=ABCMeta):
     _config: Configuration
     _autostartManager: AutostartManager
     _updateManager: UpdateManager
-    _debug: Debug
+    _logger: Logger
 
     _menuItems: dict[str, MenuItem]
     _menuTemplatesLastTimestamp: dict[str, str]
@@ -44,7 +45,7 @@ class StatusbarApp(metaclass=ABCMeta):
         configFileManager: ConfigFileManager,
         autostartManager: AutostartManager,
         updateManager: UpdateManager,
-        debug: Debug,
+        logger: Logger
     ):
         self._osSwitch = osSwitch
         self._formatter = formatter
@@ -52,7 +53,7 @@ class StatusbarApp(metaclass=ABCMeta):
         self._config = config
         self._autostartManager = autostartManager
         self._updateManager = updateManager
-        self._debug = debug
+        self._logger = logger
 
         self._configFilePath = configFileManager.configUserPath
 

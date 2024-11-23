@@ -2,20 +2,22 @@ import os
 import subprocess
 import threading
 import time
+
 import rumps
+
 import src.events as events
 from src.Entity.MenuItem import MenuItem
-from src.Service.Debug import Debug
+from src.Entity.Timestamp import Timestamp
+from src.Service.AutostartManager import AutostartManager
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
+from src.Service.FilesystemHelper import FilesystemHelper
+from src.Service.Logger import Logger
 from src.Service.OSSwitch import OSSwitch
 from src.Service.StatusbarApp import StatusbarApp
 from src.Service.TimestampTextFormatter import TimestampTextFormatter
-from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.UpdateManager import UpdateManager
-from src.Service.AutostartManager import AutostartManager
-from src.Entity.Timestamp import Timestamp
 
 
 class StatusbarAppMacOs(StatusbarApp):
@@ -30,7 +32,7 @@ class StatusbarAppMacOs(StatusbarApp):
         configFileManager: ConfigFileManager,
         autostartManager: AutostartManager,
         updateManager: UpdateManager,
-        debug: Debug,
+        logger: Logger,
     ):
         super().__init__(
             osSwitch,
@@ -40,7 +42,7 @@ class StatusbarAppMacOs(StatusbarApp):
             configFileManager,
             autostartManager,
             updateManager,
-            debug,
+            logger,
         )
 
         self._iconPathDefault = FilesystemHelper.getAssetsDir() + '/icon_macos.png'
@@ -113,7 +115,7 @@ class StatusbarAppMacOs(StatusbarApp):
             buttons,
         )
 
-        self._debug.log(f'Update check: user action: {result}')
+        self._logger.log(f'Update check: user action: {result}')
 
         if result == buttons['download']:
             subprocess.Popen(['open', f'{StatusbarAppMacOs.WEBSITE}/releases/tag/{version}'])
@@ -122,7 +124,7 @@ class StatusbarAppMacOs(StatusbarApp):
         elif result == buttons['later']:
             return
         else:
-            self._debug.log(f'Update check: unknown user action: {result}')
+            self._logger.log(f'Update check: unknown user action: {result}')
 
     def _onMenuClickLastTimestamp(self, menuItem: rumps.MenuItem) -> None:
         self._clipboard.setClipboardContent(menuItem.title)
@@ -178,7 +180,7 @@ class StatusbarAppMacOs(StatusbarApp):
             threading.Thread(target=self._flashIcon, daemon=True).start()
 
         title = self._formatter.formatForIcon(timestamp)
-        self._debug.log(f'Changing statusbar to: {title}')
+        self._logger.logDebug(f'Changing statusbar to: {title}')
         self._app.title = title
 
         for key, template in self._menuTemplatesLastTimestamp.items():

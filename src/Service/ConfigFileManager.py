@@ -1,17 +1,23 @@
 import os
 import shutil
+
 from src.Service.FilesystemHelper import FilesystemHelper
+from src.Service.Logger import Logger
 
 
 class ConfigFileManager:
     configUserPath: str
+
+    _logger: Logger
 
     _configAppPath: str
     _configUserExamplePath: str
     _stateDataPath: str
     _stateDataExamplePath: str
 
-    def __init__(self, filesystemHelper: FilesystemHelper):
+    def __init__(self, filesystemHelper: FilesystemHelper, logger: Logger):
+        self._logger = logger
+
         self._configAppPath = filesystemHelper.getConfigDir() + '/config.app.yml'
         self._configUserExamplePath = filesystemHelper.getConfigDir() + '/config.user.example.yml'
         self.configUserPath = filesystemHelper.getUserDataDir() + '/config.user.yml'
@@ -20,11 +26,11 @@ class ConfigFileManager:
 
     def getAppConfigContent(self) -> str:
         # Debug service is not yet initialized, so we simply always print debug information
-        print(f'Loading app config from `{self._configAppPath}` ... ', end='')
+        self._logger.logRaw(f'Loading app config from `{self._configAppPath}` ... ')
 
         with open(self._configAppPath, 'r') as appConfigFile:
             appConfigContent = appConfigFile.read()
-            print('done')
+            self._logger.logRaw('done\n')
 
             return appConfigContent
 
@@ -42,11 +48,11 @@ class ConfigFileManager:
         if not self._userFileExists(targetFilePath):
             self._createUserFile(prettyName, exampleFilePath, targetFilePath)
 
-        print(f'Loading {prettyName} from `{targetFilePath}` ... ', end='')
+        self._logger.logRaw(f'Loading {prettyName} from `{targetFilePath}` ... ')
 
         with open(targetFilePath, 'r') as userFile:
             userFileContent = userFile.read()
-            print('done')
+            self._logger.logRaw('done\n')
 
             return userFileContent
 
@@ -54,6 +60,6 @@ class ConfigFileManager:
         return os.path.isfile(path)
 
     def _createUserFile(self, prettyName: str, exampleFilePath: str, targetFilePath: str) -> None:
-        print(f'Creating {prettyName} at `{targetFilePath}` from `{exampleFilePath}` ... ', end='')
+        self._logger.logRaw(f'Creating {prettyName} at `{targetFilePath}` from `{exampleFilePath}` ... ')
         shutil.copyfile(exampleFilePath, targetFilePath)
-        print('done')
+        self._logger.logRaw('done')

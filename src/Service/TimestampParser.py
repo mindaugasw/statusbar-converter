@@ -1,9 +1,10 @@
 import re
 import time
+
 import src.events as events
-from src.Service import Configuration
-from src.Service.Debug import Debug
 from src.Entity.Timestamp import Timestamp
+from src.Service import Configuration
+from src.Service.Logger import Logger
 
 
 class TimestampParser:
@@ -17,13 +18,14 @@ class TimestampParser:
     """
     MILLIS_MAX_CHARACTERS = 14
 
-    _debug: Debug
+    _logger: Logger
+
     _clearOnChange: bool
     _clearAfterTime: int
     _timestampSetAt: int | None = None
 
-    def __init__(self, config: Configuration, debug: Debug):
-        self._debug = debug
+    def __init__(self, config: Configuration, logger: Logger):
+        self._logger = logger
 
         self._clearOnChange = config.get(config.CLEAR_ON_CHANGE)
         self._clearAfterTime = config.get(config.CLEAR_AFTER_TIME)
@@ -59,7 +61,7 @@ class TimestampParser:
         try:
             number = int(content)
         except Exception as e:
-            self._debug.log(
+            self._logger.logDebug(
                 f'Exception occurred while converting copied text to integer.\n'
                 f'Copied content: {content}\n'
                 f'Exception: {type(e)}\n'
@@ -95,5 +97,5 @@ class TimestampParser:
         if int(time.time()) - self._timestampSetAt < self._clearAfterTime:
             return
 
-        self._debug.log(f'Auto clearing timestamp after timeout ({self._clearAfterTime})')
+        self._logger.logDebug(f'Auto clearing timestamp after timeout ({self._clearAfterTime})')
         events.timestampClear()

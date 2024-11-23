@@ -15,7 +15,7 @@ class AutostartManagerLinux(AutostartManager):
             # Here we don't enable autostart automatically if app is in Downloads
             # directory, since user may soon move the app somewhere else and autostart
             # config will remain broken
-            self._debug.log('Autostart: not a packaged app or is inside Downloads directory, skipping initial setup')
+            self._logger.log('Autostart: not a packaged app or is inside Downloads directory, skipping initial setup')
 
             return
 
@@ -23,7 +23,7 @@ class AutostartManagerLinux(AutostartManager):
 
     def enableAutostart(self) -> bool:
         if self._appPath is None:
-            self._debug.log('Autostart: can\'t enable autostart, code is not packaged into an app')
+            self._logger.log('Autostart: can\'t enable autostart, code is not packaged into an app')
 
             return False
 
@@ -37,13 +37,13 @@ class AutostartManagerLinux(AutostartManager):
         with open(self._autostartScriptPath, 'w') as scriptFile:
             scriptFile.write(scriptContent)
 
-        self._debug.log('Autostart: added login item')
+        self._logger.log('Autostart: added login item')
 
         return True
 
     def disableAutostart(self) -> None:
         pathlib.Path.unlink(pathlib.Path(self._autostartScriptPath), missing_ok=True)
-        self._debug.log('Autostart: removed login item')
+        self._logger.log('Autostart: removed login item')
 
     def isEnabledAutostart(self) -> bool:
         if self._appPath is None:

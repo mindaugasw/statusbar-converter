@@ -1,10 +1,12 @@
+import platform
 import threading
 import time
+
 import requests
-import platform
+
 import src.events as events
 from src.Service.Configuration import Configuration
-from src.Service.Debug import Debug
+from src.Service.Logger import Logger
 
 
 class UpdateManager:
@@ -12,15 +14,15 @@ class UpdateManager:
     RELEASES_URL = 'https://api.github.com/repos/mindaugasw/statusbar-converter/releases?per_page=100'
 
     _config: Configuration
-    _debug: Debug
+    _logger: Logger
 
     _currentVersion: tuple[int, ...]
     _skippedVersion: tuple[int, ...] | None
     _lastCheckAt: int | None = None
 
-    def __init__(self, config: Configuration, debug: Debug):
+    def __init__(self, config: Configuration, logger: Logger):
         self._config = config
-        self._debug = debug
+        self._logger = logger
 
         events.appLoopIteration.append(self._updateCheckIteration)
 
@@ -35,10 +37,10 @@ class UpdateManager:
         self.checkForUpdatesAsync(False)
 
     def _checkForUpdates(self, manuallyTriggered: bool) -> None:
-        self._debug.log(f'Update check: Starting check for updates, manual check: {manuallyTriggered}')
+        self._logger.log(f'Update check: Starting check for updates, manual check: {manuallyTriggered}')
 
         if manuallyTriggered:
-            self._debug.log('Update check: clearing skipped version state')
+            self._logger.log('Update check: clearing skipped version state')
             self._config.setState(Configuration.DATA_UPDATE_SKIP_VERSION, None)
 
         currentVersion = self._stringToVersionTuple(self._config.getAppVersion())
@@ -54,7 +56,7 @@ class UpdateManager:
 
         for release in releases:
             if not self._isNewerVersion(release, currentVersion, skippedVersion):
-                self._debug.log(
+                self._logger.log(
                     f'Update check: release {release["tag_name"]} is old version or marked as skipped,'
                     f' stopping update check',
                 )
@@ -62,11 +64,11 @@ class UpdateManager:
                 break
 
             if not self._doesReleaseContainCurrentPlatform(release):
-                self._debug.log(f'Update check: release {release["tag_name"]} does not contain current platform download')
+                self._logger.log(f'Update check: release {release["tag_name"]} does not contain current platform download')
 
                 continue
 
-            self._debug.log('Update check: Found a new release ' + release['tag_name'])
+            self._logger.log('Update check: Found a new release ' + release['tag_name'])
             newUpdateFound = True
             events.updateCheckCompleted(release['tag_name'])
 
@@ -76,7 +78,7 @@ class UpdateManager:
             events.updateCheckCompleted(None)
 
         self._lastCheckAt = int(time.time())
-        self._debug.log('Update check: Completed')
+        self._logger.log('Update check: Completed')
 
     def _isNewerVersion(
             self,

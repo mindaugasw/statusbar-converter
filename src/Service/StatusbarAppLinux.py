@@ -1,22 +1,24 @@
+import signal
 import subprocess
 import sys
 import threading
 import time
 import webbrowser
+
 import gi
-import signal
+
 import src.events as events
 from src.Entity.MenuItem import MenuItem
 from src.Entity.Timestamp import Timestamp
+from src.Service.AutostartManager import AutostartManager
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
-from src.Service.Debug import Debug
 from src.Service.FilesystemHelper import FilesystemHelper
+from src.Service.Logger import Logger
 from src.Service.OSSwitch import OSSwitch
 from src.Service.StatusbarApp import StatusbarApp
 from src.Service.TimestampTextFormatter import TimestampTextFormatter
-from src.Service.AutostartManager import AutostartManager
 from src.Service.UpdateManager import UpdateManager
 
 gi.require_version('Gtk', '3.0')
@@ -68,7 +70,7 @@ class StatusbarAppLinux(StatusbarApp):
         configFileManager: ConfigFileManager,
         autostartManager: AutostartManager,
         updateManager: UpdateManager,
-        debug: Debug,
+        logger: Logger,
     ):
         super().__init__(
             osSwitch,
@@ -78,7 +80,7 @@ class StatusbarAppLinux(StatusbarApp):
             configFileManager,
             autostartManager,
             updateManager,
-            debug,
+            logger,
         )
 
         self._iconPathDefault = FilesystemHelper.getAssetsDir() + '/icon_linux.png'
@@ -168,7 +170,7 @@ class StatusbarAppLinux(StatusbarApp):
             buttons,
         )
 
-        self._debug.log(f'Update check: user action: {result}')
+        self._logger.log(f'Update check: user action: {result}')
 
         if result == buttons['download']:
             webbrowser.open(downloadPage)
@@ -177,7 +179,7 @@ class StatusbarAppLinux(StatusbarApp):
         elif result == buttons['later']:
             return
         else:
-            self._debug.log(f'Update check: unknown user action: {result}')
+            self._logger.log(f'Update check: unknown user action: {result}')
 
     def _onMenuClickLastTimestamp(self, menuItem: Gtk.MenuItem) -> None:
         label = menuItem.get_label()
@@ -242,7 +244,7 @@ class StatusbarAppLinux(StatusbarApp):
             threading.Thread(target=self._flashIcon, daemon=True).start()
 
         iconLabel = self._formatter.formatForIcon(timestamp)
-        self._debug.log(f'Changing statusbar to: {iconLabel}')
+        self._logger.logDebug(f'Changing statusbar to: {iconLabel}')
         self._app.set_label(iconLabel, '')
 
         for key, template in self._menuTemplatesLastTimestamp.items():
