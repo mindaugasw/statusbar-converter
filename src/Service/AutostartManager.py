@@ -1,11 +1,11 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 
 from src.Service.Configuration import Configuration
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
 
 
-class AutostartManager(metaclass=ABCMeta):
+class AutostartManager(ABC):
     _configuration: Configuration
     _filesystemHelper: FilesystemHelper
     _logger: Logger
@@ -22,22 +22,22 @@ class AutostartManager(metaclass=ABCMeta):
 
     def firstTimeSetup(self) -> None:
         if self._configuration.getState(Configuration.DATA_AUTO_RUN_INITIAL_SETUP_COMPLETE):
-            self._logger.log('Autostart: initial setup already completed')
+            self._logger.log('[Autostart] Initial setup already completed')
 
             return
 
         if self.isEnabledAutostart():
-            self._logger.log('Autostart: autostart already enabled, skipping initial setup')
+            self._logger.log('[Autostart] Autostart already enabled, skipping initial setup')
 
             return
 
-        self._logger.log('Autostart: starting initial setup')
+        self._logger.log('[Autostart] Starting initial setup')
         success = self.enableAutostart()
 
         if success:
             self._configuration.setState(Configuration.DATA_AUTO_RUN_INITIAL_SETUP_COMPLETE, True)
 
-        self._logger.log(f'Autostart: initial setup completed, success: {success}')
+        self._logger.log(f'[Autostart] Initial setup completed, success: {success}')
 
     @abstractmethod
     def enableAutostart(self) -> bool:

@@ -115,7 +115,7 @@ class StatusbarAppMacOs(StatusbarApp):
             buttons,
         )
 
-        self._logger.log(f'Update check: user action: {result}')
+        self._logger.log(f'[Update check] User action from dialog: {result}')
 
         if result == buttons['download']:
             subprocess.Popen(['open', f'{StatusbarAppMacOs.WEBSITE}/releases/tag/{version}'])
@@ -124,7 +124,7 @@ class StatusbarAppMacOs(StatusbarApp):
         elif result == buttons['later']:
             return
         else:
-            self._logger.log(f'Update check: unknown user action: {result}')
+            self._logger.log(f'[Update check] Unknown user action from dialog: {result}')
 
     def _onMenuClickLastTimestamp(self, menuItem: rumps.MenuItem) -> None:
         self._clipboard.setClipboardContent(menuItem.title)

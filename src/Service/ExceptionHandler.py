@@ -48,7 +48,7 @@ class ExceptionHandler:
 
     @staticmethod
     def handleExit() -> None:
-        Logger.instance.log('Exit: exiting app normally')
+        Logger.instance.log('[Exit] Exiting app normally')
 
     @staticmethod
     def _handleException(threadName, exceptionType, message, trace) -> None:

@@ -1,8 +1,8 @@
 import os
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 
 
-class FilesystemHelper(metaclass=ABCMeta):
+class FilesystemHelper(ABC):
     def getInitializationLogs(self) -> str:
         # We cannot directly use Logger because of circular imports, so we only return info to log
         return (

@@ -19,9 +19,9 @@ def main():
     sleepTime = services.argumentParser.getSleep()
 
     if sleepTime is not None:
-        services.logger.log(f'Sleeping for {sleepTime} seconds...')
+        services.logger.log(f'[Start] Sleeping for {sleepTime} seconds...')
         time.sleep(services.argumentParser.getSleep())
-        services.logger.log(f'Done sleeping, starting the app')
+        services.logger.log(f'[Start] Done sleeping, starting the app')
 
     services.logger.setDebugEnabled(services.debug.isDebugEnabled())
     services.autostartManager.setAppName(StatusbarApp.APP_NAME)

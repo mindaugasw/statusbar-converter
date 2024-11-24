@@ -1,6 +1,6 @@
 import os
 import sys
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 
 import src.events as events
 from src.DTO.MenuItem import MenuItem
@@ -15,7 +15,7 @@ from src.Service.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.UpdateManager import UpdateManager
 
 
-class StatusbarApp(metaclass=ABCMeta):
+class StatusbarApp(ABC):
     APP_NAME = 'Statusbar Converter'
     WEBSITE = 'https://github.com/mindaugasw/statusbar-converter'
     ICON_FLASH_DURATION = 0.35

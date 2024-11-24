@@ -9,7 +9,7 @@ class AutostartManagerMacOS(AutostartManager):
             # Here we don't enable autostart automatically if not in /Applications because
             # user may start the app for the first time from Downloads or some other location,
             # and possibly later move it to /Applications, which will invalidate login item
-            self._logger.log('Autostart: app is not inside Applications directory, skipping initial setup')
+            self._logger.log('[Autostart] App is not inside Applications directory, skipping initial setup')
 
             return
 
@@ -17,20 +17,20 @@ class AutostartManagerMacOS(AutostartManager):
 
     def enableAutostart(self) -> bool:
         if self._appPath is None:
-            self._logger.log('Autostart: can\'t enable autostart, code is not packaged into an app')
+            self._logger.log('[Autostart] Can\'t enable autostart, code is not packaged into an app')
 
             return False
 
         command = 'osascript -e \'tell application "System Events" to make login item at end ' \
                   f'with properties {{path:"{self._appPath}", hidden:false}}\''
         os.popen(command)
-        self._logger.log('Autostart: added login item')
+        self._logger.log('[Autostart] Added login item')
 
         return True
 
     def disableAutostart(self) -> None:
         os.popen(f'osascript -e \'tell application "System Events" to delete login item "{self._appName}"\'')
-        self._logger.log('Autostart: removed login item')
+        self._logger.log('[Autostart] Removed login item')
 
     def isEnabledAutostart(self) -> bool:
         command = 'osascript -e \'tell application "System Events" to get the path of every login item\''

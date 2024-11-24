@@ -37,10 +37,10 @@ class UpdateManager:
         self.checkForUpdatesAsync(False)
 
     def _checkForUpdates(self, manuallyTriggered: bool) -> None:
-        self._logger.log(f'Update check: Starting check for updates, manual check: {manuallyTriggered}')
+        self._logger.log(f'[Update check] Starting check for updates, manual check: {manuallyTriggered}')
 
         if manuallyTriggered:
-            self._logger.log('Update check: clearing skipped version state')
+            self._logger.log('[Update check] Clearing skipped version state')
             self._config.setState(Configuration.DATA_UPDATE_SKIP_VERSION, None)
 
         currentVersion = self._stringToVersionTuple(self._config.getAppVersion())
@@ -57,18 +57,18 @@ class UpdateManager:
         for release in releases:
             if not self._isNewerVersion(release, currentVersion, skippedVersion):
                 self._logger.log(
-                    f'Update check: release {release["tag_name"]} is old version or marked as skipped,'
+                    f'[Update check] Release {release["tag_name"]} is old version or marked as skipped,'
                     f' stopping update check',
                 )
 
                 break
 
             if not self._doesReleaseContainCurrentPlatform(release):
-                self._logger.log(f'Update check: release {release["tag_name"]} does not contain current platform download')
+                self._logger.log(f'[Update check] Release {release["tag_name"]} does not contain current platform download')
 
                 continue
 
-            self._logger.log('Update check: Found a new release ' + release['tag_name'])
+            self._logger.log('[Update check] Found a new release ' + release['tag_name'])
             newUpdateFound = True
             events.updateCheckCompleted(release['tag_name'])
 
@@ -78,7 +78,7 @@ class UpdateManager:
             events.updateCheckCompleted(None)
 
         self._lastCheckAt = int(time.time())
-        self._logger.log('Update check: Completed')
+        self._logger.log('[Update check] Completed')
 
     def _isNewerVersion(
             self,

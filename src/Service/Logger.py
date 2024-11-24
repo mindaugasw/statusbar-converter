@@ -25,7 +25,7 @@ class Logger:
         Logger.instance = self
 
         self.logRaw('\n\n')
-        self.log(f'Starting app @ {datetime.date.today().isoformat()}')
+        self.log(f'[Start] Starting app @ {datetime.date.today().isoformat()}')
 
     def log(self, content) -> None:
         message = '%s-%s: %s\n' % (time.strftime('%H:%M:%S'), self._instanceId, str(content))

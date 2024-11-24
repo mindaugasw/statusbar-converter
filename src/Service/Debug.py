@@ -14,9 +14,9 @@ class Debug:
         self._debugEnabled = config.get(config.DEBUG) or argumentParser.isDebugEnabled()
 
         if self._debugEnabled:
-            events.clipboardChanged.append(lambda content: self._logger.log('Clipboard changed: ' + str(content)))
-            events.timestampChanged.append(lambda timestamp: self._logger.log('Timestamp detected: ' + str(timestamp)))
-            events.timestampClear.append(lambda: self._logger.log('Timestamp cleared'))
+            events.clipboardChanged.append(lambda content: self._logger.log('[Clipboard] Changed to: ' + str(content)))
+            events.timestampChanged.append(lambda timestamp: self._logger.log('[Clipboard] Timestamp detected: ' + str(timestamp)))
+            events.timestampClear.append(lambda: self._logger.log('[Menu app] Timestamp cleared'))
 
     def isDebugEnabled(self) -> bool:
         return self._debugEnabled

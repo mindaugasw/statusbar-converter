@@ -170,7 +170,7 @@ class StatusbarAppLinux(StatusbarApp):
             buttons,
         )
 
-        self._logger.log(f'Update check: user action: {result}')
+        self._logger.log(f'[Update check] User action from dialog: {result}')
 
         if result == buttons['download']:
             webbrowser.open(downloadPage)
@@ -179,7 +179,7 @@ class StatusbarAppLinux(StatusbarApp):
         elif result == buttons['later']:
             return
         else:
-            self._logger.log(f'Update check: unknown user action: {result}')
+            self._logger.log(f'[Update check] Unknown user action from dialog: {result}')
 
     def _onMenuClickLastTimestamp(self, menuItem: Gtk.MenuItem) -> None:
         label = menuItem.get_label()
