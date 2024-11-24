@@ -30,6 +30,8 @@ install() {(set -e
     rm -rf "${venvPath:?}/*"
     _log "Installing virtualenv to \"$venvPath\""
 
+    # --clear - Delete the contents of the environment directory if it already exists, before environment creation
+    # --copies - Try to use copies rather than symlinks, even when symlinks are the default for the platform.
     $pythonExec -m venv "$venvPath" --clear --copies
 
     source "$venvPath/bin/activate"
@@ -59,6 +61,8 @@ _installLinux() {(set -e
 
     # TODO solve this somehow better. Installing PyGObject directly into virtualenv seems not possible
     cp -r /usr/lib/python3/dist-packages/gi "$venvPath/lib/python3.10/site-packages/gi"
+
+    _log "Successfully copied gi"
 )}
 
 buildSpec() {(set -e
