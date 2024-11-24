@@ -28,7 +28,7 @@ class UpdateManager:
 
     def checkForUpdatesAsync(self, manuallyTriggered: bool) -> None:
         self._lastCheckAt = int(time.time())
-        threading.Thread(target=self._checkForUpdates, args=[manuallyTriggered]).start()
+        threading.Thread(target=self._checkForUpdates, args=[manuallyTriggered], daemon=True).start()
 
     def _updateCheckIteration(self) -> None:
         if self._lastCheckAt and (int(time.time()) - self.CHECK_INTERVAL) < self._lastCheckAt:

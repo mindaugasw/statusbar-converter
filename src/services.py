@@ -5,6 +5,7 @@ from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
 from src.Service.Debug import Debug
+from src.Service.ExceptionHandler import ExceptionHandler
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
 from src.Service.OSSwitch import OSSwitch
@@ -24,7 +25,10 @@ else:
     filesystemHelper = FilesystemHelperLinux()
 
 logger = Logger(filesystemHelper)
+
 logger.logRaw(filesystemHelper.getInitializationLogs())
+ExceptionHandler.initialize()
+
 configFileManager = ConfigFileManager(filesystemHelper, logger)
 config = Configuration(configFileManager)
 argumentParser = ArgumentParser()

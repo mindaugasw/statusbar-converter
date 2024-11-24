@@ -1,5 +1,7 @@
 import datetime
 import os.path
+import random
+import string
 import subprocess
 import time
 
@@ -9,18 +11,24 @@ from src.Service.FilesystemHelper import FilesystemHelper
 class Logger:
     LOG_FILE_TRUNCATE_LENGTH = 1000
 
+    # static
+    instance = None
+
     _logPath: str
     _isDebugEnabled = False
+    _instanceId: str
 
     def __init__(self, filesystemHelper: FilesystemHelper):
         self._logPath = f'{filesystemHelper.getUserDataDir()}/log.txt'
         self._initializeLogFile()
+        self._instanceId = ''.join(random.choices(string.ascii_lowercase + string.digits, k=3))
+        Logger.instance = self
 
         self.logRaw('\n\n')
         self.log(f'Starting app @ {datetime.date.today().isoformat()}')
 
     def log(self, content) -> None:
-        message = '%s: %s\n' % (time.strftime('%H:%M:%S'), str(content))
+        message = '%s-%s: %s\n' % (time.strftime('%H:%M:%S'), self._instanceId, str(content))
         self.logRaw(message)
 
     def logRaw(self, content: str) -> None:
