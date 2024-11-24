@@ -8,8 +8,8 @@ import webbrowser
 import gi
 
 import src.events as events
-from src.Entity.MenuItem import MenuItem
-from src.Entity.Timestamp import Timestamp
+from src.DTO.MenuItem import MenuItem
+from src.DTO.Timestamp import Timestamp
 from src.Service.AutostartManager import AutostartManager
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager

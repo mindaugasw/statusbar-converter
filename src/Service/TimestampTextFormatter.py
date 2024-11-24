@@ -1,7 +1,8 @@
 import datetime
 import time
+
+from src.DTO.Timestamp import Timestamp
 from src.Service.Configuration import Configuration
-from src.Entity.Timestamp import Timestamp
 
 
 class TimestampTextFormatter:

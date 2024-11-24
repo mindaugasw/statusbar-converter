@@ -2,7 +2,7 @@ import re
 import time
 
 import src.events as events
-from src.Entity.Timestamp import Timestamp
+from src.DTO.Timestamp import Timestamp
 from src.Service import Configuration
 from src.Service.Logger import Logger
 

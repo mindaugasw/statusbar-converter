@@ -1,4 +1,4 @@
-from src.Entity.Event import Event
+from src.DTO.Event import Event
 
 appLoopIteration = Event()
 
