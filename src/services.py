@@ -12,7 +12,6 @@ from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
 from src.Service.OSSwitch import OSSwitch
 from src.Service.StatusbarApp import StatusbarApp
-from src.Service.TimestampParser import TimestampParser
 from src.Service.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.UpdateManager import UpdateManager
 
@@ -35,7 +34,6 @@ configFileManager = ConfigFileManager(filesystemHelper, logger)
 config = Configuration(configFileManager)
 argumentParser = ArgumentParser()
 debug = Debug(config, argumentParser)
-timestampParser = TimestampParser(config, logger)
 timestampTextFormatter = TimestampTextFormatter(config)
 updateManager = UpdateManager(config, logger)
 autostartManager: AutostartManager
