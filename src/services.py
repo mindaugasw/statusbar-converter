@@ -4,6 +4,8 @@ from src.Service.AutostartManager import AutostartManager
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
+from src.Service.ConversionManager import ConversionManager
+from src.Service.Converter.TimestampConverter import TimestampConverter
 from src.Service.Debug import Debug
 from src.Service.ExceptionHandler import ExceptionHandler
 from src.Service.FilesystemHelper import FilesystemHelper
@@ -40,6 +42,12 @@ autostartManager: AutostartManager
 clipboardManager: ClipboardManager
 statusbarApp: StatusbarApp
 
+converters = [
+    TimestampConverter(timestampTextFormatter, config, logger),
+]
+
+conversionManager = ConversionManager(converters, config, logger, debug)
+
 if osSwitch.isMacOS():
     from src.Service.AutostartManagerMacOS import AutostartManagerMacOS
     from src.Service.ClipboardManagerMacOs import ClipboardManagerMacOs
@@ -51,6 +59,7 @@ if osSwitch.isMacOS():
         osSwitch,
         timestampTextFormatter,
         clipboardManager,
+        conversionManager,
         config,
         configFileManager,
         autostartManager,
@@ -68,6 +77,7 @@ else:
         osSwitch,
         timestampTextFormatter,
         clipboardManager,
+        conversionManager,
         config,
         configFileManager,
         autostartManager,
