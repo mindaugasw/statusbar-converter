@@ -5,21 +5,21 @@ appLoopIteration = Event()
 clipboardChanged = Event()
 """Raised when clipboard content changes, but before parsing content.
 
-Content is not yet parsed, so it's not necessarily a valid timestamp.
-If content is too long and should not be parsed, event is called with None argument
+Content has whitespace trimmed.
+If content is too long and should not be parsed, event is called with None argument.
 
 @param content: New clipboard content
 @type content: str | None
 """
 
-timestampChanged = Event()
-"""Raised when clipboard content changes, after parsing it and finding a valid timestamp.
+converted = Event()
+"""Raised when one of the converters successfully converted newly changed clipboard content.
 
-@param content
-@type content: Timestamp
+@param result
+@type result: ConvertResult
 """
 
-timestampClear = Event()
+statusbarClear = Event()
 """Raised when statusbar clear was triggered."""
 
 updateCheckCompleted = Event()
