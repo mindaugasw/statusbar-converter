@@ -8,12 +8,15 @@ import webbrowser
 import gi
 
 import src.events as events
+from src.Constant.Logs import Logs
+from src.DTO.ConvertResult import ConvertResult
 from src.DTO.MenuItem import MenuItem
 from src.DTO.Timestamp import Timestamp
 from src.Service.AutostartManager import AutostartManager
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
+from src.Service.ConversionManager import ConversionManager
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
 from src.Service.OSSwitch import OSSwitch
@@ -66,6 +69,7 @@ class StatusbarAppLinux(StatusbarApp):
         osSwitch: OSSwitch,
         formatter: TimestampTextFormatter,
         clipboard: ClipboardManager,
+        conversionManager: ConversionManager,
         config: Configuration,
         configFileManager: ConfigFileManager,
         autostartManager: AutostartManager,
@@ -76,6 +80,7 @@ class StatusbarAppLinux(StatusbarApp):
             osSwitch,
             formatter,
             clipboard,
+            conversionManager,
             config,
             configFileManager,
             autostartManager,
@@ -87,8 +92,8 @@ class StatusbarAppLinux(StatusbarApp):
         self._iconPathFlash = FilesystemHelper.getAssetsDir() + '/icon_linux_flash.png'
 
     def createApp(self) -> None:
-        events.timestampChanged.append(self._onTimestampChange)
-        events.timestampClear.append(self._onTimestampClear)
+        events.converted.append(self._onConverted)
+        events.statusbarClear.append(self._onStatusbarClear)
 
         # https://lazka.github.io/pgi-docs/#AyatanaAppIndicator3-0.1/classes/Indicator.html#AyatanaAppIndicator3.Indicator.new
         self._app = AppIndicator3.Indicator.new(
@@ -237,31 +242,28 @@ class StatusbarAppLinux(StatusbarApp):
         Gtk.main_quit()
         sys.exit()
 
-    def _onTimestampChange(self, timestamp: Timestamp) -> None:
+    def _onConverted(self, result: ConvertResult) -> None:
         # Icon flash must be first action. Otherwise, it's visible how text is
         # updated first and icon later, and looks bad
         if self._flashIconOnChange:
             threading.Thread(target=self._flashIcon, daemon=True).start()
 
-        iconLabel = self._formatter.formatForIcon(timestamp)
-        self._logger.logDebug(f'Changing statusbar to: {iconLabel}')
-        self._app.set_label(iconLabel, '')
+        self._logger.logDebug(Logs.changingIconTextTo % result.iconText)
+        self._app.set_label(result.iconText, '')
+        self._menuItems[self._menuIdLastConversionOriginalText].nativeItem.set_label(result.originalText)
 
-        for key, template in self._menuTemplatesLastTimestamp.items():
-            lastTimestampLabel = self._formatter.format(timestamp, template)
-            self._menuItems[key].nativeItem.set_label(lastTimestampLabel)
+        # If menu items are changed too quickly, UI fails to actually update labels.
+        # So a small delay is needed
+        time.sleep(0.1)
 
-            # There was a bug where it seems like menu items were not being
-            # actually updated when changing them too fast. So adding this
-            # delay hoping it'll fix it
-            time.sleep(0.1)
+        self._menuItems[self._menuIdLastConversionConvertedText].nativeItem.set_label(result.convertedText)
 
     def _flashIcon(self) -> None:
         self._app.set_icon(FilesystemHelper.getAssetsDir() + '/icon_linux_flash.png')
         time.sleep(StatusbarAppLinux.ICON_FLASH_DURATION)
         self._app.set_icon(FilesystemHelper.getAssetsDir() + '/icon_linux.png')
 
-    def _onTimestampClear(self) -> None:
+    def _onStatusbarClear(self) -> None:
         self._app.set_label('', '')
 
     def _showDialog(self, message: str, buttons: list | dict) -> str:

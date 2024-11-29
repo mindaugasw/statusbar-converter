@@ -9,6 +9,7 @@ from src.Service.AutostartManager import AutostartManager
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
+from src.Service.ConversionManager import ConversionManager
 from src.Service.Logger import Logger
 from src.Service.OSSwitch import OSSwitch
 from src.Service.TimestampTextFormatter import TimestampTextFormatter
@@ -23,24 +24,30 @@ class StatusbarApp(ABC):
     _osSwitch: OSSwitch
     _formatter: TimestampTextFormatter
     _clipboard: ClipboardManager
+    _conversionManager: ConversionManager
     _config: Configuration
     _autostartManager: AutostartManager
     _updateManager: UpdateManager
     _logger: Logger
 
     _menuItems: dict[str, MenuItem]
-    _menuTemplatesLastTimestamp: dict[str, str]
+    _menuTemplateLastConversionOriginalText: str
+    _menuTemplateLastConversionConvertedText: str
     _menuTemplatesCurrentTimestamp: dict[str, str]
     _iconPathDefault: str
     _iconPathFlash: str
     _flashIconOnChange: bool
     _configFilePath: str
 
+    _menuIdLastConversionOriginalText = 'last_conversion_original_text'
+    _menuIdLastConversionConvertedText = 'last_conversion_converted_text'
+
     def __init__(
         self,
         osSwitch: OSSwitch,
         formatter: TimestampTextFormatter,
         clipboard: ClipboardManager,
+        conversionManager: ConversionManager,
         config: Configuration,
         configFileManager: ConfigFileManager,
         autostartManager: AutostartManager,
@@ -50,6 +57,7 @@ class StatusbarApp(ABC):
         self._osSwitch = osSwitch
         self._formatter = formatter
         self._clipboard = clipboard
+        self._conversionManager = conversionManager
         self._config = config
         self._autostartManager = autostartManager
         self._updateManager = updateManager
@@ -57,7 +65,8 @@ class StatusbarApp(ABC):
 
         self._configFilePath = configFileManager.configUserPath
 
-        self._menuTemplatesLastTimestamp = config.get(config.MENU_ITEMS_LAST_TIMESTAMP)
+        self._menuTemplateLastConversionOriginalText = config.get(config.MENU_ITEMS_LAST_CONVERSION_ORIGINAL_TEXT)
+        self._menuTemplateLastConversionConvertedText = config.get(config.MENU_ITEMS_LAST_CONVERSION_CONVERTED_TEXT)
         self._menuTemplatesCurrentTimestamp = config.get(config.MENU_ITEMS_CURRENT_TIMESTAMP)
         self._flashIconOnChange = config.get(config.FLASH_ICON_ON_CHANGE)
 
@@ -71,19 +80,25 @@ class StatusbarApp(ABC):
         lastTimestamp = Timestamp()
         items = {}
 
-        if len(self._menuTemplatesLastTimestamp) != 0:
-            items.update({'last_timestamp_label': MenuItem('Last timestamp - click to copy', True)})
+        # Last conversion
+        items.update({'last_conversion_label': MenuItem('Last conversion - click to copy', True)})
+        items.update({
+            self._menuIdLastConversionOriginalText:
+                MenuItem(
+                    self._formatter.format(lastTimestamp, self._menuTemplateLastConversionOriginalText),
+                    callback=self._onMenuClickLastTimestamp,
+                ),
+        })
+        items.update({
+            self._menuIdLastConversionConvertedText:
+                MenuItem(
+                    self._formatter.format(lastTimestamp, self._menuTemplateLastConversionConvertedText),
+                    callback=self._onMenuClickLastTimestamp,
+                ),
+        })
+        items.update({'last_conversion_separator': MenuItem(isSeparator=True)})
 
-            for key, template in self._menuTemplatesLastTimestamp.items():
-                items.update({
-                    key: MenuItem(
-                        self._formatter.format(lastTimestamp, template),
-                        callback=self._onMenuClickLastTimestamp,
-                    )
-                })
-
-            items.update({'separator_last_timestamp': MenuItem(isSeparator=True)})
-
+        # Current timestamp
         if len(self._menuTemplatesCurrentTimestamp) != 0:
             items.update({'current_timestamp_label': MenuItem('Current timestamp - click to copy', True)})
 
@@ -92,8 +107,9 @@ class StatusbarApp(ABC):
                     key: MenuItem(key, callback=self._onMenuClickCurrentTimestamp)
                 })
 
-            items.update({'separator_current_timestamp': MenuItem(isSeparator=True)})
+            items.update({'current_timestamp_separator': MenuItem(isSeparator=True)})
 
+        # Other controls
         items.update({
             'clear_timestamp': MenuItem('Clear timestamp', callback=self._onMenuClickClearTimestamp),
             'edit_config': MenuItem('Edit configuration', callback=self._onMenuClickEditConfiguration),
@@ -140,7 +156,7 @@ class StatusbarApp(ABC):
         pass
 
     def _onMenuClickClearTimestamp(self, menuItem) -> None:
-        events.timestampClear()
+        self._conversionManager.dispatchClear('manual, menu click')
 
     @abstractmethod
     def _onMenuClickEditConfiguration(self, menuItem) -> None:

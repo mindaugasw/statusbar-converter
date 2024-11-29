@@ -6,12 +6,15 @@ import time
 import rumps
 
 import src.events as events
+from src.Constant.Logs import Logs
+from src.DTO.ConvertResult import ConvertResult
 from src.DTO.MenuItem import MenuItem
 from src.DTO.Timestamp import Timestamp
 from src.Service.AutostartManager import AutostartManager
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
+from src.Service.ConversionManager import ConversionManager
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
 from src.Service.OSSwitch import OSSwitch
@@ -28,6 +31,7 @@ class StatusbarAppMacOs(StatusbarApp):
         osSwitch: OSSwitch,
         formatter: TimestampTextFormatter,
         clipboard: ClipboardManager,
+        conversionManager: ConversionManager,
         config: Configuration,
         configFileManager: ConfigFileManager,
         autostartManager: AutostartManager,
@@ -38,6 +42,7 @@ class StatusbarAppMacOs(StatusbarApp):
             osSwitch,
             formatter,
             clipboard,
+            conversionManager,
             config,
             configFileManager,
             autostartManager,
@@ -49,8 +54,8 @@ class StatusbarAppMacOs(StatusbarApp):
         self._iconPathFlash = FilesystemHelper.getAssetsDir() + '/icon_macos_flash.png'
 
     def createApp(self) -> None:
-        events.timestampChanged.append(self._onTimestampChange)
-        events.timestampClear.append(self._onTimestampClear)
+        events.converted.append(self._onConverted)
+        events.statusbarClear.append(self._onStatusbarClear)
 
         menu = self._createOsNativeMenu(self._createCommonMenu())
 
@@ -175,23 +180,22 @@ class StatusbarAppMacOs(StatusbarApp):
             ['Ok'],
         )
 
-    def _onTimestampChange(self, timestamp: Timestamp) -> None:
+    def _onConverted(self, result: ConvertResult) -> None:
         if self._flashIconOnChange:
             threading.Thread(target=self._flashIcon, daemon=True).start()
 
-        title = self._formatter.formatForIcon(timestamp)
-        self._logger.logDebug(f'Changing statusbar to: {title}')
-        self._app.title = title
+        self._logger.logDebug(Logs.changingIconTextTo % result.iconText)
+        self._app.title = result.iconText
 
-        for key, template in self._menuTemplatesLastTimestamp.items():
-            self._menuItems[key].nativeItem.title = self._formatter.format(timestamp, template)
+        self._menuItems[self._menuIdLastConversionOriginalText].nativeItem.title = result.originalText
+        self._menuItems[self._menuIdLastConversionConvertedText].nativeItem.title = result.convertedText
 
     def _flashIcon(self) -> None:
         self._app.icon = self._iconPathFlash
         time.sleep(StatusbarAppMacOs.ICON_FLASH_DURATION)
         self._app.icon = self._iconPathDefault
 
-    def _onTimestampClear(self) -> None:
+    def _onStatusbarClear(self) -> None:
         self._app.title = None
 
     def _showDialog(self, message: str, buttons: list | dict) -> str:
