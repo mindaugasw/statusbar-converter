@@ -1,6 +1,7 @@
 import yaml
-from src.Service.FilesystemHelper import FilesystemHelper
+
 from src.Service.ConfigFileManager import ConfigFileManager
+from src.Service.FilesystemHelper import FilesystemHelper
 
 
 class Configuration:
@@ -10,7 +11,8 @@ class Configuration:
     FLASH_ICON_ON_CHANGE = ['flash_icon_on_change']
     DEBUG = ['debug']
     FORMAT_ICON = ['converters', 'timestamp', 'icon_text_format']
-    MENU_ITEMS_LAST_TIMESTAMP = ['converters', 'timestamp', 'menu_items_last_timestamp']
+    MENU_ITEMS_LAST_CONVERSION_ORIGINAL_TEXT = ['converters', 'timestamp', 'menu_items_last_conversion', 'original_text']
+    MENU_ITEMS_LAST_CONVERSION_CONVERTED_TEXT = ['converters', 'timestamp', 'menu_items_last_conversion', 'converted_text']
     MENU_ITEMS_CURRENT_TIMESTAMP = ['converters', 'timestamp', 'menu_items_current_timestamp']
 
     # Data keys
@@ -57,7 +59,7 @@ class Configuration:
         self._setValue(key, value, self._stateData)
 
         stateContent = yaml.dump(self._stateData)
-        stateContent = '# Internal app state. This file should not be edited manually.\n' + stateContent
+        stateContent = '# Internal app state. This file should not be edited manually.\n\n' + stateContent
 
         self._configFileManager.writeStateData(stateContent)
 

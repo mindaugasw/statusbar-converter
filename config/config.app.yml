@@ -36,31 +36,31 @@ converters:
         icon_text_format:
             # Up to 60 s, e.g. "1619295908 - 59 s ago"
             60: "{ts_ms_sep} - {r_int}"
-            # 1 min - 10 min, e.g. "1619295908 - 5 min ago"
+            # Up to 10 min, e.g. "1619295908 - 5 min ago"
             600: "{ts_ms_sep} - {r_int}"
-            # 10 min - 1 hour, e.g. "1619295908 - 29 min ago (15:10)"
+            # Up to 1 hour, e.g. "1619295908 - 29 min ago (15:10)"
             3600: "{ts_ms_sep} - {r_float} (%H:%M)"
-            # 1 hour - 1 day, e.g. "1619295908 - 5.5 h ago (12:00)"
+            # TODO add more templates. E.g. Show float hours (5.5) only up to like 6 hours. Afterwards show int number
+            # Up to 1 day, e.g. "1619295908 - 5.5 h ago (12:00)"
             86400: "{ts_ms_sep} - {r_float} (%H:%M)"
-            # 1 day - 1 month, e.g. "1619295908 - 5.5 days ago (08-05 12:00)"
+            # Up to 1 month, e.g. "1619295908 - 5.5 days ago (08-05 12:00)"
             2678400: "{ts_ms_sep} - {r_float} (%m-%d  %H:%M)"
-            # 1 month - 1 year, e.g. "1619295908 - 9.2 months ago"
+            # Up to 1 year, e.g. "1619295908 - 9.2 months ago"
             31536000: "{ts_ms_sep} - {r_float} (%m-%d  %H:%M)"
-            # 1 year - 75 years, e.g. "1619295908 - 5.8 years ago ('15)"
+            # Up to 75 years, e.g. "1619295908 - 5.8 years ago ('15)"
             2365200000: "{ts_ms_sep} - {r_float} ('%y)"
             # Default if no other format matches. Must be last element in the list
             default: "{ts_ms_sep} - {r_float}"
 
-        # Menu items to create under "Last timestamp" category.
-        # Each item can be clicked to copy its value.
+        # Menu items to create under "Last conversion" category. Text copied on click.
         # Supports the same formats as in "icon_text_format".
-        menu_items_last_timestamp:
-            Last timestamp: "{ts_ms}"
-            Last datetime: "%Y-%m-%d %H:%M:%S"
+        menu_items_last_conversion:
+            original_text: "{ts_ms}"
+            converted_text: "%Y-%m-%d %H:%M:%S"
 
         # Menu items to create under "Current timestamp" category.
-        # Each item can be clicked to copy its value.
         # Supports the same formats as in "icon_text_format".
         menu_items_current_timestamp:
+            # Label text: "format to copy on click"
             Current timestamp: "{ts}"
             Current datetime: "%Y-%m-%d %H:%M:%S"
