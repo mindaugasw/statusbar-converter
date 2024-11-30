@@ -2,7 +2,7 @@
 
 ![MAC OS](https://img.shields.io/badge/macOS-000000?style=flat&logo=apple&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-e2643b?style=flat&logo=linux&logoColor=white)
-[![GitHub release](https://img.shields.io/github/v/release/mindaugasw/statusbar-converter.svg)](https://github.com/mindaugasw/statusbar-converter/releases/latest)
+[![GitHub release](https://img.shields.io/github/v/release/mindaugasw/statusbar-converter.svg)](https://github.com/mindaugasw/statusbar-converter/releases)
 
 A small tool to easily convert timestamp to human-readable time. Just copy the
 timestamp and it will automatically show as time in the statusbar: 
