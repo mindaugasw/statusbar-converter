@@ -7,7 +7,7 @@ from src.Service.Logger import Logger
 from src.Service.StatusbarApp import StatusbarApp
 
 
-def main():
+def main() -> None:
     services.logger.logRaw(
         f'\n{StatusbarApp.APP_NAME} v{services.config.getAppVersion()}\n'
         f'Platform: {platform.platform()}\n'

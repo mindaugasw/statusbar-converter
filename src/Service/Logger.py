@@ -41,7 +41,7 @@ class Logger:
         if self._isDebugEnabled:
             self.log(content)
 
-    def setDebugEnabled(self, enabled: bool):
+    def setDebugEnabled(self, enabled: bool) -> None:
         # Separate setter needed (instead of injecting Debug class) to allow using
         # Logger before Debug (ant its many dependencies) are fully initialized
         self._isDebugEnabled = enabled

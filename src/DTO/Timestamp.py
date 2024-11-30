@@ -15,7 +15,7 @@ class Timestamp:
     def __str__(self) -> str:
         return self.toString(True, '.')
 
-    def toString(self, includeMs=True, msSeparator='.'):
+    def toString(self, includeMs=True, msSeparator='.') -> str:
         if self.milliseconds is None or not includeMs:
             return str(self.seconds)
 
