@@ -40,7 +40,7 @@ updateManager = UpdateManager(config, logger)
 autostartManager: AutostartManager
 clipboardManager: ClipboardManager
 statusbarApp: StatusbarApp
-settings = Settings(logger)
+settings = Settings(osSwitch, logger)
 
 converters = [
     TimestampConverter(timestampTextFormatter, config, logger),
