@@ -12,12 +12,12 @@ from src.Service.Configuration import Configuration
 from src.Service.ConversionManager import ConversionManager
 from src.Service.Logger import Logger
 from src.Service.OSSwitch import OSSwitch
+from src.Service.Settings import Settings
 from src.Service.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.UpdateManager import UpdateManager
 
 
 class StatusbarApp(ABC):
-    APP_NAME = 'Statusbar Converter'
     WEBSITE = 'https://github.com/mindaugasw/statusbar-converter'
     ICON_FLASH_DURATION = 0.35
 

@@ -2,13 +2,13 @@ import re
 
 import rumps
 
+from src.Constant.AppConstant import AppConstant
 from src.Service.FilesystemHelper import FilesystemHelper
-from src.Service.StatusbarApp import StatusbarApp
 
 
 class FilesystemHelperMacOs(FilesystemHelper):
     def getUserDataDir(self) -> str:
-        return rumps.application_support(StatusbarApp.APP_NAME)
+        return rumps.application_support(AppConstant.appName)
 
     @staticmethod
     def getAppPath() -> str | None:

@@ -6,6 +6,7 @@ import time
 import rumps
 
 import src.events as events
+from src.Constant.AppConstant import AppConstant
 from src.Constant.Logs import Logs
 from src.DTO.ConvertResult import ConvertResult
 from src.DTO.MenuItem import MenuItem
@@ -18,6 +19,7 @@ from src.Service.ConversionManager import ConversionManager
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
 from src.Service.OSSwitch import OSSwitch
+from src.Service.Settings import Settings
 from src.Service.StatusbarApp import StatusbarApp
 from src.Service.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.UpdateManager import UpdateManager
@@ -60,7 +62,7 @@ class StatusbarAppMacOs(StatusbarApp):
         menu = self._createOsNativeMenu(self._createCommonMenu())
 
         self._app = rumps.App(
-            StatusbarApp.APP_NAME,
+            AppConstant.appName,
             None,
             self._iconPathDefault,
             True,
@@ -206,7 +208,7 @@ class StatusbarAppMacOs(StatusbarApp):
         dialogCommand =\
             f'osascript -e \'Tell application "System Events" to display dialog ' \
             f'"{message}" ' \
-            f'with title "{StatusbarAppMacOs.APP_NAME}" ' \
+            f'with title "{AppConstant.appName}" ' \
             f'buttons {{"{buttonsText}"}} ' \
             f'default button "{buttons[0]}" ' \
             f'with icon POSIX file "{self._iconPathDefault}" ' \

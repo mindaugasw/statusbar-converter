@@ -3,13 +3,14 @@ import sys
 import time
 
 import src.services as services
+from src.Constant.AppConstant import AppConstant
 from src.Service.Logger import Logger
 from src.Service.StatusbarApp import StatusbarApp
 
 
 def main() -> None:
     services.logger.logRaw(
-        f'\n{StatusbarApp.APP_NAME} v{services.config.getAppVersion()}\n'
+        f'\n{AppConstant.appName} v{services.config.getAppVersion()}\n'
         f'Platform: {platform.platform()}\n'
         f'Detected OS: {services.osSwitch.os}\n'
         f'Python: {sys.version}\n'
@@ -24,7 +25,6 @@ def main() -> None:
         services.logger.log(f'[Start] Done sleeping, starting the app')
 
     services.logger.setDebugEnabled(services.debug.isDebugEnabled())
-    services.autostartManager.setAppName(StatusbarApp.APP_NAME)
     services.autostartManager.firstTimeSetup()
     services.clipboardManager.initializeClipboardWatch()
     services.appLoop.startLoop()

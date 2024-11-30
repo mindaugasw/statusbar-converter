@@ -8,6 +8,7 @@ import webbrowser
 import gi
 
 import src.events as events
+from src.Constant.AppConstant import AppConstant
 from src.Constant.Logs import Logs
 from src.DTO.ConvertResult import ConvertResult
 from src.DTO.MenuItem import MenuItem
@@ -20,6 +21,7 @@ from src.Service.ConversionManager import ConversionManager
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
 from src.Service.OSSwitch import OSSwitch
+from src.Service.Settings import Settings
 from src.Service.StatusbarApp import StatusbarApp
 from src.Service.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.UpdateManager import UpdateManager
@@ -97,7 +99,7 @@ class StatusbarAppLinux(StatusbarApp):
 
         # https://lazka.github.io/pgi-docs/#AyatanaAppIndicator3-0.1/classes/Indicator.html#AyatanaAppIndicator3.Indicator.new
         self._app = AppIndicator3.Indicator.new(
-            StatusbarAppLinux.APP_NAME,
+            AppConstant.appName,
             # Icons can be also used from `/usr/share/icons`, e.g. 'clock-app'
             FilesystemHelper.getAssetsDir() + '/icon_linux.png',
             AppIndicator3.IndicatorCategory.APPLICATION_STATUS,
@@ -273,7 +275,7 @@ class StatusbarAppLinux(StatusbarApp):
         dialog = Gtk.MessageDialog(
             message_type=Gtk.MessageType.OTHER,
             buttons=Gtk.ButtonsType.NONE,
-            text=StatusbarAppLinux.APP_NAME,
+            text=AppConstant.appName,
         )
 
         dialog.format_secondary_markup(message)

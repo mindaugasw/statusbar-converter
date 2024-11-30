@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+from src.Constant.AppConstant import AppConstant
 from src.Service.Configuration import Configuration
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
@@ -18,6 +19,7 @@ class AutostartManager(ABC):
         self._filesystemHelper = filesystemHelper
         self._logger = logger
 
+        self._appName = AppConstant.appName
         self._appPath = filesystemHelper.getAppPath()
 
     def firstTimeSetup(self) -> None:
@@ -50,7 +52,3 @@ class AutostartManager(ABC):
     @abstractmethod
     def isEnabledAutostart(self) -> bool:
         pass
-
-    def setAppName(self, appName) -> None:
-        # Separate setter needed (instead of accessing directly from StatusbarApp class) to avoid circular import error
-        self._appName = appName
