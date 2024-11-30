@@ -4,6 +4,7 @@ class Logs:
     catConvert = '[Convert] '
     catConverter = '[Convert.'
     catMenuApp = '[Menu app] '
-    catModal = '[Modal.'
+    catModal = '[Modal] '
+    catModalSub = '[Modal.'
 
     changingIconTextTo = catMenuApp + 'Changing icon text to: %s'

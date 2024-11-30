@@ -172,7 +172,7 @@ class StatusbarAppLinux(StatusbarApp):
             'skip': 'Skip this version',
             'later': 'Remind me later',
         }
-        downloadPage = f'{StatusbarAppLinux.WEBSITE}/releases/tag/{version}'
+        downloadPage = f'{AppConstant.website}/releases/tag/{version}'
 
         result = self._showDialog(
             f'New app update found: {version}.\n'
@@ -214,7 +214,7 @@ class StatusbarAppLinux(StatusbarApp):
             f'<tt>{self._configFilePath}</tt>\n\n'
             f'After editing, the application must be restarted.\n\n'
             f'All supported configuration can be found at:\n'
-            f'<a href="{StatusbarAppLinux.WEBSITE}">{StatusbarAppLinux.WEBSITE}</a>\n\n'
+            f'<a href="{AppConstant.website}">{AppConstant.website}</a>\n\n'
             f'Open configuration file in default text editor?',
             buttons,
         )
@@ -235,12 +235,13 @@ class StatusbarAppLinux(StatusbarApp):
             menuItem.set_label(f'{"" if checked else self.CHECK}Run at login')
 
     def _onMenuClickOpenWebsite(self, menuItem: Gtk.MenuItem) -> None:
-        webbrowser.open(StatusbarAppLinux.WEBSITE)
+        webbrowser.open(AppConstant.website)
 
-    def _onMenuClickAbout(self, menuItem: Gtk.MenuItem) -> None:
+    # TODO remove
+    def _onMenuClickAboutOld(self, menuItem: Gtk.MenuItem) -> None:
         self._showDialog(
             f'Version: {self._config.getAppVersion()}\n\n'
-            f'App website: <a href="{StatusbarAppLinux.WEBSITE}">{StatusbarAppLinux.WEBSITE}</a>\n\n'
+            f'App website: <a href="{AppConstant.website}">{AppConstant.website}</a>\n\n'
             f'App icon made by <a href="https://www.flaticon.com/free-icons/convert">iconsax at flaticon.com</a>',
             ['Ok'],
         )

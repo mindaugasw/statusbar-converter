@@ -130,7 +130,7 @@ class StatusbarAppMacOs(StatusbarApp):
         self._logger.log(f'[Update check] User action from dialog: {result}')
 
         if result == buttons['download']:
-            subprocess.Popen(['open', f'{StatusbarAppMacOs.WEBSITE}/releases/tag/{version}'])
+            subprocess.Popen(['open', f'{AppConstant.website}/releases/tag/{version}'])
         elif result == buttons['skip']:
             self._config.setState(Configuration.DATA_UPDATE_SKIP_VERSION, version)
         elif result == buttons['later']:
@@ -158,7 +158,7 @@ class StatusbarAppMacOs(StatusbarApp):
             f'{self._configFilePath}\\n\\n'
             f'After editing, the application must be restarted.\\n\\n'
             f'All supported configuration can be found at:\\n'
-            f'{StatusbarAppMacOs.WEBSITE}/blob/master/config.app.yml\\n\\n'
+            f'{AppConstant.website}/blob/master/config.app.yml\\n\\n'
             f'Open configuration file in default text editor?',
             buttons,
         )
@@ -177,12 +177,13 @@ class StatusbarAppMacOs(StatusbarApp):
             menuItem.state = not menuItem.state
 
     def _onMenuClickOpenWebsite(self, menuItem: rumps.MenuItem) -> None:
-        subprocess.Popen(['open', StatusbarAppMacOs.WEBSITE])
+        subprocess.Popen(['open', AppConstant.website])
 
-    def _onMenuClickAbout(self, menuItem: rumps.MenuItem) -> None:
+    # TODO remove
+    def _onMenuClickAboutOld(self, menuItem: rumps.MenuItem) -> None:
         self._showDialog(
             f'Version: {self._config.getAppVersion()}\\n\\n'
-            f'App website: {StatusbarAppMacOs.WEBSITE}\\n\\n'
+            f'App website: {AppConstant.website}\\n\\n'
             f'App icon made by iconsax at flaticon.com',
             ['Ok'],
         )

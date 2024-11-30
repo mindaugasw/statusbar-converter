@@ -14,6 +14,8 @@ class ModalWindowManager:
     _osSwitch: OSSwitch
     _logger: Logger
 
+    _isModalOpen = False
+
     def __init__(
         self,
         builders: dict[str, ModalWindowBuilderInterface],
@@ -28,6 +30,12 @@ class ModalWindowManager:
         if _id not in self._builders:
             raise Exception('Tried opening modal by non-existing id: ' + _id)
 
+        if self._isModalOpen:
+            self._logger.logDebug(Logs.catModal + 'Cannot open 2 modals at once, tried opening id: ' + _id)
+
+            return
+
+        self._isModalOpen = True
         self._showWindow(self._builders[_id])
 
     def _showWindow(self, builder: ModalWindowBuilderInterface) -> None:
@@ -45,23 +53,40 @@ class ModalWindowManager:
         self._buildWindow(builder)
 
     def _buildWindow(self, builder: ModalWindowBuilderInterface) -> None:
+        """
+        See docs at https://dearpygui.readthedocs.io
+        """
+
         parameters = builder.getParameters()
-        logCategory = Logs.catModal + parameters.logCategory + '] '
+        logCategory = Logs.catModalSub + parameters.logCategory + '] '
         self._logger.logDebug(logCategory + 'Initialize')
 
         dpg.create_context()
+        # Viewport is OS-drawn window
         dpg.create_viewport(
             title=AppConstant.appName + ' - ' + parameters.title,
             width=parameters.width,
             height=parameters.height,
+            min_width=parameters.width,
+            max_width=parameters.width,
+            min_height=parameters.height,
+            max_height=parameters.height,
+            resizable=False,
         )
 
+        # Build dpg-window - one that appears inside the viewport
         builder.build()
 
         dpg.setup_dearpygui()
         dpg.show_viewport()
+
+        if parameters.primaryWindowTag:
+            dpg.set_primary_window(parameters.primaryWindowTag, True)
+
         self._logger.logDebug(logCategory + 'Start')
         dpg.start_dearpygui()
         self._logger.logDebug(logCategory + 'Closed')
         dpg.destroy_context()
         self._logger.logDebug(logCategory + 'Destroyed')
+
+        self._isModalOpen = False

@@ -1,3 +1,4 @@
+import dearpygui.dearpygui as dpg
 import dearpygui.demo as demo
 
 from src.DTO.ModalWindowParameters import ModalWindowParameters
@@ -11,7 +12,9 @@ class DemoBuilder(ModalWindowBuilderInterface):
             'Demo',
             800,
             800,
+            None,
         )
 
     def build(self) -> None:
         demo.show_demo()
+        dpg.set_item_pos('__demo_id', [0, 0])

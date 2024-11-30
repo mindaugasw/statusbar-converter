@@ -11,6 +11,7 @@ from src.Service.Debug import Debug
 from src.Service.ExceptionHandler import ExceptionHandler
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
+from src.Service.ModalWindow.AboutBuilder import AboutBuilder
 from src.Service.ModalWindow.DemoBuilder import DemoBuilder
 from src.Service.ModalWindow.ModalWindowBuilderInterface import ModalWindowBuilderInterface
 from src.Service.ModalWindow.ModalWindowManager import ModalWindowManager
@@ -47,6 +48,7 @@ statusbarApp: StatusbarApp
 guiBuilders: dict[str, ModalWindowBuilderInterface] = {
     ModalId.demo: DemoBuilder(),
     ModalId.settings: SettingsBuilder(),
+    ModalId.about: AboutBuilder(config),
 }
 modalWindowManager = ModalWindowManager(guiBuilders, osSwitch, logger)
 

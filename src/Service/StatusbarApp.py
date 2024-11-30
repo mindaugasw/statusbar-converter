@@ -20,7 +20,6 @@ from src.Service.UpdateManager import UpdateManager
 
 
 class StatusbarApp(ABC):
-    WEBSITE = 'https://github.com/mindaugasw/statusbar-converter'
     ICON_FLASH_DURATION = 0.35
 
     _osSwitch: OSSwitch
@@ -89,7 +88,7 @@ class StatusbarApp(ABC):
         items = {}
 
         # Last conversion
-        items.update({'last_conversion_label': MenuItem('Last conversion - click to copy', True)})
+        items.update({'label_last_conversion': MenuItem('Last conversion - click to copy', True)})
         items.update({
             self._menuIdLastConversionOriginalText:
                 MenuItem(
@@ -104,18 +103,18 @@ class StatusbarApp(ABC):
                     callback=self._onMenuClickLastTimestamp,
                 ),
         })
-        items.update({'last_conversion_separator': MenuItem(isSeparator=True)})
+        items.update({'separator_last_conversion': MenuItem(isSeparator=True)})
 
         # Current timestamp
         if len(self._menuTemplatesCurrentTimestamp) != 0:
-            items.update({'current_timestamp_label': MenuItem('Current timestamp - click to copy', True)})
+            items.update({'label_current_timestamp': MenuItem('Current timestamp - click to copy', True)})
 
             for key, template in self._menuTemplatesCurrentTimestamp.items():
                 items.update({
                     key: MenuItem(key, callback=self._onMenuClickCurrentTimestamp)
                 })
 
-            items.update({'current_timestamp_separator': MenuItem(isSeparator=True)})
+            items.update({'separator_current_timestamp': MenuItem(isSeparator=True)})
 
         # Other controls
         items.update({
@@ -128,14 +127,8 @@ class StatusbarApp(ABC):
             ),
             'check_updates': MenuItem('Check for updates', callback=self._onMenuClickCheckUpdates),
             'settings': MenuItem('Settings', callback=self._onMenuClickSettings),
-        })
-
-        if self._debug.isDebugEnabled():
-            items.update({'gui_demo': MenuItem('Open GUI demo', callback=self._onMenuClickOpenGUIDemo)})
-
-        items.update({
             'open_website': MenuItem('Open website', callback=self._onMenuClickOpenWebsite),
-            'about': MenuItem('About', callback=self._onMenuClickAbout)
+            'about': MenuItem('About', callback=self._onMenuClickAbout),
         })
 
         if self._osSwitch.isMacOS():
@@ -148,6 +141,15 @@ class StatusbarApp(ABC):
             # On macOS Quit button is automatically created by rumps app
             items.update({
                 'quit': MenuItem('Quit', callback=self._onMenuClickQuit),
+            })
+
+        if self._debug.isDebugEnabled():
+            items.update({
+                'separator_debug': MenuItem(isSeparator=True),
+                'label_debug': MenuItem('Debug tools', isDisabled=True),
+                'gui_demo': MenuItem('Open GUI demo', callback=self._onMenuClickOpenGUIDemo),
+                # TODO remove
+                'about_old': MenuItem('About [Old]', callback=self._onMenuClickAboutOld),
             })
 
         self._menuItems = items
@@ -194,8 +196,12 @@ class StatusbarApp(ABC):
     def _onMenuClickOpenWebsite(self, menuItem) -> None:
         pass
 
-    @abstractmethod
     def _onMenuClickAbout(self, menuItem) -> None:
+        self._modalWindowManager.openModal(ModalId.about)
+
+    # TODO remove
+    @abstractmethod
+    def _onMenuClickAboutOld(self, menuItem) -> None:
         pass
 
     def _onMenuClickRestart(self, menuItem) -> None:

@@ -5,14 +5,17 @@ from src.Service.ModalWindow.ModalWindowBuilderInterface import ModalWindowBuild
 
 
 class SettingsBuilder(ModalWindowBuilderInterface):
+    _primaryTag = 'primary'
+
     def getParameters(self) -> ModalWindowParameters:
         return ModalWindowParameters(
             'Settings',
             'Settings',
             600,
             300,
+            self._primaryTag,
         )
 
     def build(self) -> None:
-        with dpg.window(label='Window title'):
+        with dpg.window(label='Window title', tag=self._primaryTag):
             dpg.add_text('Hello world')
