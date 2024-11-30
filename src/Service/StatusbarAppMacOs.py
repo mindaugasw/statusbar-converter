@@ -19,8 +19,8 @@ from src.Service.ConversionManager import ConversionManager
 from src.Service.Debug import Debug
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
+from src.Service.ModalWindow.ModalWindowManager import ModalWindowManager
 from src.Service.OSSwitch import OSSwitch
-from src.Service.Settings import Settings
 from src.Service.StatusbarApp import StatusbarApp
 from src.Service.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.UpdateManager import UpdateManager
@@ -39,7 +39,7 @@ class StatusbarAppMacOs(StatusbarApp):
         configFileManager: ConfigFileManager,
         autostartManager: AutostartManager,
         updateManager: UpdateManager,
-        settings: Settings,
+        modalWindowManager: ModalWindowManager,
         logger: Logger,
         debug: Debug,
     ):
@@ -52,7 +52,7 @@ class StatusbarAppMacOs(StatusbarApp):
             configFileManager,
             autostartManager,
             updateManager,
-            settings,
+            modalWindowManager,
             logger,
             debug,
         )

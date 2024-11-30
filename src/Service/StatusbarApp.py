@@ -3,6 +3,7 @@ import sys
 from abc import ABC, abstractmethod
 
 import src.events as events
+from src.Constant.ModalId import ModalId
 from src.DTO.MenuItem import MenuItem
 from src.DTO.Timestamp import Timestamp
 from src.Service.AutostartManager import AutostartManager
@@ -12,8 +13,8 @@ from src.Service.Configuration import Configuration
 from src.Service.ConversionManager import ConversionManager
 from src.Service.Debug import Debug
 from src.Service.Logger import Logger
+from src.Service.ModalWindow import ModalWindowManager
 from src.Service.OSSwitch import OSSwitch
-from src.Service.Settings import Settings
 from src.Service.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.UpdateManager import UpdateManager
 
@@ -29,7 +30,7 @@ class StatusbarApp(ABC):
     _config: Configuration
     _autostartManager: AutostartManager
     _updateManager: UpdateManager
-    _settings: Settings
+    _modalWindowManager: ModalWindowManager
     _logger: Logger
     _debug: Debug
 
@@ -55,7 +56,7 @@ class StatusbarApp(ABC):
         configFileManager: ConfigFileManager,
         autostartManager: AutostartManager,
         updateManager: UpdateManager,
-        settings: Settings,
+        modalWindowManager: ModalWindowManager,
         logger: Logger,
         debug: Debug,
     ):
@@ -66,7 +67,7 @@ class StatusbarApp(ABC):
         self._config = config
         self._autostartManager = autostartManager
         self._updateManager = updateManager
-        self._settings = settings
+        self._modalWindowManager = modalWindowManager
         self._logger = logger
         self._debug = debug
 
@@ -126,7 +127,7 @@ class StatusbarApp(ABC):
                 callback=self._onMenuClickRunAtLogin,
             ),
             'check_updates': MenuItem('Check for updates', callback=self._onMenuClickCheckUpdates),
-            'settings': MenuItem('Settings', callback=self._onMenuClickOpenSettings),
+            'settings': MenuItem('Settings', callback=self._onMenuClickSettings),
         })
 
         if self._debug.isDebugEnabled():
@@ -183,11 +184,11 @@ class StatusbarApp(ABC):
     def _onMenuClickCheckUpdates(self, menuItem) -> None:
         self._updateManager.checkForUpdatesAsync(True)
 
-    def _onMenuClickOpenSettings(self, menuItem) -> None:
-        self._settings.openSettings()
+    def _onMenuClickSettings(self, menuItem) -> None:
+        self._modalWindowManager.openModal(ModalId.settings)
 
     def _onMenuClickOpenGUIDemo(self, menuItem) -> None:
-        self._settings.openGUIDemo()
+        self._modalWindowManager.openModal(ModalId.demo)
 
     @abstractmethod
     def _onMenuClickOpenWebsite(self, menuItem) -> None:

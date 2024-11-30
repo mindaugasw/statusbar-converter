@@ -1,3 +1,4 @@
+from src.Constant.ModalId import ModalId
 from src.Service.AppLoop import AppLoop
 from src.Service.ArgumentParser import ArgumentParser
 from src.Service.AutostartManager import AutostartManager
@@ -10,8 +11,11 @@ from src.Service.Debug import Debug
 from src.Service.ExceptionHandler import ExceptionHandler
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
+from src.Service.ModalWindow.DemoBuilder import DemoBuilder
+from src.Service.ModalWindow.ModalWindowBuilderInterface import ModalWindowBuilderInterface
+from src.Service.ModalWindow.ModalWindowManager import ModalWindowManager
+from src.Service.ModalWindow.SettingsBuilder import SettingsBuilder
 from src.Service.OSSwitch import OSSwitch
-from src.Service.Settings import Settings
 from src.Service.StatusbarApp import StatusbarApp
 from src.Service.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.UpdateManager import UpdateManager
@@ -40,7 +44,11 @@ updateManager = UpdateManager(config, logger)
 autostartManager: AutostartManager
 clipboardManager: ClipboardManager
 statusbarApp: StatusbarApp
-settings = Settings(osSwitch, logger)
+guiBuilders: dict[str, ModalWindowBuilderInterface] = {
+    ModalId.demo: DemoBuilder(),
+    ModalId.settings: SettingsBuilder(),
+}
+modalWindowManager = ModalWindowManager(guiBuilders, osSwitch, logger)
 
 converters = [
     TimestampConverter(timestampTextFormatter, config, logger),
@@ -64,7 +72,7 @@ if osSwitch.isMacOS():
         configFileManager,
         autostartManager,
         updateManager,
-        settings,
+        modalWindowManager,
         logger,
         debug,
     )
@@ -84,7 +92,7 @@ else:
         configFileManager,
         autostartManager,
         updateManager,
-        settings,
+        modalWindowManager,
         logger,
         debug,
     )
