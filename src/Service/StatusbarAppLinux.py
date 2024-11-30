@@ -18,6 +18,7 @@ from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
 from src.Service.ConversionManager import ConversionManager
+from src.Service.Debug import Debug
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
 from src.Service.OSSwitch import OSSwitch
@@ -76,7 +77,9 @@ class StatusbarAppLinux(StatusbarApp):
         configFileManager: ConfigFileManager,
         autostartManager: AutostartManager,
         updateManager: UpdateManager,
+        settings: Settings,
         logger: Logger,
+        debug: Debug,
     ):
         super().__init__(
             osSwitch,
@@ -87,7 +90,9 @@ class StatusbarAppLinux(StatusbarApp):
             configFileManager,
             autostartManager,
             updateManager,
+            settings,
             logger,
+            debug,
         )
 
         self._iconPathDefault = FilesystemHelper.getAssetsDir() + '/icon_linux.png'

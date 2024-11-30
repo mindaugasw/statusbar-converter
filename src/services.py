@@ -11,6 +11,7 @@ from src.Service.ExceptionHandler import ExceptionHandler
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
 from src.Service.OSSwitch import OSSwitch
+from src.Service.Settings import Settings
 from src.Service.StatusbarApp import StatusbarApp
 from src.Service.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.UpdateManager import UpdateManager
@@ -39,6 +40,7 @@ updateManager = UpdateManager(config, logger)
 autostartManager: AutostartManager
 clipboardManager: ClipboardManager
 statusbarApp: StatusbarApp
+settings = Settings(logger)
 
 converters = [
     TimestampConverter(timestampTextFormatter, config, logger),
@@ -62,7 +64,9 @@ if osSwitch.isMacOS():
         configFileManager,
         autostartManager,
         updateManager,
+        settings,
         logger,
+        debug,
     )
 else:
     from src.Service.AutostartManagerLinux import AutostartManagerLinux
@@ -80,7 +84,9 @@ else:
         configFileManager,
         autostartManager,
         updateManager,
+        settings,
         logger,
+        debug,
     )
 
 appLoop = AppLoop(osSwitch)

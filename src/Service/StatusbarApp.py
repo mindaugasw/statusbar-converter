@@ -10,6 +10,7 @@ from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
 from src.Service.ConversionManager import ConversionManager
+from src.Service.Debug import Debug
 from src.Service.Logger import Logger
 from src.Service.OSSwitch import OSSwitch
 from src.Service.Settings import Settings
@@ -28,7 +29,9 @@ class StatusbarApp(ABC):
     _config: Configuration
     _autostartManager: AutostartManager
     _updateManager: UpdateManager
+    _settings: Settings
     _logger: Logger
+    _debug: Debug
 
     _menuItems: dict[str, MenuItem]
     _menuTemplateLastConversionOriginalText: str
@@ -52,7 +55,9 @@ class StatusbarApp(ABC):
         configFileManager: ConfigFileManager,
         autostartManager: AutostartManager,
         updateManager: UpdateManager,
-        logger: Logger
+        settings: Settings,
+        logger: Logger,
+        debug: Debug,
     ):
         self._osSwitch = osSwitch
         self._formatter = formatter
@@ -61,7 +66,9 @@ class StatusbarApp(ABC):
         self._config = config
         self._autostartManager = autostartManager
         self._updateManager = updateManager
+        self._settings = settings
         self._logger = logger
+        self._debug = debug
 
         self._configFilePath = configFileManager.configUserPath
 
@@ -111,7 +118,7 @@ class StatusbarApp(ABC):
 
         # Other controls
         items.update({
-            'clear_timestamp': MenuItem('Clear timestamp', callback=self._onMenuClickClearTimestamp),
+            'clear_statusbar': MenuItem('Clear statusbar', callback=self._onMenuClickClearStatusbar),
             'edit_config': MenuItem('Edit configuration', callback=self._onMenuClickEditConfiguration),
             'autostart': MenuItem(
                 'Run at login',
@@ -119,6 +126,13 @@ class StatusbarApp(ABC):
                 callback=self._onMenuClickRunAtLogin,
             ),
             'check_updates': MenuItem('Check for updates', callback=self._onMenuClickCheckUpdates),
+            'settings': MenuItem('Settings', callback=self._onMenuClickOpenSettings),
+        })
+
+        if self._debug.isDebugEnabled():
+            items.update({'gui_demo': MenuItem('Open GUI demo', callback=self._onMenuClickOpenGUIDemo)})
+
+        items.update({
             'open_website': MenuItem('Open website', callback=self._onMenuClickOpenWebsite),
             'about': MenuItem('About', callback=self._onMenuClickAbout)
         })
@@ -155,7 +169,7 @@ class StatusbarApp(ABC):
     def _onMenuClickCurrentTimestamp(self, menuItem) -> None:
         pass
 
-    def _onMenuClickClearTimestamp(self, menuItem) -> None:
+    def _onMenuClickClearStatusbar(self, menuItem) -> None:
         self._conversionManager.dispatchClear('manual, menu click')
 
     @abstractmethod
@@ -168,6 +182,12 @@ class StatusbarApp(ABC):
 
     def _onMenuClickCheckUpdates(self, menuItem) -> None:
         self._updateManager.checkForUpdatesAsync(True)
+
+    def _onMenuClickOpenSettings(self, menuItem) -> None:
+        self._settings.openSettings()
+
+    def _onMenuClickOpenGUIDemo(self, menuItem) -> None:
+        self._settings.openGUIDemo()
 
     @abstractmethod
     def _onMenuClickOpenWebsite(self, menuItem) -> None:
