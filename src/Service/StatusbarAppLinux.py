@@ -3,7 +3,7 @@ import subprocess
 import sys
 import threading
 import time
-import webbrowser
+from collections.abc import Callable
 
 import gi
 
@@ -157,41 +157,9 @@ class StatusbarAppLinux(StatusbarApp):
 
         return menu
 
-    def _showAppUpdateDialog(self, version: str | None) -> None:
-        if version is None:
-            self._showDialog(
-                f'No new version found.\n'
-                f'Current app version is v{self._config.getAppVersion()}.',
-                ['Ok'],
-            )
-
-            return
-
-        buttons = {
-            'download': 'Download update',
-            'skip': 'Skip this version',
-            'later': 'Remind me later',
-        }
-        downloadPage = f'{AppConstant.website}/releases/tag/{version}'
-
-        result = self._showDialog(
-            f'New app update found: {version}.\n'
-            f'Current app version is v{self._config.getAppVersion()}.\n'
-            f'Release notes available on the <a href="{downloadPage}">download page</a>.\n\n'
-            f'Download update?',
-            buttons,
-        )
-
-        self._logger.log(f'[Update check] User action from dialog: {result}')
-
-        if result == buttons['download']:
-            webbrowser.open(downloadPage)
-        elif result == buttons['skip']:
-            self._config.setState(Configuration.DATA_UPDATE_SKIP_VERSION, version)
-        elif result == buttons['later']:
-            return
-        else:
-            self._logger.log(f'[Update check] Unknown user action from dialog: {result}')
+    def _showAppUpdateDialog(self, text: str, buttons: dict[str, Callable | None]) -> None:
+        # TODO port changes to macOS as well
+        self._showDialog(text, buttons)
 
     def _onMenuClickLastTimestamp(self, menuItem: Gtk.MenuItem) -> None:
         label = menuItem.get_label()
@@ -209,7 +177,8 @@ class StatusbarAppLinux(StatusbarApp):
             'close': 'Cancel',
         }
 
-        response = self._showDialog(
+        # TODO refactor to use dpg
+        response = self._showDialogGtk(
             f'Configuration can be edited in the file: \n'
             f'<tt>{self._configFilePath}</tt>\n\n'
             f'After editing, the application must be restarted.\n\n'
@@ -234,12 +203,9 @@ class StatusbarAppLinux(StatusbarApp):
         if success:
             menuItem.set_label(f'{"" if checked else self.CHECK}Run at login')
 
-    def _onMenuClickOpenWebsite(self, menuItem: Gtk.MenuItem) -> None:
-        webbrowser.open(AppConstant.website)
-
     # TODO remove
     def _onMenuClickAboutOld(self, menuItem: Gtk.MenuItem) -> None:
-        self._showDialog(
+        self._showDialogGtk(
             f'Version: {self._config.getAppVersion()}\n\n'
             f'App website: <a href="{AppConstant.website}">{AppConstant.website}</a>\n\n'
             f'App icon made by <a href="https://www.flaticon.com/free-icons/convert">iconsax at flaticon.com</a>',
@@ -274,7 +240,17 @@ class StatusbarAppLinux(StatusbarApp):
     def _onStatusbarClear(self) -> None:
         self._app.set_label('', '')
 
-    def _showDialog(self, message: str, buttons: list | dict) -> str:
+    def _showDialog(self, text: str, buttons: dict[str, Callable | None]) -> None:
+        self._modalWindowManager.openDialog(text, buttons)
+
+    def _isMenuItemChecked(self, menuItem: Gtk.MenuItem) -> bool:
+        return menuItem.get_label().startswith(self.CHECK)
+
+    def _showDialogGtk(self, message: str, buttons: list | dict) -> str:
+        """
+        Deprecated, old way to show dialog on Linux.
+        Does not work reliably, often crashes. Possibly got worse after installing dpg.
+        """
         if isinstance(buttons, dict):
             buttons = list(buttons.values())
 
@@ -293,6 +269,3 @@ class StatusbarAppLinux(StatusbarApp):
         dialog.destroy()
 
         return buttons[response]
-
-    def _isMenuItemChecked(self, menuItem: Gtk.MenuItem) -> bool:
-        return menuItem.get_label().startswith(self.CHECK)

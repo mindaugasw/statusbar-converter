@@ -13,6 +13,7 @@ from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
 from src.Service.ModalWindow.AboutBuilder import AboutBuilder
 from src.Service.ModalWindow.DemoBuilder import DemoBuilder
+from src.Service.ModalWindow.DialogBuilder import DialogBuilder
 from src.Service.ModalWindow.ModalWindowBuilderInterface import ModalWindowBuilderInterface
 from src.Service.ModalWindow.ModalWindowManager import ModalWindowManager
 from src.Service.ModalWindow.SettingsBuilder import SettingsBuilder
@@ -37,7 +38,7 @@ logger.logRaw(filesystemHelper.getInitializationLogs())
 ExceptionHandler.initialize()
 
 configFileManager = ConfigFileManager(filesystemHelper, logger)
-config = Configuration(configFileManager)
+config = Configuration(configFileManager, logger)
 argumentParser = ArgumentParser()
 debug = Debug(config, argumentParser)
 timestampTextFormatter = TimestampTextFormatter(config)
@@ -49,6 +50,7 @@ guiBuilders: dict[str, ModalWindowBuilderInterface] = {
     ModalId.demo: DemoBuilder(),
     ModalId.settings: SettingsBuilder(),
     ModalId.about: AboutBuilder(config),
+    ModalId.dialog: DialogBuilder(),
 }
 modalWindowManager = ModalWindowManager(guiBuilders, osSwitch, logger)
 

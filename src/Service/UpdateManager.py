@@ -2,10 +2,13 @@ import json
 import platform
 import threading
 import time
+import webbrowser
+from typing import Callable
 
 import requests
 
 import src.events as events
+from src.Constant.AppConstant import AppConstant
 from src.Constant.Logs import Logs
 from src.Service.Configuration import Configuration
 from src.Service.Debug import Debug
@@ -45,10 +48,10 @@ class UpdateManager:
         self.checkForUpdatesAsync(False)
 
     def _checkForUpdates(self, manuallyTriggered: bool) -> None:
-        self._logger.log(f'[Update check] Starting check for updates, manual check: {manuallyTriggered}')
+        self._logger.log(f'{Logs.catUpdateCheck} Starting check for updates, manual check: {manuallyTriggered}')
 
         if manuallyTriggered:
-            self._logger.log('[Update check] Clearing skipped version state')
+            self._logger.log(Logs.catUpdateCheck + 'Clearing skipped version state')
             self._config.setState(Configuration.DATA_UPDATE_SKIP_VERSION, None)
 
         currentVersion = self._stringToVersionTuple(self._config.getAppVersion())
@@ -65,28 +68,28 @@ class UpdateManager:
         for release in releases:
             if not self._isNewerVersion(release, currentVersion, skippedVersion):
                 self._logger.log(
-                    f'[Update check] Release {release["tag_name"]} is old version or marked as skipped,'
+                    f'{Logs.catUpdateCheck} Release {release["tag_name"]} is old version or marked as skipped,'
                     f' stopping update check',
                 )
 
                 break
 
             if not self._doesReleaseContainCurrentPlatform(release):
-                self._logger.log(f'[Update check] Release {release["tag_name"]} does not contain current platform download')
+                self._logger.log(f'{Logs.catUpdateCheck} Release {release["tag_name"]} does not contain current platform download')
 
                 continue
 
-            self._logger.log('[Update check] Found a new release ' + release['tag_name'])
+            self._logger.log(f'{Logs.catUpdateCheck} Found a new release {release["tag_name"]}')
             newUpdateFound = True
-            events.updateCheckCompleted(release['tag_name'])
+            self._dispatchUpdateResultEvent(release['tag_name'])
 
             break
 
         if manuallyTriggered and not newUpdateFound:
-            events.updateCheckCompleted(None)
+            self._dispatchUpdateResultEvent(None)
 
         self._lastCheckAt = int(time.time())
-        self._logger.log('[Update check] Completed')
+        self._logger.log(Logs.catUpdateCheck + 'Completed')
 
     def _isNewerVersion(
         self,
@@ -135,3 +138,40 @@ class UpdateManager:
                 return json.load(file)
 
         return requests.get(self.RELEASES_URL).json()
+
+    def _dispatchUpdateResultEvent(self, version: str | None) -> None:
+        def _handleClickGoToDownloadPage() -> None:
+            self._logger.log(Logs.catUpdateCheck + 'Dialog button click: Go to download page')
+            downloadPageUrl = f'{AppConstant.website}/releases/tag/{version}'
+            webbrowser.open(downloadPageUrl)
+
+        def _handleClickSkipThisVersion() -> None:
+            self._logger.log(Logs.catUpdateCheck + 'Dialog button click: Skip this version')
+            self._config.setState(Configuration.DATA_UPDATE_SKIP_VERSION, version)
+
+        def _handleClickRemindMeLater() -> None:
+            self._logger.log(Logs.catUpdateCheck + 'Dialog button click: Remind me later')
+
+        text: str
+        buttons: dict[str, Callable | None]
+
+        if version is None:
+            text = \
+                f'No new version found.\n' \
+                f'Current app version is v{self._config.getAppVersion()}.'
+
+            buttons = {'Ok': None}
+        else:
+            text =\
+                f'New app update found: {version}.\n' \
+                f'Current app version is v{self._config.getAppVersion()}.\n' \
+                f'Release notes available on the download page.\n\n' \
+                f'Download update?'
+
+            buttons = {
+                'Go to download page': _handleClickGoToDownloadPage,
+                'Skip this version': _handleClickSkipThisVersion,
+                'Remind me later': _handleClickRemindMeLater,
+            }
+
+        events.updateCheckCompleted(text, buttons)

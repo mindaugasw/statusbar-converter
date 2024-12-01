@@ -1,8 +1,11 @@
 import os
 import sys
+import webbrowser
 from abc import ABC, abstractmethod
+from typing import Callable
 
 import src.events as events
+from src.Constant.AppConstant import AppConstant
 from src.Constant.ModalId import ModalId
 from src.DTO.MenuItem import MenuItem
 from src.DTO.Timestamp import Timestamp
@@ -161,7 +164,7 @@ class StatusbarApp(ABC):
         pass
 
     @abstractmethod
-    def _showAppUpdateDialog(self, version: str | None) -> None:
+    def _showAppUpdateDialog(self, text: str, buttons: dict[str, Callable | None]) -> None:
         pass
 
     @abstractmethod
@@ -192,9 +195,8 @@ class StatusbarApp(ABC):
     def _onMenuClickOpenGUIDemo(self, menuItem) -> None:
         self._modalWindowManager.openModal(ModalId.demo)
 
-    @abstractmethod
     def _onMenuClickOpenWebsite(self, menuItem) -> None:
-        pass
+        webbrowser.open(AppConstant.website)
 
     def _onMenuClickAbout(self, menuItem) -> None:
         self._modalWindowManager.openModal(ModalId.about)
@@ -212,7 +214,7 @@ class StatusbarApp(ABC):
         raise Exception('Not implemented')
 
     @abstractmethod
-    def _showDialog(self, message: str, buttons: list | dict) -> str:
+    def _showDialog(self, message: str, buttons: dict[str, Callable | None]) -> str:
         """Create a dialog window
 
         @param message: Main message. Can contain formatting on Linux. See supported

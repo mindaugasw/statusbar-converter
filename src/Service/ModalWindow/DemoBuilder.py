@@ -15,6 +15,6 @@ class DemoBuilder(ModalWindowBuilderInterface):
             None,
         )
 
-    def build(self) -> None:
+    def build(self, arguments: dict[str, any]) -> None:
         demo.show_demo()
         dpg.set_item_pos('__demo_id', [0, 0])

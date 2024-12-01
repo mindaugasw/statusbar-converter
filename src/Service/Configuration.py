@@ -1,7 +1,9 @@
 import yaml
 
+from src.Constant.Logs import Logs
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.FilesystemHelper import FilesystemHelper
+from src.Service.Logger import Logger
 
 
 class Configuration:
@@ -20,6 +22,8 @@ class Configuration:
     DATA_AUTO_RUN_INITIAL_SETUP_COMPLETE = ['auto_run', 'initial_setup_complete']
 
     _configFileManager: ConfigFileManager
+    _logger: Logger
+
     _appVersion: str
     _configApp: dict
     """
@@ -38,8 +42,9 @@ class Configuration:
     """
     _configInitialized = False
 
-    def __init__(self, configFileManager: ConfigFileManager):
+    def __init__(self, configFileManager: ConfigFileManager, logger: Logger):
         self._configFileManager = configFileManager
+        self._logger = logger
 
     def get(self, key: list[str]):
         self._initializeConfig()
@@ -56,6 +61,7 @@ class Configuration:
         return self._queryDictionary(key, self._stateData)
 
     def setState(self, key: list[str], value) -> None:
+        self._logger.log(f'{Logs.catConfig} Persisting state: {key}: {value}')
         self._setValue(key, value, self._stateData)
 
         stateContent = yaml.dump(self._stateData)

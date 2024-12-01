@@ -99,11 +99,8 @@ class StatusbarAppMacOs(StatusbarApp):
 
         return menu
 
+    # TODO refactor to handle new signature
     def _showAppUpdateDialog(self, version: str | None) -> None:
-        # Here dialog cannot be shown by rumps because it's called from a different thread.
-        # Can't be called from the main thread because of async request.
-        # Also, automatic update check can't trigger dialog from rumps main thread
-
         if version is None:
             self._showDialog(
                 f'No new version found.\\n'
@@ -127,7 +124,7 @@ class StatusbarAppMacOs(StatusbarApp):
             buttons,
         )
 
-        self._logger.log(f'[Update check] User action from dialog: {result}')
+        self._logger.log(f'{Logs.catUpdateCheck} User action from dialog: {result}')
 
         if result == buttons['download']:
             subprocess.Popen(['open', f'{AppConstant.website}/releases/tag/{version}'])
@@ -136,7 +133,7 @@ class StatusbarAppMacOs(StatusbarApp):
         elif result == buttons['later']:
             return
         else:
-            self._logger.log(f'[Update check] Unknown user action from dialog: {result}')
+            self._logger.log(f'{Logs.catUpdateCheck} Unknown user action from dialog: {result}')
 
     def _onMenuClickLastTimestamp(self, menuItem: rumps.MenuItem) -> None:
         self._clipboard.setClipboardContent(menuItem.title)
@@ -176,9 +173,6 @@ class StatusbarAppMacOs(StatusbarApp):
         if success:
             menuItem.state = not menuItem.state
 
-    def _onMenuClickOpenWebsite(self, menuItem: rumps.MenuItem) -> None:
-        subprocess.Popen(['open', AppConstant.website])
-
     # TODO remove
     def _onMenuClickAboutOld(self, menuItem: rumps.MenuItem) -> None:
         self._showDialog(
@@ -207,6 +201,12 @@ class StatusbarAppMacOs(StatusbarApp):
         self._app.title = None
 
     def _showDialog(self, message: str, buttons: list | dict) -> str:
+        # Here rumps dialog cannot be shown because it's initiated from a different thread.
+        # And can't be initiated from the main thread because of async request.
+        # Also, automatic update check can't trigger dialog from rumps main thread.
+        # Same problem with dpg.
+        # So we're using non-rumps and non-dpg dialog
+
         if isinstance(buttons, dict):
             buttons = list(buttons.values())
 

@@ -16,6 +16,6 @@ class SettingsBuilder(ModalWindowBuilderInterface):
             self._primaryTag,
         )
 
-    def build(self) -> None:
+    def build(self, arguments: dict[str, any]) -> None:
         with dpg.window(label='Window title', tag=self._primaryTag):
             dpg.add_text('Hello world')

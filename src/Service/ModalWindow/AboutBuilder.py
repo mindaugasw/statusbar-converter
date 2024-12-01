@@ -25,10 +25,10 @@ class AboutBuilder(ModalWindowBuilderInterface):
             self._primaryTag,
         )
 
-    def build(self) -> None:
+    def build(self, arguments: dict[str, any]) -> None:
         BuilderHelper.registerHyperlinkTheme()
 
-        with dpg.window(label='Window title', tag=self._primaryTag, on_close=self._onClose):
+        with dpg.window(tag=self._primaryTag, on_close=self._onClose):
 
             # group with `horizontal` to make 2 "columns" for image and text
             with dpg.group(horizontal=True):
