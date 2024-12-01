@@ -115,11 +115,11 @@ class StatusbarAppMacOs(StatusbarApp):
 
     def _onMenuClickEditConfiguration(self, menuItem: rumps.MenuItem) -> None:
         buttons = {
-            'open': 'Open in default editor',
-            'close': 'Cancel',
+            'Open in default editor': lambda: subprocess.Popen(['open', self._configFilePath]),
+            'Cancel': None,
         }
 
-        result = self._showDialog(
+        self._showDialog(
             f'Configuration can be edited in the file:\\n'
             f'{self._configFilePath}\\n\\n'
             f'After editing, the application must be restarted.\\n\\n'
@@ -128,9 +128,6 @@ class StatusbarAppMacOs(StatusbarApp):
             f'Open configuration file in default text editor?',
             buttons,
         )
-
-        if result == buttons['open']:
-            subprocess.Popen(['open', self._configFilePath])
 
     def _onMenuClickRunAtLogin(self, menuItem: rumps.MenuItem) -> None:
         if menuItem.state:
@@ -148,7 +145,7 @@ class StatusbarAppMacOs(StatusbarApp):
             f'Version: {self._config.getAppVersion()}\\n\\n'
             f'App website: {AppConstant.website}\\n\\n'
             f'App icon made by iconsax at flaticon.com',
-            ['Ok'],
+            {'Ok': None},
         )
 
     def _onConverted(self, result: ConvertResult) -> None:
