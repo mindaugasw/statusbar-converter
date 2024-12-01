@@ -2,6 +2,7 @@ import os
 import subprocess
 import threading
 import time
+from typing import Callable
 
 import rumps
 
@@ -99,41 +100,9 @@ class StatusbarAppMacOs(StatusbarApp):
 
         return menu
 
-    # TODO refactor to handle new signature
-    def _showAppUpdateDialog(self, version: str | None) -> None:
-        if version is None:
-            self._showDialog(
-                f'No new version found.\\n'
-                f'Current app version is v{self._config.getAppVersion()}.',
-                ['Ok'],
-            )
-
-            return
-
-        buttons = {
-            'download': 'Download update',
-            'skip': 'Skip this version',
-            'later': 'Remind me later',
-        }
-
-        result = self._showDialog(
-            f'New app update found: {version}.\\n'
-            f'Current app version is v{self._config.getAppVersion()}.\\n'
-            f'Release notes available on the download page.\\n\\n'
-            f'Download update?',
-            buttons,
-        )
-
-        self._logger.log(f'{Logs.catUpdateCheck} User action from dialog: {result}')
-
-        if result == buttons['download']:
-            subprocess.Popen(['open', f'{AppConstant.website}/releases/tag/{version}'])
-        elif result == buttons['skip']:
-            self._config.setState(Configuration.DATA_UPDATE_SKIP_VERSION, version)
-        elif result == buttons['later']:
-            return
-        else:
-            self._logger.log(f'{Logs.catUpdateCheck} Unknown user action from dialog: {result}')
+    def _showAppUpdateDialog(self, text: str, buttons: dict[str, Callable | None]) -> None:
+        text = text.replace('\n', '\\n')
+        self._showDialog(text, buttons)
 
     def _onMenuClickLastTimestamp(self, menuItem: rumps.MenuItem) -> None:
         self._clipboard.setClipboardContent(menuItem.title)
@@ -200,23 +169,21 @@ class StatusbarAppMacOs(StatusbarApp):
     def _onStatusbarClear(self) -> None:
         self._app.title = None
 
-    def _showDialog(self, message: str, buttons: list | dict) -> str:
+    def _showDialog(self, message: str, buttons: dict[str, Callable | None]) -> None:
         # Here rumps dialog cannot be shown because it's initiated from a different thread.
         # And can't be initiated from the main thread because of async request.
         # Also, automatic update check can't trigger dialog from rumps main thread.
         # Same problem with dpg.
         # So we're using non-rumps and non-dpg dialog
 
-        if isinstance(buttons, dict):
-            buttons = list(buttons.values())
-
-        buttonsText = '", "'.join(buttons)
+        buttonNames = list(buttons.keys())
+        buttonsText = '", "'.join(buttonNames)
         dialogCommand =\
             f'osascript -e \'Tell application "System Events" to display dialog ' \
             f'"{message}" ' \
             f'with title "{AppConstant.appName}" ' \
             f'buttons {{"{buttonsText}"}} ' \
-            f'default button "{buttons[0]}" ' \
+            f'default button "{buttonNames[0]}" ' \
             f'with icon POSIX file "{self._iconPathDefault}" ' \
             f'giving up after 60\''
 
@@ -229,4 +196,7 @@ class StatusbarAppMacOs(StatusbarApp):
         for replaceText in ['button returned:', ', gave up:false', ', gave up:true']:
             result = result.replace(replaceText, '')
 
-        return result
+        buttonCallback = buttons[result]
+
+        if buttonCallback is not None:
+            buttonCallback()

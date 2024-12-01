@@ -250,6 +250,9 @@ class StatusbarAppLinux(StatusbarApp):
         """
         Deprecated, old way to show dialog on Linux.
         Does not work reliably, often crashes. Possibly got worse after installing dpg.
+
+        Message can contain formatting (only on Linux). See supported formatting example:
+        https://python-gtk-3-tutorial.readthedocs.io/en/latest/label.html#example
         """
         if isinstance(buttons, dict):
             buttons = list(buttons.values())
