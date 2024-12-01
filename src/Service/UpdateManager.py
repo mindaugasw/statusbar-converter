@@ -1,3 +1,4 @@
+import json
 import platform
 import threading
 import time
@@ -5,7 +6,10 @@ import time
 import requests
 
 import src.events as events
+from src.Constant.Logs import Logs
 from src.Service.Configuration import Configuration
+from src.Service.Debug import Debug
+from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
 
 
@@ -13,16 +17,20 @@ class UpdateManager:
     CHECK_INTERVAL = 3600 * 24 * 2  # Check every 2 days
     RELEASES_URL = 'https://api.github.com/repos/mindaugasw/statusbar-converter/releases?per_page=100'
 
+    _filesystemHelper: FilesystemHelper
     _config: Configuration
     _logger: Logger
+    _debug: Debug
 
     _currentVersion: tuple[int, ...]
     _skippedVersion: tuple[int, ...] | None
     _lastCheckAt: int | None = None
 
-    def __init__(self, config: Configuration, logger: Logger):
+    def __init__(self, filesystemHelper: FilesystemHelper, config: Configuration, logger: Logger, debug: Debug):
+        self._filesystemHelper = filesystemHelper
         self._config = config
         self._logger = logger
+        self._debug = debug
 
         events.appLoopIteration.append(self._updateCheckIteration)
 
@@ -51,7 +59,7 @@ class UpdateManager:
         else:
             skippedVersion = self._stringToVersionTuple(skippedVersion)
 
-        releases = requests.get(self.RELEASES_URL).json()
+        releases = self._queryReleases()
         newUpdateFound = False
 
         for release in releases:
@@ -81,10 +89,10 @@ class UpdateManager:
         self._logger.log('[Update check] Completed')
 
     def _isNewerVersion(
-            self,
-            release: dict,
-            currentVersion: tuple[int, ...],
-            skippedVersion: tuple[int, ...] | None,
+        self,
+        release: dict,
+        currentVersion: tuple[int, ...],
+        skippedVersion: tuple[int, ...] | None,
     ) -> bool:
         releaseVersion = release['tag_name'].strip('v')
         releaseVersion = self._stringToVersionTuple(releaseVersion)
@@ -115,5 +123,15 @@ class UpdateManager:
         # From https://stackoverflow.com/a/11887825/4110469
         return tuple(map(int, (version.split('.'))))
 
-    def _suggestUpdate(self) -> None:
-        pass
+    def _queryReleases(self):
+        mockUpdate = self._debug.getMockUpdate()
+
+        if mockUpdate is not None:
+            """
+            Allow using mock response. Because GitHub has rate limiting per IP, which is possible to reach
+            when testing more intensively
+            """
+            with open(f'{self._filesystemHelper.getAssetsDevDir()}/releases_response_mock_{mockUpdate}.json') as file:
+                return json.load(file)
+
+        return requests.get(self.RELEASES_URL).json()

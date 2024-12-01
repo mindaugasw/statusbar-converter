@@ -16,6 +16,15 @@ class FilesystemHelper(ABC):
         return FilesystemHelper.getProjectDir() + '/assets'
 
     @staticmethod
+    def getAssetsDevDir() -> str:
+        """
+        Get Assets directory (inside project directory) for development-only files
+
+        Split into a separate directory from other assets to allow excluding it from build
+        """
+        return FilesystemHelper.getProjectDir() + '/assets_dev'
+
+    @staticmethod
     def getConfigDir() -> str:
         """Get default app config directory (inside project directory)"""
         return FilesystemHelper.getProjectDir() + '/config'

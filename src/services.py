@@ -41,7 +41,7 @@ config = Configuration(configFileManager)
 argumentParser = ArgumentParser()
 debug = Debug(config, argumentParser)
 timestampTextFormatter = TimestampTextFormatter(config)
-updateManager = UpdateManager(config, logger)
+updateManager = UpdateManager(filesystemHelper, config, logger, debug)
 autostartManager: AutostartManager
 clipboardManager: ClipboardManager
 statusbarApp: StatusbarApp

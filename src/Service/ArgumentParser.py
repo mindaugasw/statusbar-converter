@@ -8,6 +8,7 @@ class ArgumentParser:
         parser = argparse.ArgumentParser()
 
         parser.add_argument('--debug', action='store_true')
+        parser.add_argument('--mock-update', action='store', help='Helper for development. Allows mocking update check. Value must be one of ["old", "new"]')
         parser.add_argument('--sleep', type=int, help='Sleep this number of seconds before showing app icon')
         """
         Sleep argument is needed for Linux, to make statusbar icon appear at the end, after
@@ -19,6 +20,9 @@ class ArgumentParser:
 
     def isDebugEnabled(self) -> bool:
         return self._arguments.debug
+
+    def getMockUpdate(self) -> str | None:
+        return self._arguments.mock_update
 
     def getSleep(self) -> int | None:
         return self._arguments.sleep
