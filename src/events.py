@@ -1,5 +1,6 @@
 from src.DTO.Event import Event
 
+# TODO refactor into a service
 appLoopIteration = Event()
 
 clipboardChanged = Event()

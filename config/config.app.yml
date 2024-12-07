@@ -13,6 +13,10 @@ flash_icon_on_change: true
 debug: false
 
 converters:
+    temperature:
+        enabled: true
+        convert_to_unit: C
+
     timestamp:
         # Formatting template for text on the statusbar.
         #
