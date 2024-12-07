@@ -10,6 +10,7 @@ Create virtualenv with:
 - `./builder.sh install arm64 python3.10` (`arm64` native on macOS)
 - `./builder.sh install x86_64 python3.10` (`x86_64` native on macOS/Linux)
 - `./builder.sh install x86_64 python3.10-intel64` (building `x86_64` on `arm64` on macOS)
+- Or see `Makefile`
 
 Run app:
 - `source .venv-macos-arm64/bin/activate`
