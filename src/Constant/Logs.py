@@ -8,5 +8,6 @@ class Logs:
     catModal = '[Modal] '
     catModalSub = '[Modal.'
     catUpdateCheck = '[Update check] '
+    catStart = '[Start] '
 
     changingIconTextTo = catMenuApp + 'Changing icon text to: %s'

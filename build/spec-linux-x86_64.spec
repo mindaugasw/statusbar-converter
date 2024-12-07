@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['../start.py'],
+    ['../src/__main__.py'],
     pathex=[],
     binaries=[('../binaries/clipnotify/clipnotify', 'binaries/clipnotify')],
     datas=[('../assets', 'assets'), ('../config', 'config'), ('../version', '.')],

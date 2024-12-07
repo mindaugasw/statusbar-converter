@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['../start.py'],
+    ['../src/__main__.py'],
     pathex=[],
     binaries=[],
     datas=[('../assets', 'assets'), ('../config', 'config'), ('../version', '.')],
