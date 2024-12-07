@@ -1,3 +1,4 @@
+from src.Constant.ConfigId import ConfigId
 from src.DTO.ConvertResult import ConvertResult
 from src.Service.Configuration import Configuration
 from src.Service.Conversion.Converter.SimpleUnit.SimpleConverterInterface import SimpleConverterInterface
@@ -5,6 +6,8 @@ from src.Service.Conversion.Converter.SimpleUnit.UnitPreprocessor import UnitPre
 
 
 class TemperatureConverter(SimpleConverterInterface):
+    _enabled: bool
+    _primaryUnit: str
     _units = {
         'C': {
             'aliases': ['°C', 'Celsius', '°Celsius', '*Celsius'],
@@ -20,8 +23,11 @@ class TemperatureConverter(SimpleConverterInterface):
 
     def __init__(self, unitPreprocessor: UnitPreprocessor, config: Configuration):
         self._unitsProcessed = unitPreprocessor.process(self._units)
+        self._enabled = config.get(ConfigId.Converter_Temperature_Enabled)
+        self._primaryUnit = config.get(ConfigId.Converter_Temperature_PrimaryUnit).lower()
 
-        # TODO check config if converter is enabled
+    def isEnabled(self) -> bool:
+        return self._enabled
 
     def getName(self) -> str:
         return 'Temp'

@@ -9,6 +9,7 @@ import requests
 
 import src.events as events
 from src.Constant.AppConstant import AppConstant
+from src.Constant.ConfigId import ConfigId
 from src.Constant.Logs import Logs
 from src.Service.Configuration import Configuration
 from src.Service.Debug import Debug
@@ -52,10 +53,10 @@ class UpdateManager:
 
         if manuallyTriggered:
             self._logger.log(f'{Logs.catUpdateCheck}Clearing skipped version state')
-            self._config.setState(Configuration.DATA_UPDATE_SKIP_VERSION, None)
+            self._config.setState(ConfigId.Data_Update_SkipVersion, None)
 
         currentVersion = self._stringToVersionTuple(self._config.getAppVersion())
-        skippedVersion = self._config.getState(Configuration.DATA_UPDATE_SKIP_VERSION)
+        skippedVersion = self._config.getState(ConfigId.Data_Update_SkipVersion)
 
         if skippedVersion is None:
             skippedVersion = (-1, -1, -1)
@@ -147,7 +148,7 @@ class UpdateManager:
 
         def _handleClickSkipThisVersion() -> None:
             self._logger.log(f'{Logs.catUpdateCheck}Dialog button click: Skip this version')
-            self._config.setState(Configuration.DATA_UPDATE_SKIP_VERSION, version)
+            self._config.setState(ConfigId.Data_Update_SkipVersion, version)
 
         def _handleClickRemindMeLater() -> None:
             self._logger.log(f'{Logs.catUpdateCheck}Dialog button click: Remind me later')

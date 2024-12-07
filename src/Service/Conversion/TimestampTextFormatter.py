@@ -1,6 +1,7 @@
 import datetime
 import time
 
+from src.Constant.ConfigId import ConfigId
 from src.DTO.Timestamp import Timestamp
 from src.Service.Configuration import Configuration
 
@@ -9,7 +10,7 @@ class TimestampTextFormatter:
     _iconFormats: dict[int, str]
 
     def __init__(self, config: Configuration):
-        self._iconFormats = config.get(config.FORMAT_ICON)
+        self._iconFormats = config.get(ConfigId.Converter_Timestamp_IconFormat)
 
     def format(self, timestamp: Timestamp, template: str) -> str:
         return self._formatInternal(timestamp, template, self._getRelativeTimeData(timestamp.seconds))

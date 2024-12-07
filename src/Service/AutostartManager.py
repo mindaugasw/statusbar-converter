@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from src.Constant.AppConstant import AppConstant
+from src.Constant.ConfigId import ConfigId
 from src.Service.Configuration import Configuration
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
@@ -23,7 +24,7 @@ class AutostartManager(ABC):
         self._appPath = filesystemHelper.getAppPath()
 
     def firstTimeSetup(self) -> None:
-        if self._configuration.getState(Configuration.DATA_AUTO_RUN_INITIAL_SETUP_COMPLETE):
+        if self._configuration.getState(ConfigId.Data_Autorun_InitialSetupComplete):
             self._logger.log('[Autostart] Initial setup already completed')
 
             return
@@ -37,7 +38,7 @@ class AutostartManager(ABC):
         success = self.enableAutostart()
 
         if success:
-            self._configuration.setState(Configuration.DATA_AUTO_RUN_INITIAL_SETUP_COMPLETE, True)
+            self._configuration.setState(ConfigId.Data_Autorun_InitialSetupComplete, True)
 
         self._logger.log(f'[Autostart] Initial setup completed, success: {success}')
 

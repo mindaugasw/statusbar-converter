@@ -5,6 +5,10 @@ from src.DTO.ConvertResult import ConvertResult
 
 class SimpleConverterInterface(ABC):
     @abstractmethod
+    def isEnabled(self) -> bool:
+        pass
+
+    @abstractmethod
     def getName(self) -> str:
         pass
 

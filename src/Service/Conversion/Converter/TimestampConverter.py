@@ -1,5 +1,6 @@
 import re
 
+from src.Constant.ConfigId import ConfigId
 from src.Constant.Logs import Logs
 from src.DTO.ConvertResult import ConvertResult
 from src.DTO.Timestamp import Timestamp
@@ -23,6 +24,7 @@ class TimestampConverter(ConverterInterface):
     _formatter: TimestampTextFormatter
     _logger: Logger
 
+    _enabled: bool
     _templateOriginalText: str
     _templateConvertedText: str
 
@@ -30,8 +32,12 @@ class TimestampConverter(ConverterInterface):
         self._formatter = formatter
         self._logger = logger
 
-        self._templateOriginalText = config.get(Configuration.MENU_ITEMS_LAST_CONVERSION_ORIGINAL_TEXT)
-        self._templateConvertedText = config.get(Configuration.MENU_ITEMS_LAST_CONVERSION_CONVERTED_TEXT)
+        self._enabled = config.get(ConfigId.Converter_Timestamp_Enabled)
+        self._templateOriginalText = config.get(ConfigId.Converter_Timestamp_Menu_LastConversion_OriginalText)
+        self._templateConvertedText = config.get(ConfigId.Converter_Timestamp_Menu_LastConversion_ConvertedText)
+
+    def isEnabled(self) -> bool:
+        return self._enabled
 
     def getName(self) -> str:
         return 'Timestamp'

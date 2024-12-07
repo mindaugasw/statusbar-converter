@@ -2,6 +2,7 @@ import time
 import traceback
 
 import src.events as events
+from src.Constant.ConfigId import ConfigId
 from src.Constant.Logs import Logs
 from src.Service.Configuration import Configuration
 from src.Service.Conversion.Converter.ConverterInterface import ConverterInterface
@@ -19,12 +20,12 @@ class ConversionManager:
     _convertedAt: int | None = None
 
     def __init__(self, converters: list[ConverterInterface], config: Configuration, logger: Logger, debug: Debug):
-        self._converters = converters
+        self._converters = [c for c in converters if c.isEnabled()]
         self._logger = logger
         self._debug = debug
 
-        self._clearOnChangeEnabled = config.get(config.CLEAR_ON_CHANGE)
-        self._clearAfterTime = config.get(config.CLEAR_AFTER_TIME)
+        self._clearOnChangeEnabled = config.get(ConfigId.ClearOnChange)
+        self._clearAfterTime = config.get(ConfigId.ClearAfterTime)
 
         events.clipboardChanged.append(self.onClipboardChange)
 

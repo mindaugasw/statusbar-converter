@@ -10,19 +10,29 @@ class SimpleUnitConverter(ConverterInterface):
     """
     Convert simple units, where a single number is followed by a single unit, e.g.: 50 km/h
     """
-    _patternIsNumberAndText = re.compile(r'^((\-)?([\d,.]*\d[\d,.]*))([a-z/*°]+)')
 
     _thousandsDetector: ThousandsDetector
     _unitToConverter: dict[str, SimpleConverterInterface] = {}
+
+    _patternIsNumberAndText = re.compile(r'^((\-)?([\d,.]*\d[\d,.]*))([a-z/*°]+)')
+    _enabled: bool
 
     def __init__(self, internalConverters: list[SimpleConverterInterface], thousandsDetector: ThousandsDetector):
         self._thousandsDetector = thousandsDetector
 
         for internalConverter in internalConverters:
+            if not internalConverter.isEnabled():
+                continue
+
             unitsIds = internalConverter.getUnitIds()
 
             for unitId in unitsIds:
                 self._unitToConverter[unitId] = internalConverter
+
+        self._enabled = len(self._unitToConverter) > 0
+
+    def isEnabled(self) -> bool:
+        return self._enabled
 
     def getName(self) -> str:
         return 'Simple'

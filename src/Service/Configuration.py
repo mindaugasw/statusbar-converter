@@ -7,20 +7,6 @@ from src.Service.Logger import Logger
 
 
 class Configuration:
-    # Config keys
-    CLEAR_ON_CHANGE = ['clear_on_change']
-    CLEAR_AFTER_TIME = ['clear_after_time']
-    FLASH_ICON_ON_CHANGE = ['flash_icon_on_change']
-    DEBUG = ['debug']
-    FORMAT_ICON = ['converters', 'timestamp', 'icon_text_format']
-    MENU_ITEMS_LAST_CONVERSION_ORIGINAL_TEXT = ['converters', 'timestamp', 'menu_items_last_conversion', 'original_text']
-    MENU_ITEMS_LAST_CONVERSION_CONVERTED_TEXT = ['converters', 'timestamp', 'menu_items_last_conversion', 'converted_text']
-    MENU_ITEMS_CURRENT_TIMESTAMP = ['converters', 'timestamp', 'menu_items_current_timestamp']
-
-    # Data keys
-    DATA_UPDATE_SKIP_VERSION = ['update', 'skip_version']
-    DATA_AUTO_RUN_INITIAL_SETUP_COMPLETE = ['auto_run', 'initial_setup_complete']
-
     _configFileManager: ConfigFileManager
     _logger: Logger
 

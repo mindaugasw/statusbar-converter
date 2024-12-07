@@ -6,6 +6,7 @@ from typing import Callable
 
 import src.events as events
 from src.Constant.AppConstant import AppConstant
+from src.Constant.ConfigId import ConfigId
 from src.Constant.ModalId import ModalId
 from src.DTO.MenuItem import MenuItem
 from src.DTO.Timestamp import Timestamp
@@ -75,10 +76,10 @@ class StatusbarApp(ABC):
 
         self._configFilePath = configFileManager.configUserPath
 
-        self._menuTemplateLastConversionOriginalText = config.get(config.MENU_ITEMS_LAST_CONVERSION_ORIGINAL_TEXT)
-        self._menuTemplateLastConversionConvertedText = config.get(config.MENU_ITEMS_LAST_CONVERSION_CONVERTED_TEXT)
-        self._menuTemplatesCurrentTimestamp = config.get(config.MENU_ITEMS_CURRENT_TIMESTAMP)
-        self._flashIconOnChange = config.get(config.FLASH_ICON_ON_CHANGE)
+        self._menuTemplateLastConversionOriginalText = config.get(ConfigId.Converter_Timestamp_Menu_LastConversion_OriginalText)
+        self._menuTemplateLastConversionConvertedText = config.get(ConfigId.Converter_Timestamp_Menu_LastConversion_ConvertedText)
+        self._menuTemplatesCurrentTimestamp = config.get(ConfigId.Converter_Timestamp_Menu_CurrentTimestamp)
+        self._flashIconOnChange = config.get(ConfigId.FlashIconOnChange)
 
         events.updateCheckCompleted.append(self._showAppUpdateDialog)
 

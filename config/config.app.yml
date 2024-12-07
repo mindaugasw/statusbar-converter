@@ -14,6 +14,8 @@ debug: false
 
 converters:
     timestamp:
+        enabled: true
+
         # Formatting template for text on the statusbar.
         #
         # Used template will be the first one, where relative time difference in
@@ -64,3 +66,7 @@ converters:
             # Label text: "format to copy on click"
             Current timestamp: "{ts}"
             Current datetime: "%Y-%m-%d %H:%M:%S"
+
+    temperature:
+        enabled: true
+        primary_unit: C
