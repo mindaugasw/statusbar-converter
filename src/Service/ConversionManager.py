@@ -1,9 +1,10 @@
 import time
+import traceback
 
 import src.events as events
 from src.Constant.Logs import Logs
 from src.Service.Configuration import Configuration
-from src.Service.Converter.ConverterInterface import ConverterInterface
+from src.Service.Conversion.Converter.ConverterInterface import ConverterInterface
 from src.Service.Debug import Debug
 from src.Service.Logger import Logger
 

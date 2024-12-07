@@ -1,9 +1,9 @@
 import re
 
 from src.DTO.ConvertResult import ConvertResult
+from src.Service.Conversion.Converter.ConverterInterface import ConverterInterface
+from src.Service.Conversion.Converter.SimpleUnit.TemperatureConverter import TemperatureConverter
 from src.Service.Conversion.ThousandsDetector import ThousandsDetector
-from src.Service.Converter.ConverterInterface import ConverterInterface
-from src.Service.Converter.SimpleUnit.TemperatureConverter import TemperatureConverter
 
 
 class SimpleUnitConverter(ConverterInterface):

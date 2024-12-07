@@ -7,13 +7,14 @@ from src.Service.AutostartManager import AutostartManager
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
+from src.Service.Conversion.Converter.ConverterInterface import ConverterInterface
+from src.Service.Conversion.Converter.SimpleUnit.SimpleUnitConverter import SimpleUnitConverter
+from src.Service.Conversion.Converter.SimpleUnit.TemperatureConverter import TemperatureConverter
+from src.Service.Conversion.Converter.SimpleUnit.UnitPreprocessor import UnitPreprocessor
+from src.Service.Conversion.Converter.TimestampConverter import TimestampConverter
 from src.Service.Conversion.ThousandsDetector import ThousandsDetector
+from src.Service.Conversion.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.ConversionManager import ConversionManager
-from src.Service.Converter.ConverterInterface import ConverterInterface
-from src.Service.Converter.SimpleUnit.SimpleUnitConverter import SimpleUnitConverter
-from src.Service.Converter.SimpleUnit.TemperatureConverter import TemperatureConverter
-from src.Service.Converter.SimpleUnit.UnitPreprocessor import UnitPreprocessor
-from src.Service.Converter.TimestampConverter import TimestampConverter
 from src.Service.Debug import Debug
 from src.Service.ExceptionHandler import ExceptionHandler
 from src.Service.FilesystemHelper import FilesystemHelper
@@ -26,7 +27,6 @@ from src.Service.ModalWindow.ModalWindowManager import ModalWindowManager
 from src.Service.ModalWindow.SettingsBuilder import SettingsBuilder
 from src.Service.OSSwitch import OSSwitch
 from src.Service.StatusbarApp import StatusbarApp
-from src.Service.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.UpdateManager import UpdateManager
 
 
