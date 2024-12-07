@@ -33,7 +33,7 @@ class TimestampConverter(ConverterInterface):
         self._templateOriginalText = config.get(Configuration.MENU_ITEMS_LAST_CONVERSION_ORIGINAL_TEXT)
         self._templateConvertedText = config.get(Configuration.MENU_ITEMS_LAST_CONVERSION_CONVERTED_TEXT)
 
-    def getConverterName(self) -> str:
+    def getName(self) -> str:
         return 'Timestamp'
 
     def tryConvert(self, text: str) -> (bool, ConvertResult | None):
@@ -48,6 +48,7 @@ class TimestampConverter(ConverterInterface):
                 self._formatter.formatForIcon(timestamp),
                 self._formatter.format(timestamp, self._templateOriginalText),
                 self._formatter.format(timestamp, self._templateConvertedText),
+                self.getName(),
             ),
         )
 
@@ -61,7 +62,7 @@ class TimestampConverter(ConverterInterface):
             number = int(text)
         except Exception as e:
             self._logger.logDebug(
-                f'{Logs.catConverter}{self.getConverterName()}] '
+                f'{Logs.catConverter}{self.getName()}] '
                 f'Exception occurred while converting copied text to integer.\n'
                 f'Copied content: {text}\n'
                 f'Exception: {type(e)}\n'

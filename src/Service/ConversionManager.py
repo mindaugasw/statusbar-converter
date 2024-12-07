@@ -38,7 +38,22 @@ class ConversionManager:
             return
 
         for converter in self._converters:
-            success, result = converter.tryConvert(text)
+            try:
+                success, result = converter.tryConvert(text)
+            except Exception as e:
+                traceList = traceback.format_exception(e)
+                traceString = ''.join(traceList)
+
+                self._logger.log(
+                    Logs.catConverter + '%s] CONVERTER EXCEPTION:\nType: %s\nMessage: %s\nTrace: %s' % (
+                        converter.getName(),
+                        type(e),
+                        e,
+                        traceString,
+                    ),
+                )
+
+                continue
 
             if not success:
                 continue
@@ -46,7 +61,7 @@ class ConversionManager:
             if self._debug.isDebugEnabled():
                 self._logger.log(
                     Logs.catConverter + '%s] Converted to: %s / %s / %s' % (
-                        converter.getConverterName(),
+                        result.converterName,
                         result.iconText,
                         result.originalText,
                         result.convertedText,

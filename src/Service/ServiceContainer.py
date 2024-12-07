@@ -8,6 +8,7 @@ from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
 from src.Service.Conversion.Converter.ConverterInterface import ConverterInterface
+from src.Service.Conversion.Converter.SimpleUnit.SimpleConverterInterface import SimpleConverterInterface
 from src.Service.Conversion.Converter.SimpleUnit.SimpleUnitConverter import SimpleUnitConverter
 from src.Service.Conversion.Converter.SimpleUnit.TemperatureConverter import TemperatureConverter
 from src.Service.Conversion.Converter.SimpleUnit.UnitPreprocessor import UnitPreprocessor
@@ -57,9 +58,12 @@ class ServiceContainer:
         _[UnitPreprocessor] = unitPreprocessor = UnitPreprocessor()
         _[ThousandsDetector] = thousandsDetector = ThousandsDetector()
         _[TemperatureConverter] = temperatureConverter = TemperatureConverter(unitPreprocessor, config)
+        _[list[SimpleConverterInterface]] = simpleConverters = [
+            temperatureConverter,
+        ]
         _[list[ConverterInterface]] = converters = [
             TimestampConverter(timestampTextFormatter, config, logger),
-            SimpleUnitConverter(temperatureConverter, thousandsDetector),
+            SimpleUnitConverter(simpleConverters, thousandsDetector),
         ]
         _[ConversionManager] = conversionManager = ConversionManager(converters, config, logger, debug)
 
