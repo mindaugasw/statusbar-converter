@@ -22,14 +22,21 @@ class ClipboardManager(ABC):
     def setClipboardContent(self, content: str) -> None:
         pass
 
-    def _handleChangedClipboard(self, content: str) -> None:
+    def _handleChangedClipboard(self, text: str) -> None:
         # Avoid parsing huge texts to not impact performance
-        if len(content) > ClipboardManager.MAX_CONTENT_LENGTH:
+        if len(text) > ClipboardManager.MAX_CONTENT_LENGTH:
             self._logger.logDebug(Logs.catClipboard + 'Changed: Too long content, skipping')
             events.clipboardChanged(None)
 
             return
-        trimmed = content.strip()
+
+        trimmed = text.strip()
+
+        if trimmed == '':
+            self._logger.logDebug(f'{Logs.catClipboard}Changed to: [empty]')
+            events.clipboardChanged(None)
+
+            return
 
         if len(trimmed) > ClipboardManager.MAX_CONTENT_LENGTH_TRIMMED:
             self._logger.logDebug(Logs.catClipboard + 'Changed: Too long clipboard content after trimming, skipping')

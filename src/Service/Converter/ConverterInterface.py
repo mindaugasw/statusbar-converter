@@ -9,7 +9,7 @@ class ConverterInterface(ABC):
         pass
 
     @abstractmethod
-    def tryConvert(self, content: str) -> (bool, ConvertResult | None):
+    def tryConvert(self, text: str) -> (bool, ConvertResult | None):
         """
         @return: (True, ConvertResult) if conversion happened. (False, None) otherwise
         """

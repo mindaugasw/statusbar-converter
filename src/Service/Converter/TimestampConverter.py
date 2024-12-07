@@ -21,48 +21,49 @@ class TimestampConverter(ConverterInterface):
     MILLIS_MAX_CHARACTERS = 14
 
     _formatter: TimestampTextFormatter
-    _config: Configuration
     _logger: Logger
+
+    _templateOriginalText: str
+    _templateConvertedText: str
 
     def __init__(self, formatter: TimestampTextFormatter, config: Configuration, logger: Logger):
         self._formatter = formatter
-        self._config = config
         self._logger = logger
+
+        self._templateOriginalText = config.get(Configuration.MENU_ITEMS_LAST_CONVERSION_ORIGINAL_TEXT)
+        self._templateConvertedText = config.get(Configuration.MENU_ITEMS_LAST_CONVERSION_CONVERTED_TEXT)
 
     def getConverterName(self) -> str:
         return 'Timestamp'
 
-    def tryConvert(self, content: str) -> (bool, ConvertResult | None):
-        timestamp = self._extractTimestamp(content)
+    def tryConvert(self, text: str) -> (bool, ConvertResult | None):
+        timestamp = self._extractTimestamp(text)
 
         if timestamp is None:
             return False, None
-
-        templateOriginalText = self._config.get(Configuration.MENU_ITEMS_LAST_CONVERSION_ORIGINAL_TEXT)
-        templateConvertedText = self._config.get(Configuration.MENU_ITEMS_LAST_CONVERSION_CONVERTED_TEXT)
 
         return (
             True,
             ConvertResult(
                 self._formatter.formatForIcon(timestamp),
-                self._formatter.format(timestamp, templateOriginalText),
-                self._formatter.format(timestamp, templateConvertedText),
+                self._formatter.format(timestamp, self._templateOriginalText),
+                self._formatter.format(timestamp, self._templateConvertedText),
             ),
         )
 
-    def _extractTimestamp(self, content: str) -> Timestamp | None:
-        regexResult = re.match(self.REGEX_PATTERN, content)
+    def _extractTimestamp(self, text: str) -> Timestamp | None:
+        regexResult = re.match(self.REGEX_PATTERN, text)
 
         if regexResult is None:
             return None
 
         try:
-            number = int(content)
+            number = int(text)
         except Exception as e:
             self._logger.logDebug(
                 f'{Logs.catConverter}{self.getConverterName()}] '
                 f'Exception occurred while converting copied text to integer.\n'
-                f'Copied content: {content}\n'
+                f'Copied content: {text}\n'
                 f'Exception: {type(e)}\n'
                 f'Message: {str(e)}'
             )

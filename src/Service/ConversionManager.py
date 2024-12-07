@@ -30,14 +30,14 @@ class ConversionManager:
         if self._clearAfterTime > 0:
             events.appLoopIteration.append(self._tryClearAfterTime)
 
-    def onClipboardChange(self, content: str | None) -> None:
-        if content is None:
+    def onClipboardChange(self, text: str | None) -> None:
+        if text is None:
             self._tryClearOnChange()
 
             return
 
         for converter in self._converters:
-            success, result = converter.tryConvert(content)
+            success, result = converter.tryConvert(text)
 
             if not success:
                 continue
