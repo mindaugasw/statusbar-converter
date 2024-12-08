@@ -9,8 +9,9 @@ class TestThousandsDetector(TestCase):
 
     def testParseNumber(self) -> None:
         casesInitial: list[TestThousandsDetector._testCaseType] = [
-            # input,          expected output,   auto-generate ,.? (Default True)
+            # input,          expected output,   auto-generate more cases with ,.-? (Default True)
             ('100',           100,               False),
+            ('-100',          -100,              False),
             ('10.5',          10.5),
             ('10.50',         10.5),
             ('56.123',        56123),
@@ -26,6 +27,7 @@ class TestThousandsDetector(TestCase):
             ('11.222.333',    11222333),
             ('1234.4567,789', None),
             ('001',           1,                 False),
+            ('-001',          -1,                False),
             ('1..5',          None),
             ('1.,5',          None),
 
@@ -36,12 +38,12 @@ class TestThousandsDetector(TestCase):
 
         correctResults = 0
         casesCount = len(cases)
-        output = '\n%13s => %12s  !=  Error\n' % ('From', 'Expected')
+        output = '\n%15s => %12s  !=  Error\n' % ('From', 'Expected')
         parser = ThousandsDetector()
 
         for case in cases:
             result = parser.parseNumber(case[0])
-            output += '%13s => %12s' % (case[0], case[1])
+            output += '%15s => %12s' % (case[0], case[1])
 
             if result != case[1]:
                 output += '  != %12s\n' % result
@@ -55,7 +57,8 @@ class TestThousandsDetector(TestCase):
 
     def _generateTestCases(self, cases: list[_testCaseType]) -> list[_testCaseType]:
         """
-        Generate more test cases by swapping , and . in original test cases
+        Generate more test cases by swapping , and . in original test cases,
+        adding negative number test case
         """
 
         convertedList: list[TestThousandsDetector._testCaseType] = []
@@ -68,5 +71,9 @@ class TestThousandsDetector(TestCase):
 
             convertedText = case[0].replace(',', '#').replace('.', ',').replace('#', '.')
             convertedList.append((convertedText, case[1]))
+
+            minusNumber = case[1] * -1 if case[1] is not None else None
+            convertedList.append((f'-{case[0]}', minusNumber))
+            convertedList.append((f'-{convertedText}', minusNumber))
 
         return convertedList

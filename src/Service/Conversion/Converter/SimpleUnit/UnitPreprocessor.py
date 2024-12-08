@@ -6,11 +6,16 @@ class UnitPreprocessor:
         for _id, unit in units.items():
             primaryId = self._cleanString(_id)
 
-            unitsProcessed.update({primaryId: {'primaryId': primaryId}})
+            unitProcessed = {
+                'primaryId': primaryId,
+                'prettyFormat': unit['prettyFormat']
+            }
+
+            unitsProcessed.update({primaryId: unitProcessed})
 
             for alias in unit['aliases']:
                 aliasId = self._cleanString(alias)
-                unitsProcessed.update({aliasId: {'primaryId': primaryId}})
+                unitsProcessed.update({aliasId: unitProcessed})
 
         return unitsProcessed
 
