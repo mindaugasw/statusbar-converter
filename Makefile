@@ -15,12 +15,20 @@ help: ## Get this help.
 .PHONY:
 run: ## Start the app
 	@source .venv-*/bin/activate
-	@python -m src
+	python -m src
 
 .PHONY:
 test: ## Run unit tests
 	@source .venv-*/bin/activate
-	@python -m unittest
+	python -m unittest
+
+.PHONY:
+coverage: ## Run unit tests with coverage
+	@source .venv-*/bin/activate
+	coverage run
+	@coverage html
+	@echo 'Coverage %'
+	@coverage report --format=total
 
 .PHONY:
 install_macOS_AppleSilicon: ## Install Python virtual env
