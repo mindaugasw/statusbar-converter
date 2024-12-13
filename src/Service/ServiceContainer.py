@@ -7,6 +7,7 @@ from src.Service.AutostartManager import AutostartManager
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
+from src.Service.Conversion.ConversionManager import ConversionManager
 from src.Service.Conversion.Converter.ConverterInterface import ConverterInterface
 from src.Service.Conversion.Converter.SimpleUnit.SimpleConverterInterface import SimpleConverterInterface
 from src.Service.Conversion.Converter.SimpleUnit.SimpleUnitConverter import SimpleUnitConverter
@@ -15,7 +16,6 @@ from src.Service.Conversion.Converter.SimpleUnit.UnitPreprocessor import UnitPre
 from src.Service.Conversion.Converter.TimestampConverter import TimestampConverter
 from src.Service.Conversion.ThousandsDetector import ThousandsDetector
 from src.Service.Conversion.TimestampTextFormatter import TimestampTextFormatter
-from src.Service.ConversionManager import ConversionManager
 from src.Service.Debug import Debug
 from src.Service.ExceptionHandler import ExceptionHandler
 from src.Service.FilesystemHelper import FilesystemHelper

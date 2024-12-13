@@ -17,8 +17,8 @@ from src.Service.AutostartManager import AutostartManager
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
+from src.Service.Conversion.ConversionManager import ConversionManager
 from src.Service.Conversion.TimestampTextFormatter import TimestampTextFormatter
-from src.Service.ConversionManager import ConversionManager
 from src.Service.Debug import Debug
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
