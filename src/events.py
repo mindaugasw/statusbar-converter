@@ -1,5 +1,9 @@
 from src.DTO.Event import Event
 
+# TODO refactor into a service
+# As a bonus, it could allow easily blocking all events, e.g. before showing UI window, and unblocking afterwards. To not crash application with incoming events while UI is blocked
+# EventDispatcher.blockEvents()
+# EventDispatcher.unblockEvents()
 appLoopIteration = Event()
 
 clipboardChanged = Event()

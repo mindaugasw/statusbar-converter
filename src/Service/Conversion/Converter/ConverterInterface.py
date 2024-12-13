@@ -15,6 +15,8 @@ class ConverterInterface(ABC):
     @abstractmethod
     def tryConvert(self, text: str) -> (bool, ConvertResult | None):
         """
+        @param: text will already have whitespace trimmed around start and end
+
         @return: (True, ConvertResult) if conversion happened. (False, None) otherwise
         """
         pass

@@ -34,14 +34,10 @@ class TemperatureConverter(SimpleConverterInterface):
     _unitsProcessed: dict
 
     def __init__(self, unitPreprocessor: UnitPreprocessor, config: Configuration):
-        self._enabled = config.get(ConfigId.Converter_Temperature_Enabled)
-
-        if not self._enabled:
-            return
-
         self._unitsProcessed = unitPreprocessor.process(self._units)
         primaryUnitId = config.get(ConfigId.Converter_Temperature_PrimaryUnit).lower()
         self._primaryUnit = self._unitsProcessed[primaryUnitId]
+        self._enabled = config.get(ConfigId.Converter_Temperature_Enabled)
 
     def isEnabled(self) -> bool:
         return self._enabled
@@ -75,7 +71,7 @@ class TemperatureConverter(SimpleConverterInterface):
         else:
             raise Exception(f'Unknown unitFrom.primaryId "{unitFrom["primaryId"]}" in TemperatureConverter')
 
-        textFrom = f'{int(number)} {unitFrom["prettyFormat"]}'
-        textTo = f'{int(convertedNumber)} {convertedUnit["prettyFormat"]}'
+        textFrom = f'{round(number)} {unitFrom["prettyFormat"]}'
+        textTo = f'{round(convertedNumber)} {convertedUnit["prettyFormat"]}'
 
         return True, ConvertResult(f'{textFrom}  =  {textTo}', textFrom, textTo, self.getName())

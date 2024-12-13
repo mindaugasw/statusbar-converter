@@ -12,6 +12,12 @@ from src.Service.OSSwitch import OSSwitch
 
 
 class ModalWindowManager:
+    """
+    Based on Dear PyGui
+
+    See docs at: https://dearpygui.readthedocs.io
+    """
+
     _builders: dict[str, ModalWindowBuilderInterface]
     _osSwitch: OSSwitch
     _logger: Logger
@@ -64,10 +70,6 @@ class ModalWindowManager:
         self._buildWindow(builder, arguments)
 
     def _buildWindow(self, builder: ModalWindowBuilderInterface, arguments: dict[str, any]) -> None:
-        """
-        See docs at https://dearpygui.readthedocs.io
-        """
-
         parameters = builder.getParameters()
         logCategory = Logs.catModalSub + parameters.logCategory + '] '
         self._logger.logDebug(logCategory + 'Initialize')
