@@ -27,13 +27,12 @@ class TestTimestampConverter(TestCase):
         ('14 chars: max value, ms', '9999999999999', True, '9999999999.999'),
         ('15 chars: too long for ms', '10000000000000', False, None),
     ])
-    @patch('time.time')
+    @patch('time.time', return_value=1733022011.42)
     def testTryConvert(
         self, _: str,
         text: str, expectSuccess: bool, expectText: str | None,
         timeMock,
     ) -> None:
-        timeMock.return_value = 1733022011.42
         configMock = MockLibrary.getConfig([
             (ConfigId.Converter_Timestamp_Enabled, True),
             (ConfigId.Converter_Timestamp_IconFormat, {

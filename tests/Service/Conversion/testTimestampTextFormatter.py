@@ -24,14 +24,13 @@ class TestTimestampTextFormatter(TestCase):
         ('In seconds', 1733022011 + 15, None, '{r_int}, {r_float}', 'in 15 s, in 15.0 s'),
         ('In years', 1733022011 + 3600 * 24 * 365 * 15.111, None, '{r_int}, {r_float}', 'in 15 years, in 15.1 years'),
     ])
-    @patch('time.time')
+    @patch('time.time', return_value=1733022011.42)
     def testFormat(
         self, _: str,
         seconds: int, milliseconds: int | None, template: str,
         expected: str,
         timeMock,
     ) -> None:
-        timeMock.return_value = 1733022011.42
         configMock = MockLibrary.getConfig([
             (ConfigId.Converter_Timestamp_IconFormat, {}),
         ])
@@ -47,9 +46,8 @@ class TestTimestampTextFormatter(TestCase):
         ('Level 6', 1733022011 - 2678400 - 100, 'none 6'),
         ('Level default', 1733022011 + 2365200000 + 100, '4098222111 - in 75.0 years'),
     ])
-    @patch('time.time')
+    @patch('time.time', return_value=1733022011.42)
     def testFormatForIcon(self, _: str, seconds: int, expected: str, timeMock) -> None:
-        timeMock.return_value = 1733022011.42
         configMock = MockLibrary.getConfig([
             (ConfigId.Converter_Timestamp_IconFormat, {
                 '60': 'none 1',
