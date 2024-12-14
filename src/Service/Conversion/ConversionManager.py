@@ -1,17 +1,18 @@
 import time
 import traceback
 
-import src.events as events
 from src.Constant.ConfigId import ConfigId
 from src.Constant.Logs import Logs
 from src.Service.Configuration import Configuration
 from src.Service.Conversion.Converter.ConverterInterface import ConverterInterface
 from src.Service.Debug import Debug
+from src.Service.EventService import EventService
 from src.Service.Logger import Logger
 
 
 class ConversionManager:
     _converters: list[ConverterInterface]
+    _events: EventService
     _logger: Logger
     _debug: Debug
 
@@ -19,18 +20,26 @@ class ConversionManager:
     _clearAfterTime: int
     _convertedAt: int | None = None
 
-    def __init__(self, converters: list[ConverterInterface], config: Configuration, logger: Logger, debug: Debug):
+    def __init__(
+        self,
+        converters: list[ConverterInterface],
+        events: EventService,
+        config: Configuration,
+        logger: Logger,
+        debug: Debug,
+    ):
         self._converters = [c for c in converters if c.isEnabled()]
+        self._events = events
         self._logger = logger
         self._debug = debug
 
         self._clearOnChangeEnabled = config.get(ConfigId.ClearOnChange)
         self._clearAfterTime = config.get(ConfigId.ClearAfterTime)
 
-        events.clipboardChanged.append(self.onClipboardChange)
+        self._events.subscribeClipboardChanged(self.onClipboardChange)
 
         if self._clearAfterTime > 0:
-            events.appLoopIteration.append(self._tryClearAfterTime)
+            self._events.subscribeAppLoopIteration(self._tryClearAfterTime)
 
     def onClipboardChange(self, text: str | None) -> None:
         if text is None:
@@ -70,7 +79,7 @@ class ConversionManager:
                 )
 
             self._convertedAt = int(time.time())
-            events.converted(result)
+            self._events.dispatchConverted(result)
 
             return
 
@@ -80,7 +89,7 @@ class ConversionManager:
         self._logger.logDebug(Logs.catConvert + ' Statusbar clear: ' + reason)
 
         self._convertedAt = None
-        events.statusbarClear()
+        self._events.dispatchStatusbarClear()
 
     def _tryClearOnChange(self) -> None:
         if not self._clearOnChangeEnabled:

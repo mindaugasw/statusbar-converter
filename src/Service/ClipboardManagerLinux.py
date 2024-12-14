@@ -3,6 +3,7 @@ import subprocess
 import threading
 
 from src.Service.ClipboardManager import ClipboardManager
+from src.Service.EventService import EventService
 from src.Service.FilesystemHelperLinux import FilesystemHelperLinux
 from src.Service.Logger import Logger
 
@@ -10,8 +11,8 @@ from src.Service.Logger import Logger
 class ClipboardManagerLinux(ClipboardManager):
     _clipnotifyPath: str
 
-    def __init__(self, logger: Logger):
-        super().__init__(logger)
+    def __init__(self, events: EventService, logger: Logger):
+        super().__init__(events, logger)
 
         self._clipnotifyPath = FilesystemHelperLinux.getBinariesDir() + '/clipnotify/clipnotify'
 

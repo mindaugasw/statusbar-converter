@@ -1,16 +1,19 @@
 import threading
 import time
-import src.events as events
+
+from src.Service.EventService import EventService
 from src.Service.OSSwitch import OSSwitch
 
 
 class AppLoop:
     _osSwitch: OSSwitch
+    _events: EventService
 
     _loopInterval: float
 
-    def __init__(self, osSwitch: OSSwitch):
+    def __init__(self, osSwitch: OSSwitch, events: EventService):
         self._osSwitch = osSwitch
+        self._events = events
 
     def startLoop(self) -> None:
         # On macOS AppLoop is used for clipboard polling, so we must keep interval
@@ -22,5 +25,5 @@ class AppLoop:
 
     def _processIteration(self) -> None:
         while True:
-            events.appLoopIteration()
+            self._events.dispatchAppLoopIteration()
             time.sleep(self._loopInterval)

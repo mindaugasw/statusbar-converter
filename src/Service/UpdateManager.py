@@ -7,12 +7,12 @@ from typing import Callable
 
 import requests
 
-import src.events as events
 from src.Constant.AppConstant import AppConstant
 from src.Constant.ConfigId import ConfigId
 from src.Constant.Logs import Logs
 from src.Service.Configuration import Configuration
 from src.Service.Debug import Debug
+from src.Service.EventService import EventService
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
 
@@ -22,6 +22,7 @@ class UpdateManager:
     RELEASES_URL = 'https://api.github.com/repos/mindaugasw/statusbar-converter/releases?per_page=100'
 
     _filesystemHelper: FilesystemHelper
+    _events: EventService
     _config: Configuration
     _logger: Logger
     _debug: Debug
@@ -30,13 +31,21 @@ class UpdateManager:
     _skippedVersion: tuple[int, ...] | None
     _lastCheckAt: int | None = None
 
-    def __init__(self, filesystemHelper: FilesystemHelper, config: Configuration, logger: Logger, debug: Debug):
+    def __init__(
+        self,
+        filesystemHelper: FilesystemHelper,
+        events: EventService,
+        config: Configuration,
+        logger: Logger,
+        debug: Debug,
+    ):
         self._filesystemHelper = filesystemHelper
+        self._events = events
         self._config = config
         self._logger = logger
         self._debug = debug
 
-        events.appLoopIteration.append(self._updateCheckIteration)
+        self._events.subscribeAppLoopIteration(self._updateCheckIteration)
 
     def checkForUpdatesAsync(self, manuallyTriggered: bool) -> None:
         self._lastCheckAt = int(time.time())
@@ -175,4 +184,4 @@ class UpdateManager:
                 'Remind me later': _handleClickRemindMeLater,
             }
 
-        events.updateCheckCompleted(text, buttons)
+        self._events.dispatchUpdateCheckCompleted(text, buttons)

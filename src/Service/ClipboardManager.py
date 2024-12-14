@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-import src.events as events
 from src.Constant.Logs import Logs
+from src.Service.EventService import EventService
 from src.Service.Logger import Logger
 
 
@@ -9,9 +9,11 @@ class ClipboardManager(ABC):
     MAX_CONTENT_LENGTH = 100
     MAX_CONTENT_LENGTH_TRIMMED = 25
 
+    _events: EventService
     _logger: Logger
 
-    def __init__(self, logger: Logger):
+    def __init__(self, events: EventService, logger: Logger):
+        self._events = events
         self._logger = logger
 
     @abstractmethod
@@ -26,7 +28,7 @@ class ClipboardManager(ABC):
         # Avoid parsing huge texts to not impact performance
         if len(text) > ClipboardManager.MAX_CONTENT_LENGTH:
             self._logger.logDebug(Logs.catClipboard + 'Changed: Too long content, skipping')
-            events.clipboardChanged(None)
+            self._events.dispatchClipboardChanged(None)
 
             return
 
@@ -34,15 +36,15 @@ class ClipboardManager(ABC):
 
         if trimmed == '':
             self._logger.logDebug(f'{Logs.catClipboard}Changed to: [empty]')
-            events.clipboardChanged(None)
+            self._events.dispatchClipboardChanged(None)
 
             return
 
         if len(trimmed) > ClipboardManager.MAX_CONTENT_LENGTH_TRIMMED:
             self._logger.logDebug(Logs.catClipboard + 'Changed: Too long clipboard content after trimming, skipping')
-            events.clipboardChanged(None)
+            self._events.dispatchClipboardChanged(None)
 
             return
 
         self._logger.logDebug(Logs.catClipboard + 'Changed to: ' + trimmed)
-        events.clipboardChanged(trimmed)
+        self._events.dispatchClipboardChanged(trimmed)

@@ -4,7 +4,6 @@ import webbrowser
 from abc import ABC, abstractmethod
 from typing import Callable
 
-import src.events as events
 from src.Constant.AppConstant import AppConstant
 from src.Constant.ConfigId import ConfigId
 from src.Constant.ModalId import ModalId
@@ -17,6 +16,7 @@ from src.Service.Configuration import Configuration
 from src.Service.Conversion.ConversionManager import ConversionManager
 from src.Service.Conversion.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.Debug import Debug
+from src.Service.EventService import EventService
 from src.Service.Logger import Logger
 from src.Service.ModalWindow import ModalWindowManager
 from src.Service.OSSwitch import OSSwitch
@@ -30,6 +30,7 @@ class StatusbarApp(ABC):
     _formatter: TimestampTextFormatter
     _clipboard: ClipboardManager
     _conversionManager: ConversionManager
+    _events: EventService
     _config: Configuration
     _autostartManager: AutostartManager
     _updateManager: UpdateManager
@@ -55,6 +56,7 @@ class StatusbarApp(ABC):
         formatter: TimestampTextFormatter,
         clipboard: ClipboardManager,
         conversionManager: ConversionManager,
+        events: EventService,
         config: Configuration,
         configFileManager: ConfigFileManager,
         autostartManager: AutostartManager,
@@ -67,6 +69,7 @@ class StatusbarApp(ABC):
         self._formatter = formatter
         self._clipboard = clipboard
         self._conversionManager = conversionManager
+        self._events = events
         self._config = config
         self._autostartManager = autostartManager
         self._updateManager = updateManager
@@ -81,7 +84,7 @@ class StatusbarApp(ABC):
         self._menuTemplatesCurrentTimestamp = config.get(ConfigId.Converter_Timestamp_Menu_CurrentTimestamp)
         self._flashIconOnChange = config.get(ConfigId.FlashIconOnChange)
 
-        events.updateCheckCompleted.append(self._showAppUpdateDialog)
+        self._events.subscribeUpdateCheckCompleted(self._showAppUpdateDialog)
 
     @abstractmethod
     def createApp(self) -> None:

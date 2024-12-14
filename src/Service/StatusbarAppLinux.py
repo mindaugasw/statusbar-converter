@@ -7,7 +7,6 @@ from collections.abc import Callable
 
 import gi
 
-import src.events as events
 from src.Constant.AppConstant import AppConstant
 from src.Constant.Logs import Logs
 from src.DTO.ConvertResult import ConvertResult
@@ -20,6 +19,7 @@ from src.Service.Configuration import Configuration
 from src.Service.Conversion.ConversionManager import ConversionManager
 from src.Service.Conversion.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.Debug import Debug
+from src.Service.EventService import EventService
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
 from src.Service.ModalWindow.ModalWindowManager import ModalWindowManager
@@ -73,6 +73,7 @@ class StatusbarAppLinux(StatusbarApp):
         formatter: TimestampTextFormatter,
         clipboard: ClipboardManager,
         conversionManager: ConversionManager,
+        events: EventService,
         config: Configuration,
         configFileManager: ConfigFileManager,
         autostartManager: AutostartManager,
@@ -86,6 +87,7 @@ class StatusbarAppLinux(StatusbarApp):
             formatter,
             clipboard,
             conversionManager,
+            events,
             config,
             configFileManager,
             autostartManager,
@@ -99,8 +101,8 @@ class StatusbarAppLinux(StatusbarApp):
         self._iconPathFlash = FilesystemHelper.getAssetsDir() + '/icon_linux_flash.png'
 
     def createApp(self) -> None:
-        events.converted.append(self._onConverted)
-        events.statusbarClear.append(self._onStatusbarClear)
+        self._events.subscribeConverted(self._onConverted)
+        self._events.subscribeStatusbarClear(self._onStatusbarClear)
 
         # https://lazka.github.io/pgi-docs/#AyatanaAppIndicator3-0.1/classes/Indicator.html#AyatanaAppIndicator3.Indicator.new
         self._app = AppIndicator3.Indicator.new(

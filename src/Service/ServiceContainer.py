@@ -17,6 +17,7 @@ from src.Service.Conversion.Converter.TimestampConverter import TimestampConvert
 from src.Service.Conversion.ThousandsDetector import ThousandsDetector
 from src.Service.Conversion.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.Debug import Debug
+from src.Service.EventService import EventService
 from src.Service.ExceptionHandler import ExceptionHandler
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
@@ -52,6 +53,7 @@ class ServiceContainer:
         _[Configuration] = config = Configuration(configFileManager, logger)
         _[ArgumentParser] = argumentParser = ArgumentParser()
         _[Debug] = debug = Debug(config, argumentParser)
+        _[EventService] = events = EventService()
 
         # Conversion services
         _[TimestampTextFormatter] = timestampTextFormatter = TimestampTextFormatter(config)
@@ -65,18 +67,18 @@ class ServiceContainer:
             TimestampConverter(timestampTextFormatter, config, logger),
             SimpleUnitConverter(simpleConverters, thousandsDetector),
         ]
-        _[ConversionManager] = conversionManager = ConversionManager(converters, config, logger, debug)
+        _[ConversionManager] = conversionManager = ConversionManager(converters, events, config, logger, debug)
 
         # GUI services
         _[list[ModalWindowBuilderInterface]] = modalWindowBuilders = self._getModalWindowBuilders(config)
         _[ModalWindowManager] = modalWindowManager = ModalWindowManager(modalWindowBuilders, osSwitch, logger)
 
         # App services
-        _[UpdateManager] = updateManager = UpdateManager(filesystemHelper, config, logger, debug)
+        _[UpdateManager] = updateManager = UpdateManager(filesystemHelper, events, config, logger, debug)
         _[AutostartManager] = autostartManager = self._getAutostartManager(osSwitch, config, filesystemHelper, logger)
-        _[ClipboardManager] = clipboardManager = self._getClipboardManager(osSwitch, logger)
-        _[StatusbarApp] = statusbarApp = self._getStatusbarApp(osSwitch, timestampTextFormatter, clipboardManager, conversionManager, config, configFileManager, autostartManager, updateManager, modalWindowManager, logger, debug)
-        _[AppLoop] = appLoop = AppLoop(osSwitch)
+        _[ClipboardManager] = clipboardManager = self._getClipboardManager(events, osSwitch, logger)
+        _[StatusbarApp] = statusbarApp = self._getStatusbarApp(osSwitch, timestampTextFormatter, clipboardManager, conversionManager, events, config, configFileManager, autostartManager, updateManager, modalWindowManager, logger, debug)
+        _[AppLoop] = appLoop = AppLoop(osSwitch, events)
 
         self._services = _
 
@@ -122,13 +124,13 @@ class ServiceContainer:
             from src.Service.AutostartManagerLinux import AutostartManagerLinux
             return AutostartManagerLinux(config, filesystemHelper, logger)
 
-    def _getClipboardManager(self, osSwitch: OSSwitch, logger: Logger) -> ClipboardManager:
+    def _getClipboardManager(self, eventService: EventService, osSwitch: OSSwitch, logger: Logger) -> ClipboardManager:
         if osSwitch.isMacOS():
             from src.Service.ClipboardManagerMacOs import ClipboardManagerMacOs
-            return ClipboardManagerMacOs(logger)
+            return ClipboardManagerMacOs(eventService, logger)
         else:
             from src.Service.ClipboardManagerLinux import ClipboardManagerLinux
-            return ClipboardManagerLinux(logger)
+            return ClipboardManagerLinux(eventService, logger)
 
     def _getStatusbarApp(
         self,
@@ -136,6 +138,7 @@ class ServiceContainer:
         timestampTextFormatter: TimestampTextFormatter,
         clipboardManager: ClipboardManager,
         conversionManager: ConversionManager,
+        events: EventService,
         config: Configuration,
         configFileManager: ConfigFileManager,
         autostartManager: AutostartManager,
@@ -151,6 +154,7 @@ class ServiceContainer:
                 timestampTextFormatter,
                 clipboardManager,
                 conversionManager,
+                events,
                 config,
                 configFileManager,
                 autostartManager,
@@ -166,6 +170,7 @@ class ServiceContainer:
                 timestampTextFormatter,
                 clipboardManager,
                 conversionManager,
+                events,
                 config,
                 configFileManager,
                 autostartManager,
