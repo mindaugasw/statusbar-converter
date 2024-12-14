@@ -30,9 +30,6 @@ class TestThousandsDetector(TestCase):
             ('-001',          -1,                False),
             ('1..5',          None),
             ('1.,5',          None),
-
-            # (',', None), # TODO move to another test
-            # ('.', None),
         ]
         cases = self._generateTestCases(casesInitial)
 
