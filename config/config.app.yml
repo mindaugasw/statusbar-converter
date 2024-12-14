@@ -13,6 +13,14 @@ flash_icon_on_change: true
 debug: false
 
 converters:
+    distance:
+        enabled: true
+        primary_unit_metric: true
+
+    temperature:
+        enabled: true
+        primary_unit: C
+
     timestamp:
         enabled: true
 
@@ -66,7 +74,3 @@ converters:
             # Label text: "format to copy on click"
             Current timestamp: "{ts}"
             Current datetime: "%Y-%m-%d %H:%M:%S"
-
-    temperature:
-        enabled: true
-        primary_unit: C

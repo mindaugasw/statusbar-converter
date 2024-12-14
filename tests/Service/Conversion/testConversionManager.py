@@ -8,6 +8,7 @@ from src.DTO.ConvertResult import ConvertResult
 from src.Service.ArgumentParser import ArgumentParser
 from src.Service.Conversion.ConversionManager import ConversionManager
 from src.Service.Conversion.Converter.ConverterInterface import ConverterInterface
+from src.Service.Conversion.Converter.SimpleUnit.DistanceConverter import DistanceConverter
 from src.Service.Conversion.Converter.SimpleUnit.SimpleConverterInterface import SimpleConverterInterface
 from src.Service.Conversion.Converter.SimpleUnit.SimpleUnitConverter import SimpleUnitConverter
 from src.Service.Conversion.Converter.SimpleUnit.TemperatureConverter import TemperatureConverter
@@ -38,6 +39,7 @@ class TestConversionManager(TestCase):
         ('No matched converter', '123 asd', False, None),
         ('Timestamp converter', '1555522011', True, '1555522011'),
         ('Temperature converter', '15 F', True, '-9 °C'),
+        ('Distance converter', '15 ft', True, '4.6 m'),
     ])
     @patch('time.time', return_value=1733022011.42)
     def testOnClipboardChange(
@@ -65,15 +67,18 @@ class TestConversionManager(TestCase):
             (ConfigId.ClearOnChange, False),
             (ConfigId.ClearAfterTime, 0),
             (ConfigId.Debug, False),
+            (ConfigId.Converter_Distance_Enabled, True),
+            (ConfigId.Converter_Distance_PrimaryUnit_Metric, True),
+            (ConfigId.Converter_Temperature_Enabled, True),
+            (ConfigId.Converter_Temperature_PrimaryUnit, 'C'),
             (ConfigId.Converter_Timestamp_Enabled, True),
             (ConfigId.Converter_Timestamp_IconFormat, {'default': ''}),
             (ConfigId.Converter_Timestamp_Menu_LastConversion_OriginalText, ''),
             (ConfigId.Converter_Timestamp_Menu_LastConversion_ConvertedText, '{ts_ms_sep}'),
-            (ConfigId.Converter_Temperature_Enabled, True),
-            (ConfigId.Converter_Temperature_PrimaryUnit, 'C'),
         ])
 
         simpleConverters: list[SimpleConverterInterface] = [
+            DistanceConverter(configMock),
             TemperatureConverter(
                 UnitPreprocessor(),
                 configMock,

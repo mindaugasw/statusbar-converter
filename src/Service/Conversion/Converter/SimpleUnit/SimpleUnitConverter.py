@@ -12,13 +12,14 @@ class SimpleUnitConverter(ConverterInterface):
     """
 
     _thousandsDetector: ThousandsDetector
-    _unitToConverter: dict[str, SimpleConverterInterface] = {}
 
-    _patternIsNumberAndText = re.compile(r'^((\-)?([\d,.]*\d[\d,.]*))([a-z/*°]+)')
+    _patternIsNumberAndText = re.compile(r'^((\-)?([\d,.]*\d[\d,.]*))([a-z/*°\'"`]+)')
+    _unitToConverter: dict[str, SimpleConverterInterface]
     _enabled: bool
 
     def __init__(self, internalConverters: list[SimpleConverterInterface], thousandsDetector: ThousandsDetector):
         self._thousandsDetector = thousandsDetector
+        self._unitToConverter = {}
 
         for internalConverter in internalConverters:
             if not internalConverter.isEnabled():
@@ -27,6 +28,9 @@ class SimpleUnitConverter(ConverterInterface):
             unitsIds = internalConverter.getUnitIds()
 
             for unitId in unitsIds:
+                if unitId in self._unitToConverter:
+                    raise Exception(f'SimpleUnitConverter unit alias collision: {unitId} alias already exists')
+
                 self._unitToConverter[unitId] = internalConverter
 
         self._enabled = len(self._unitToConverter) > 0
