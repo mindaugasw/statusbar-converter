@@ -22,7 +22,7 @@ class ModalWindowManager:
     _osSwitch: OSSwitch
     _logger: Logger
 
-    _isModalOpen = False
+    _isModalOpen: bool
 
     def __init__(
         self,
@@ -33,6 +33,8 @@ class ModalWindowManager:
         self._builders = builders
         self._osSwitch = osSwitch
         self._logger = logger
+
+        self._isModalOpen = False
 
     def openModal(self, _id: str):
         self._openModalInternal(_id, {})

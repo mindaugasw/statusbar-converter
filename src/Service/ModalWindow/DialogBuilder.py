@@ -9,7 +9,12 @@ from src.Service.ModalWindow.ModalWindowBuilderInterface import ModalWindowBuild
 class DialogBuilder(ModalWindowBuilderInterface):
     _primaryTag = 'primary'
     _minimumNewLines = 7
-    _callbacks: dict[str | int, Callable | None] = {}
+    _callbacks: dict[str | int, Callable | None]
+
+    def __init__(self):
+        super().__init__()
+
+        self._callbacks = {}
 
     def getParameters(self) -> ModalWindowParameters:
         return ModalWindowParameters(

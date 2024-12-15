@@ -18,7 +18,7 @@ class ConversionManager:
 
     _clearOnChangeEnabled: bool
     _clearAfterTime: int
-    _convertedAt: int | None = None
+    _convertedAt: int | None
 
     def __init__(
         self,
@@ -35,6 +35,7 @@ class ConversionManager:
 
         self._clearOnChangeEnabled = config.get(ConfigId.ClearOnChange)
         self._clearAfterTime = config.get(ConfigId.ClearAfterTime)
+        self._convertedAt = None
 
         self._events.subscribeClipboardChanged(self.onClipboardChange)
 

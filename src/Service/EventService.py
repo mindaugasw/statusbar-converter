@@ -16,7 +16,10 @@ class EventService:
     _idStatusbarClear = 'statusbar_clear'
     _idUpdateCheckCompleted = 'update_check_completed'
 
-    _events: dict[str, Event] = {}
+    _events: dict[str, Event]
+
+    def __init__(self):
+        self._events = {}
 
     def subscribeAppLoopIteration(self, callback: Callable[[], None]) -> None:
         self._subscribe(self._idAppLoopIteration, callback)

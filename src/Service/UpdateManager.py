@@ -29,7 +29,7 @@ class UpdateManager:
 
     _currentVersion: tuple[int, ...]
     _skippedVersion: tuple[int, ...] | None
-    _lastCheckAt: int | None = None
+    _lastCheckAt: int | None
 
     def __init__(
         self,
@@ -45,6 +45,7 @@ class UpdateManager:
         self._logger = logger
         self._debug = debug
 
+        self._lastCheckAt = None
         self._events.subscribeAppLoopIteration(self._updateCheckIteration)
 
     def checkForUpdatesAsync(self, manuallyTriggered: bool) -> None:

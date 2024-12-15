@@ -26,11 +26,13 @@ class Configuration:
     App internal state.
     Writable by the app itself and should not be modified by the user
     """
-    _configInitialized = False
+    _configInitialized: bool
 
     def __init__(self, configFileManager: ConfigFileManager, logger: Logger):
         self._configFileManager = configFileManager
         self._logger = logger
+
+        self._configInitialized = False
 
     def get(self, key: list[str]):
         self._initializeConfig()

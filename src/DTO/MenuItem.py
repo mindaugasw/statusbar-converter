@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Any
 
 
 class MenuItem:
@@ -7,7 +7,7 @@ class MenuItem:
     isSeparator: bool
     callback: Callable | None
     initialState: bool | None
-    nativeItem = None
+    nativeItem: Any
 
     def __init__(
         self,
@@ -31,6 +31,7 @@ class MenuItem:
         self.isSeparator = isSeparator
         self.initialState = initialState
         self.callback = callback
+        self.nativeItem = None
 
     def setNativeItem(self, nativeItem) -> None:
         self.nativeItem = nativeItem

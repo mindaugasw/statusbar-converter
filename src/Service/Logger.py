@@ -15,10 +15,11 @@ class Logger:
     instance = None
 
     _logPath: str
-    _isDebugEnabled = False
+    _isDebugEnabled: bool
     _instanceId: str
 
     def __init__(self, filesystemHelper: FilesystemHelper):
+        self._isDebugEnabled = False
         self._logPath = f'{filesystemHelper.getUserDataDir()}/log.txt'
         self._initializeLogFile()
         self._instanceId = ''.join(random.choices(string.ascii_lowercase + string.digits, k=3))

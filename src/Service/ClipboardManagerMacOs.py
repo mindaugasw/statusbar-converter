@@ -1,12 +1,19 @@
 from AppKit import NSPasteboard, NSStringPboardType, NSArray
 
 from src.Service.ClipboardManager import ClipboardManager
+from src.Service.EventService import EventService
+from src.Service.Logger import Logger
 
 
 class ClipboardManagerMacOs(ClipboardManager):
     _pasteboard: NSPasteboard
 
-    _changeCount = -1
+    _changeCount: int
+
+    def __init__(self, events: EventService, logger: Logger):
+        super().__init__(events, logger)
+
+        self._changeCount = -1
 
     def initializeClipboardWatch(self) -> None:
         self._pasteboard = NSPasteboard.generalPasteboard()
