@@ -77,10 +77,12 @@ class TestConversionManager(TestCase):
             (ConfigId.Converter_Timestamp_Menu_LastConversion_ConvertedText, '{ts_ms_sep}'),
         ])
 
+        unitPreprocessor = UnitPreprocessor()
+
         simpleConverters: list[SimpleConverterInterface] = [
-            DistanceConverter(configMock),
+            DistanceConverter(unitPreprocessor, configMock),
             TemperatureConverter(
-                UnitPreprocessor(),
+                unitPreprocessor,
                 configMock,
             ),
         ]

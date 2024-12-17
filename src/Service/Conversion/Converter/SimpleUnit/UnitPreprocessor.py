@@ -1,23 +1,30 @@
+import copy
+
+from src.DTO.Converter.AbstractUnit import AbstractUnit
+from src.DTO.Converter.UnitDefinition import UnitDefinition, UnitDefT
+
+
 class UnitPreprocessor:
-    # TODO define DTOs for units instead of using dicts
-    def process(self, units: dict) -> dict:
-        unitsProcessed = {}
+    def expandAliases(self, units: dict[str, UnitDefinition[UnitDefT]]) -> dict[str, UnitDefT]:
+        unitsExpanded: dict[str, AbstractUnit] = {}
 
-        for _id, unit in units.items():
-            primaryId = self._cleanString(_id)
+        for _, unitDef in units.items():
+            primaryAlias = self._cleanString(unitDef.unit.primaryAlias)
 
-            unitProcessed = {
-                'primaryId': primaryId,
-                'prettyFormat': unit['prettyFormat']
-            }
+            unitExpanded = copy.deepcopy(unitDef.unit)
+            unitExpanded.primaryAlias = primaryAlias
 
-            unitsProcessed.update({primaryId: unitProcessed})
+            unitsExpanded.update({primaryAlias: unitExpanded})
 
-            for alias in unit['aliases']:
-                aliasId = self._cleanString(alias)
-                unitsProcessed.update({aliasId: unitProcessed})
+            for alias in unitDef.aliases:
+                aliasCleaned = self._cleanString(alias)
 
-        return unitsProcessed
+                if aliasCleaned in unitsExpanded:
+                    raise Exception(f'Unit alias collision: {aliasCleaned} alias already exists')
+
+                unitsExpanded.update({aliasCleaned: unitExpanded})
+
+        return unitsExpanded
 
     def _cleanString(self, string: str) -> str:
         return string.lower().replace(' ', '')

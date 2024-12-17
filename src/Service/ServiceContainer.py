@@ -60,7 +60,7 @@ class ServiceContainer:
         _[TimestampTextFormatter] = timestampTextFormatter = TimestampTextFormatter(config)
         _[UnitPreprocessor] = unitPreprocessor = UnitPreprocessor()
         _[ThousandsDetector] = thousandsDetector = ThousandsDetector()
-        _[DistanceConverter] = distanceConverter = DistanceConverter(config)
+        _[DistanceConverter] = distanceConverter = DistanceConverter(unitPreprocessor, config)
         _[TemperatureConverter] = temperatureConverter = TemperatureConverter(unitPreprocessor, config)
         _[list[SimpleConverterInterface]] = simpleConverters = [
             distanceConverter,

@@ -2,14 +2,14 @@ import sys
 
 from src.Constant.ConfigId import ConfigId
 from src.DTO.ConvertResult import ConvertResult
+from src.DTO.Converter.AbstractUnit import AbstractUnit
+from src.DTO.Converter.UnitDefinition import UnitDefinition
 from src.Service.Configuration import Configuration
 from src.Service.Conversion.Converter.SimpleUnit.SimpleConverterInterface import SimpleConverterInterface
 from src.Service.Conversion.Converter.SimpleUnit.UnitPreprocessor import UnitPreprocessor
 
 
-class DistanceUnitExpanded:
-    primaryAlias: str
-    prettyFormat: str
+class DistanceUnit(AbstractUnit):
     isMetric: bool
     convertToThis: bool
     limitToShowUnit: float
@@ -24,44 +24,28 @@ class DistanceUnitExpanded:
         limitToShowUnit: float,
         multiplierToMeter: float,
     ):
-        self.primaryAlias = primaryAlias
-        self.prettyFormat = prettyFormat
+        super().__init__(primaryAlias, prettyFormat)
         self.isMetric = isMetric
         self.convertToThis = convertToThis
         self.limitToShowUnit = limitToShowUnit
         self.multiplierToMeter = multiplierToMeter
 
-class DistanceUnitInitial(DistanceUnitExpanded):
-    aliases: list[str]
-
-    def __init__(
-        self,
-        primaryAlias: str,
-        aliases: list[str],
-        prettyFormat: str,
-        isMetric: bool,
-        convertToThis: bool,
-        limitToShowUnit: float,
-        multiplierToMeter: float,
-    ):
-        super().__init__(primaryAlias, prettyFormat, isMetric, convertToThis, limitToShowUnit, multiplierToMeter)
-        self.aliases = aliases
-
 class DistanceConverter(SimpleConverterInterface):
+    # TODO add next: add unit test specifically for Distance converter
     _maxValueMeters = 999_999 * 1000 # 1M km
     _minValueMeters = 0.0001 # 0.1 mm
 
     _enabled: bool
     _primaryUnitMetric: bool
-    _unitsInitial: dict[str, DistanceUnitInitial]
-    _unitsExpanded: dict[str, DistanceUnitExpanded]
+    _unitsDefinition: dict[str, UnitDefinition[DistanceUnit]]
+    _unitsExpanded: dict[str, DistanceUnit]
 
-    def __init__(self, config: Configuration):
+    def __init__(self, unitPreprocessor: UnitPreprocessor, config: Configuration):
         self._enabled = config.get(ConfigId.Converter_Distance_Enabled)
         self._primaryUnitMetric = config.get(ConfigId.Converter_Distance_PrimaryUnit_Metric)
 
-        self._unitsInitial = self._getUnitsInitial()
-        self._unitsExpanded = self._expandUnitAliases(self._unitsInitial)
+        self._unitsDefinition = self._getUnitsDefinition()
+        self._unitsExpanded = unitPreprocessor.expandAliases(self._unitsDefinition)
 
     def isEnabled(self) -> bool:
         return self._enabled
@@ -87,18 +71,19 @@ class DistanceConverter(SimpleConverterInterface):
             return False, None
 
         numberTo: float = -1
-        unitTo: DistanceUnitInitial | None = None
+        unitTo: DistanceUnit | None = None
 
-        for _, unitInitial in self._unitsInitial.items():
-            if unitInitial.isMetric != self._primaryUnitMetric or not unitInitial.convertToThis:
+        for _, unitDef in self._unitsDefinition.items():
+            unitIteration = unitDef.unit
+            if unitIteration.isMetric != self._primaryUnitMetric or not unitIteration.convertToThis:
                 continue
 
-            numberTo = meters / unitInitial.multiplierToMeter
+            numberTo = meters / unitIteration.multiplierToMeter
 
-            if numberTo >= unitInitial.limitToShowUnit:
+            if numberTo >= unitIteration.limitToShowUnit:
                 continue
 
-            unitTo = unitInitial
+            unitTo = unitIteration
 
             break
 
@@ -110,93 +95,111 @@ class DistanceConverter(SimpleConverterInterface):
 
         return True, ConvertResult(f'{textFrom}  =  {textTo}', textFrom, textTo, self.getName())
 
-    def _getUnitsInitial(self) -> dict[str, DistanceUnitInitial]:
+    def _getUnitsDefinition(self) -> dict[str, UnitDefinition[DistanceUnit]]:
         return {
             # Units must be increasing order (per metric/imperial system)
 
             # Metric units
-            'mm': DistanceUnitInitial(
-                'mm',
+            'mm': UnitDefinition(
                 self._pluralizeAliases(['millimeter', 'milimeter', 'millimetre', 'milimetre']),
-                'mm',
-                True,
-                True,
-                10,
-                0.001,
+                DistanceUnit(
+                    'mm',
+                    'mm',
+                    True,
+                    True,
+                    10,
+                    0.001,
+                ),
             ),
-            'cm': DistanceUnitInitial(
-                'cm',
+            'cm': UnitDefinition(
                 ['cms'] + self._pluralizeAliases(['centimeter', 'centimetre']),
-                'cm',
-                True,
-                True,
-                100,
-                0.01,
+                DistanceUnit(
+                    'cm',
+                    'cm',
+                    True,
+                    True,
+                    100,
+                    0.01,
+                ),
             ),
-            'dm': DistanceUnitInitial(
-                'dm',
+            'dm': UnitDefinition(
                 self._pluralizeAliases(['decimeter', 'decimetre']),
-                'dm',
-                True,
-                False,
-                0,
-                0.1,
+                DistanceUnit(
+                    'dm',
+                    'dm',
+                    True,
+                    False,
+                    0,
+                    0.1,
+                ),
             ),
-            'm': DistanceUnitInitial(
-                'm',
+            'm': UnitDefinition(
                 self._pluralizeAliases(['meter', 'metre']),
-                'm',
-                True,
-                True,
-                1000,
-                1,
+                DistanceUnit(
+                    'm',
+                    'm',
+                    True,
+                    True,
+                    1000,
+                    1,
+                ),
             ),
-            'km': DistanceUnitInitial(
-                'km',
+            'km': UnitDefinition(
                 ['kms'] + self._pluralizeAliases(['kilometer', 'killometer', 'kilometre', 'killometre']),
-                'km',
-                True,
-                True,
-                sys.maxsize,
-                1000,
+                DistanceUnit(
+                    'km',
+                    'km',
+                    True,
+                    True,
+                    sys.maxsize,
+                    1000,
+                ),
             ),
 
             # Imperial units
-            'in': DistanceUnitInitial(
-                'in',
+            'in': UnitDefinition(
                 ['ins', 'inch', 'inches', 'inchs', '"', '\'\'', '``'],
-                '\'\'',
-                False,
-                True,
-                12,
-                0.0254,
+                DistanceUnit(
+                    'in',
+                    'in',
+                    False,
+                    True,
+                    12,
+                    0.0254,
+                ),
             ),
-            'ft': DistanceUnitInitial(
-                'ft',
+            'ft': UnitDefinition(
                 ['fts', 'feet', 'feets', 'foot', 'foots', '\'', '`'],
-                '\'',
-                False,
-                True,
-                1000,
-                0.3048,
+                DistanceUnit(
+                    'ft',
+                    'ft',
+                    False,
+                    True,
+                    1000,
+                    0.3048,
+                ),
             ),
-            'yd': DistanceUnitInitial(
-                'yd',
+            'yd': UnitDefinition(
                 ['yds', 'yrd', 'yrds', 'yard', 'yards'],
-                'yd',
-                False,
-                False,
-                0,
-                0.9144,
+                DistanceUnit(
+                    'yd',
+                    'yd',
+                    False,
+                    False,
+                    0,
+                    0.9144,
+                ),
             ),
-            'mi': DistanceUnitInitial(
-                'mi',
+            'mi': UnitDefinition(
                 ['mile', 'miles'],
-                'mi',
-                False,
-                True,
-                sys.maxsize,
-                1609.344,
+                DistanceUnit(
+                    'mi',
+                    'mi',
+                    False,
+                    True,
+                    sys.maxsize,
+                    1609.344,
+                ),
             ),
         }
 
@@ -208,30 +211,3 @@ class DistanceConverter(SimpleConverterInterface):
             newList.append(alias + 's')
 
         return newList
-
-    # TODO maybe extract to common UnitPreprocessor?
-    def _expandUnitAliases(self, units: dict[str, DistanceUnitInitial]) -> dict[str, DistanceUnitExpanded]:
-        unitsExpanded: dict[str, DistanceUnitExpanded] = {}
-
-        for _, unit in units.items():
-            primaryAlias = UnitPreprocessor._cleanString(unit.primaryAlias)
-
-            unitExpanded = DistanceUnitExpanded(
-                primaryAlias,
-                unit.prettyFormat,
-                unit.isMetric,
-                unit.convertToThis,
-                unit.limitToShowUnit,
-                unit.multiplierToMeter,
-            )
-            unitsExpanded.update({primaryAlias: unitExpanded})
-
-            for alias in unit.aliases:
-                aliasCleaned = UnitPreprocessor._cleanString(alias)
-
-                if aliasCleaned in unitsExpanded:
-                    raise Exception(f'DistanceConverter unit alias collision: {aliasCleaned} alias already exists')
-
-                unitsExpanded.update({aliasCleaned: unitExpanded})
-
-        return unitsExpanded
