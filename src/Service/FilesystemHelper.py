@@ -1,4 +1,5 @@
 import os
+import sys
 from abc import ABC, abstractmethod
 
 
@@ -57,3 +58,8 @@ class FilesystemHelper(ABC):
     def getStartupScriptDir() -> str:
         """Get directory where scripts should be saved to enable auto-start on boot"""
         pass
+
+    @staticmethod
+    def isPackagedApp():
+        # Frozen attribute is added by PyInstaller to packaged app
+        return getattr(sys, 'frozen', False)

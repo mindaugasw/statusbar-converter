@@ -14,8 +14,7 @@ class FilesystemHelperLinux(FilesystemHelper):
 
     @staticmethod
     def getAppPath() -> str | None:
-        if not getattr(sys, "frozen", False):
-            # Frozen attribute is added to packaged app
+        if not FilesystemHelper.isPackagedApp():
             return None
 
         return sys.executable
