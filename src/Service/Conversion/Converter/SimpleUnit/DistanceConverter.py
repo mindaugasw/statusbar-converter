@@ -31,7 +31,6 @@ class DistanceUnit(AbstractUnit):
         self.multiplierToMeter = multiplierToMeter
 
 class DistanceConverter(SimpleConverterInterface):
-    # TODO add next: add unit test specifically for Distance converter
     _maxValueMeters = 999_999 * 1000 # 1M km
     _minValueMeters = 0.0001 # 0.1 mm
 

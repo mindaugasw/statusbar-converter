@@ -23,7 +23,7 @@ class TestTemperatureConverter(TestCase):
         ('Do not convert primary unit: F', 100, 'f', 'f', False),
     ])
     def testTryConvert(
-        self, _,
+        self, _: str,
         number: float, unitId: str, primaryUnitId: str,
         expectedSuccess: bool, expectedFrom: str | None = None, expectedTo: str | None = None,
     ) -> None:
