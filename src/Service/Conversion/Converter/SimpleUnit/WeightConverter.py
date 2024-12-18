@@ -136,7 +136,7 @@ class WeightConverter(AbstractSimpleConverter):
                     'lb',
                     False,
                     True,
-                    2240, # 2240 is 1 imperial ton
+                    sys.maxsize,
                     0.45359237,
                 ),
             ),
@@ -153,21 +153,11 @@ class WeightConverter(AbstractSimpleConverter):
             ),
         }
 
+        # To avoid confusion (12 t = 12.2 t), metric/imperial tons are converted kg/lb.
+        # ton-to-ton conversion can be enabled by uncommenting the second unit.
+        # First unit is unitFrom, used for aliases and multiplier.
+        # Second unit is unitTo, used for prettyFormat and multiplier.
         if self._primaryUnitMetric:
-            units.update({
-                'metric_tonne': UnitDefinition(
-                    UnitPreprocessor.pluralizeAliases(['ton', 'tone', 'tonne']),
-                    WeightUnit(
-                        't',
-                        't',
-                        True,
-                        True,
-                        sys.maxsize,
-                        1000,
-                    ),
-                ),
-            })
-        else:
             units.update({
                 'imperial_ton': UnitDefinition(
                     UnitPreprocessor.pluralizeAliases(['ton', 'tone', 'tonne']),
@@ -175,11 +165,49 @@ class WeightConverter(AbstractSimpleConverter):
                         't',
                         't',
                         False,
-                        True,
-                        sys.maxsize,
+                        False,
+                        -1,
                         1016.0469088,
                     ),
                 ),
+                # Uncomment to enable converting ton-to-ton:
+                # 'metric_tonne': UnitDefinition(
+                #     [],
+                #     WeightUnit(
+                #         'metric tonne',
+                #         't',
+                #         True,
+                #         True,
+                #         sys.maxsize,
+                #         1000,
+                #     )
+                # ),
+            })
+        else:
+            units.update({
+                'metric_tonne': UnitDefinition(
+                    UnitPreprocessor.pluralizeAliases(['ton', 'tone', 'tonne']),
+                    WeightUnit(
+                        't',
+                        't',
+                        True,
+                        False,
+                        -1,
+                        1000,
+                    ),
+                ),
+                # Uncomment to enable converting ton-to-ton:
+                # 'imperial_ton': UnitDefinition(
+                #     [],
+                #     WeightUnit(
+                #         'imperial ton',
+                #         't',
+                #         False,
+                #         True,
+                #         sys.maxsize,
+                #         1016.0469088,
+                #     ),
+                # ),
             })
 
         return units

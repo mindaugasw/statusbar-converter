@@ -12,6 +12,7 @@ from src.Service.Conversion.Converter.SimpleUnit.AbstractSimpleConverter import 
 from src.Service.Conversion.Converter.SimpleUnit.DistanceConverter import DistanceConverter
 from src.Service.Conversion.Converter.SimpleUnit.SimpleUnitConverter import SimpleUnitConverter
 from src.Service.Conversion.Converter.SimpleUnit.TemperatureConverter import TemperatureConverter
+from src.Service.Conversion.Converter.SimpleUnit.WeightConverter import WeightConverter
 from src.Service.Conversion.Converter.TimestampConverter import TimestampConverter
 from src.Service.Conversion.ThousandsDetector import ThousandsDetector
 from src.Service.Conversion.TimestampTextFormatter import TimestampTextFormatter
@@ -39,6 +40,7 @@ class TestConversionManager(TestCase):
         ('Timestamp converter', '1555522011', True, '1555522011'),
         ('Temperature converter', '15 F', True, '-9 °C'),
         ('Distance converter', '15 ft', True, '4.6 m'),
+        ('Weight converter', '15 lb', True, '6.8 kg'),
     ])
     @patch('time.time', return_value=1733022011.42)
     def testOnClipboardChange(
@@ -74,10 +76,13 @@ class TestConversionManager(TestCase):
             (ConfigId.Converter_Timestamp_IconFormat, {'default': ''}),
             (ConfigId.Converter_Timestamp_Menu_LastConversion_OriginalText, ''),
             (ConfigId.Converter_Timestamp_Menu_LastConversion_ConvertedText, '{ts_ms_sep}'),
+            (ConfigId.Converter_Weight_Enabled, True),
+            (ConfigId.Converter_Weight_PrimaryUnit_Metric, True),
         ])
 
         simpleConverters: list[AbstractSimpleConverter] = [
             DistanceConverter(configMock),
+            WeightConverter(configMock),
             TemperatureConverter(configMock),
         ]
 
