@@ -17,6 +17,9 @@ class ConfigId:
     Converter_Timestamp_Menu_LastConversion_ConvertedText = ['converters', 'timestamp', 'menu_items_last_conversion', 'converted_text']
     Converter_Timestamp_Menu_CurrentTimestamp = ['converters', 'timestamp', 'menu_items_current_timestamp']
 
+    Converter_Weight_Enabled = ['converters', 'weight', 'enabled']
+    Converter_Weight_PrimaryUnit_Metric = ['converters', 'weight', 'primary_unit_metric']
+
     # Data keys
     Data_Update_SkipVersion = ['update', 'skip_version']
     Data_Autorun_InitialSetupComplete = ['auto_run', 'initial_setup_complete']

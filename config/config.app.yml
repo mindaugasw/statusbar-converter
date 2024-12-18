@@ -74,3 +74,7 @@ converters:
             # Label text: "format to copy on click"
             Current timestamp: "{ts}"
             Current datetime: "%Y-%m-%d %H:%M:%S"
+
+    weight:
+        enabled: true
+        primary_unit_metric: true

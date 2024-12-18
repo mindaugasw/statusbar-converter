@@ -13,7 +13,7 @@ from src.Service.Conversion.Converter.SimpleUnit.AbstractSimpleConverter import 
 from src.Service.Conversion.Converter.SimpleUnit.DistanceConverter import DistanceConverter
 from src.Service.Conversion.Converter.SimpleUnit.SimpleUnitConverter import SimpleUnitConverter
 from src.Service.Conversion.Converter.SimpleUnit.TemperatureConverter import TemperatureConverter
-from src.Service.Conversion.Converter.SimpleUnit.UnitPreprocessor import UnitPreprocessor
+from src.Service.Conversion.Converter.SimpleUnit.WeightConverter import WeightConverter
 from src.Service.Conversion.Converter.TimestampConverter import TimestampConverter
 from src.Service.Conversion.ThousandsDetector import ThousandsDetector
 from src.Service.Conversion.TimestampTextFormatter import TimestampTextFormatter
@@ -58,12 +58,13 @@ class ServiceContainer:
 
         # Conversion services
         _[TimestampTextFormatter] = timestampTextFormatter = TimestampTextFormatter(config)
-        _[UnitPreprocessor] = unitPreprocessor = UnitPreprocessor()
         _[ThousandsDetector] = thousandsDetector = ThousandsDetector()
         _[DistanceConverter] = distanceConverter = DistanceConverter(config)
+        _[WeightConverter] = weightConverter = WeightConverter(config)
         _[TemperatureConverter] = temperatureConverter = TemperatureConverter(config)
         _[list[AbstractSimpleConverter]] = simpleConverters = [
             distanceConverter,
+            weightConverter,
             temperatureConverter,
         ]
         _[list[ConverterInterface]] = converters = [
