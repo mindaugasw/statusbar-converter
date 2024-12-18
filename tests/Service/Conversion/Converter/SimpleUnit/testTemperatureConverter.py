@@ -4,7 +4,6 @@ from parameterized import parameterized
 
 from src.Constant.ConfigId import ConfigId
 from src.Service.Conversion.Converter.SimpleUnit.TemperatureConverter import TemperatureConverter
-from src.Service.Conversion.Converter.SimpleUnit.UnitPreprocessor import UnitPreprocessor
 from tests.TestUtil.MockLibrary import MockLibrary
 
 
@@ -35,10 +34,7 @@ class TestTemperatureConverter(TestCase):
             (ConfigId.Converter_Temperature_PrimaryUnit, primaryUnitId),
         ])
 
-        converter = TemperatureConverter(
-            UnitPreprocessor(),
-            configMock,
-        )
+        converter = TemperatureConverter(configMock)
 
         success, result = converter.tryConvert(number, unitId)
 

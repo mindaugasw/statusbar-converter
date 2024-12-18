@@ -4,7 +4,6 @@ from parameterized import parameterized
 
 from src.Constant.ConfigId import ConfigId
 from src.Service.Conversion.Converter.SimpleUnit.DistanceConverter import DistanceConverter
-from src.Service.Conversion.Converter.SimpleUnit.UnitPreprocessor import UnitPreprocessor
 from tests.TestUtil.MockLibrary import MockLibrary
 
 
@@ -45,10 +44,7 @@ class TestDistanceConverter(TestCase):
             (ConfigId.Converter_Distance_PrimaryUnit_Metric, True if primaryUnitSystem == 'metric' else False)
         ])
 
-        converter = DistanceConverter(
-            UnitPreprocessor(),
-            configMock,
-        )
+        converter = DistanceConverter(configMock)
 
         success, result = converter.tryConvert(number, unitId)
 

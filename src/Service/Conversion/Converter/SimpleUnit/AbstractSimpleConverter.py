@@ -3,10 +3,14 @@ from abc import ABC, abstractmethod
 from src.DTO.ConvertResult import ConvertResult
 
 
-class SimpleConverterInterface(ABC):
-    @abstractmethod
+class AbstractSimpleConverter(ABC):
+    _enabled: bool
+
+    def __init__(self, enabled: bool):
+        self._enabled = enabled
+
     def isEnabled(self) -> bool:
-        pass
+        return self._enabled
 
     @abstractmethod
     def getName(self) -> str:

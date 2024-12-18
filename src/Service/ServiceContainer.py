@@ -9,8 +9,8 @@ from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
 from src.Service.Conversion.ConversionManager import ConversionManager
 from src.Service.Conversion.Converter.ConverterInterface import ConverterInterface
+from src.Service.Conversion.Converter.SimpleUnit.AbstractSimpleConverter import AbstractSimpleConverter
 from src.Service.Conversion.Converter.SimpleUnit.DistanceConverter import DistanceConverter
-from src.Service.Conversion.Converter.SimpleUnit.SimpleConverterInterface import SimpleConverterInterface
 from src.Service.Conversion.Converter.SimpleUnit.SimpleUnitConverter import SimpleUnitConverter
 from src.Service.Conversion.Converter.SimpleUnit.TemperatureConverter import TemperatureConverter
 from src.Service.Conversion.Converter.SimpleUnit.UnitPreprocessor import UnitPreprocessor
@@ -60,9 +60,9 @@ class ServiceContainer:
         _[TimestampTextFormatter] = timestampTextFormatter = TimestampTextFormatter(config)
         _[UnitPreprocessor] = unitPreprocessor = UnitPreprocessor()
         _[ThousandsDetector] = thousandsDetector = ThousandsDetector()
-        _[DistanceConverter] = distanceConverter = DistanceConverter(unitPreprocessor, config)
-        _[TemperatureConverter] = temperatureConverter = TemperatureConverter(unitPreprocessor, config)
-        _[list[SimpleConverterInterface]] = simpleConverters = [
+        _[DistanceConverter] = distanceConverter = DistanceConverter(config)
+        _[TemperatureConverter] = temperatureConverter = TemperatureConverter(config)
+        _[list[AbstractSimpleConverter]] = simpleConverters = [
             distanceConverter,
             temperatureConverter,
         ]

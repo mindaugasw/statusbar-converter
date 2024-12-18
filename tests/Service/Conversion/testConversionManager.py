@@ -8,11 +8,10 @@ from src.DTO.ConvertResult import ConvertResult
 from src.Service.ArgumentParser import ArgumentParser
 from src.Service.Conversion.ConversionManager import ConversionManager
 from src.Service.Conversion.Converter.ConverterInterface import ConverterInterface
+from src.Service.Conversion.Converter.SimpleUnit.AbstractSimpleConverter import AbstractSimpleConverter
 from src.Service.Conversion.Converter.SimpleUnit.DistanceConverter import DistanceConverter
-from src.Service.Conversion.Converter.SimpleUnit.SimpleConverterInterface import SimpleConverterInterface
 from src.Service.Conversion.Converter.SimpleUnit.SimpleUnitConverter import SimpleUnitConverter
 from src.Service.Conversion.Converter.SimpleUnit.TemperatureConverter import TemperatureConverter
-from src.Service.Conversion.Converter.SimpleUnit.UnitPreprocessor import UnitPreprocessor
 from src.Service.Conversion.Converter.TimestampConverter import TimestampConverter
 from src.Service.Conversion.ThousandsDetector import ThousandsDetector
 from src.Service.Conversion.TimestampTextFormatter import TimestampTextFormatter
@@ -77,14 +76,9 @@ class TestConversionManager(TestCase):
             (ConfigId.Converter_Timestamp_Menu_LastConversion_ConvertedText, '{ts_ms_sep}'),
         ])
 
-        unitPreprocessor = UnitPreprocessor()
-
-        simpleConverters: list[SimpleConverterInterface] = [
-            DistanceConverter(unitPreprocessor, configMock),
-            TemperatureConverter(
-                unitPreprocessor,
-                configMock,
-            ),
+        simpleConverters: list[AbstractSimpleConverter] = [
+            DistanceConverter(configMock),
+            TemperatureConverter(configMock),
         ]
 
         converters: list[ConverterInterface] = [

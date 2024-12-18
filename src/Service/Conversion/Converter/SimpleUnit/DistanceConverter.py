@@ -5,7 +5,7 @@ from src.DTO.ConvertResult import ConvertResult
 from src.DTO.Converter.AbstractUnit import AbstractUnit
 from src.DTO.Converter.UnitDefinition import UnitDefinition
 from src.Service.Configuration import Configuration
-from src.Service.Conversion.Converter.SimpleUnit.SimpleConverterInterface import SimpleConverterInterface
+from src.Service.Conversion.Converter.SimpleUnit.AbstractSimpleConverter import AbstractSimpleConverter
 from src.Service.Conversion.Converter.SimpleUnit.UnitPreprocessor import UnitPreprocessor
 
 
@@ -30,24 +30,22 @@ class DistanceUnit(AbstractUnit):
         self.limitToShowUnit = limitToShowUnit
         self.multiplierToMeter = multiplierToMeter
 
-class DistanceConverter(SimpleConverterInterface):
+class DistanceConverter(AbstractSimpleConverter):
     _maxValueMeters = 999_999 * 1000 # 1M km
     _minValueMeters = 0.0001 # 0.1 mm
 
-    _enabled: bool
     _primaryUnitMetric: bool
     _unitsDefinition: dict[str, UnitDefinition[DistanceUnit]]
     _unitsExpanded: dict[str, DistanceUnit]
 
-    def __init__(self, unitPreprocessor: UnitPreprocessor, config: Configuration):
-        self._enabled = config.get(ConfigId.Converter_Distance_Enabled)
+    def __init__(self, config: Configuration):
+        enabled = config.get(ConfigId.Converter_Distance_Enabled)
+        super().__init__(enabled)
+
         self._primaryUnitMetric = config.get(ConfigId.Converter_Distance_PrimaryUnit_Metric)
 
         self._unitsDefinition = self._getUnitsDefinition()
-        self._unitsExpanded = unitPreprocessor.expandAliases(self._unitsDefinition)
-
-    def isEnabled(self) -> bool:
-        return self._enabled
+        self._unitsExpanded = UnitPreprocessor.expandAliases(self._unitsDefinition)
 
     def getName(self) -> str:
         return 'Dist'
@@ -100,7 +98,7 @@ class DistanceConverter(SimpleConverterInterface):
 
             # Metric units
             'mm': UnitDefinition(
-                self._pluralizeAliases(['millimeter', 'milimeter', 'millimetre', 'milimetre']),
+                UnitPreprocessor.pluralizeAliases(['millimeter', 'milimeter', 'millimetre', 'milimetre']),
                 DistanceUnit(
                     'mm',
                     'mm',
@@ -111,7 +109,7 @@ class DistanceConverter(SimpleConverterInterface):
                 ),
             ),
             'cm': UnitDefinition(
-                ['cms'] + self._pluralizeAliases(['centimeter', 'centimetre']),
+                ['cms'] + UnitPreprocessor.pluralizeAliases(['centimeter', 'centimetre']),
                 DistanceUnit(
                     'cm',
                     'cm',
@@ -122,7 +120,7 @@ class DistanceConverter(SimpleConverterInterface):
                 ),
             ),
             'dm': UnitDefinition(
-                self._pluralizeAliases(['decimeter', 'decimetre']),
+                UnitPreprocessor.pluralizeAliases(['decimeter', 'decimetre']),
                 DistanceUnit(
                     'dm',
                     'dm',
@@ -133,7 +131,7 @@ class DistanceConverter(SimpleConverterInterface):
                 ),
             ),
             'm': UnitDefinition(
-                self._pluralizeAliases(['meter', 'metre']),
+                UnitPreprocessor.pluralizeAliases(['meter', 'metre']),
                 DistanceUnit(
                     'm',
                     'm',
@@ -144,7 +142,7 @@ class DistanceConverter(SimpleConverterInterface):
                 ),
             ),
             'km': UnitDefinition(
-                ['kms'] + self._pluralizeAliases(['kilometer', 'killometer', 'kilometre', 'killometre']),
+                ['kms'] + UnitPreprocessor.pluralizeAliases(['kilometer', 'killometer', 'kilometre', 'killometre']),
                 DistanceUnit(
                     'km',
                     'km',
@@ -201,12 +199,3 @@ class DistanceConverter(SimpleConverterInterface):
                 ),
             ),
         }
-
-    def _pluralizeAliases(self, aliases: list[str]) -> list[str]:
-        newList: list[str] = []
-
-        for alias in aliases:
-            newList.append(alias)
-            newList.append(alias + 's')
-
-        return newList
