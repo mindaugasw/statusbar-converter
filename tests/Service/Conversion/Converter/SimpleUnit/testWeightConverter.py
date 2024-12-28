@@ -1,13 +1,13 @@
-from unittest import TestCase
-
 from parameterized import parameterized
 
 from src.Constant.ConfigId import ConfigId
 from src.Service.Conversion.Converter.SimpleUnit.WeightConverter import WeightConverter
+from tests.Service.Conversion.Converter.SimpleUnit.AbstractSimpleUnitConverterTest import \
+    AbstractSimpleUnitConverterTest
 from tests.TestUtil.MockLibrary import MockLibrary
 
 
-class TestWeightConverter(TestCase):
+class TestWeightConverter(AbstractSimpleUnitConverterTest):
     @parameterized.expand([
         ('To mg', 0.003, 'oz', 'metric', True, '0 oz', '85 mg'),
         ('To g', 3, 'oz.', 'metric', True, '3 oz', '85 g'),
@@ -24,20 +24,10 @@ class TestWeightConverter(TestCase):
         number: float, unitId: str, primaryUnitSystem: str,
         expectedSuccess: bool, expectedFrom: str | None = None, expectedTo: str | None = None,
     ) -> None:
-        if unitId != unitId.lower():
-            raise Exception('tryConvert function expects already lower-cased unitId')
-
         configMock = MockLibrary.getConfig([
             (ConfigId.Converter_Weight_Enabled, True),
             (ConfigId.Converter_Weight_PrimaryUnit_Metric, True if primaryUnitSystem == 'metric' else False)
         ])
-
         converter = WeightConverter(configMock)
 
-        success, result = converter.tryConvert(number, unitId)
-
-        self.assertEqual(expectedSuccess, success)
-
-        if success:
-            self.assertEqual(expectedFrom, result.originalText)
-            self.assertEqual(expectedTo, result.convertedText)
+        self._testTryConvert(converter, number, unitId, expectedSuccess, expectedFrom, expectedTo)

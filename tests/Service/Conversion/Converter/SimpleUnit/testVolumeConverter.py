@@ -30,8 +30,4 @@ class TestVolumeConverter(AbstractSimpleUnitConverterTest):
         ])
         converter = VolumeConverter(configMock)
 
-        self._testTryConvert(
-            converter,
-            number, unitId,
-            expectedSuccess, expectedFrom, expectedTo,
-        )
+        self._testTryConvert(converter, number, unitId, expectedSuccess, expectedFrom, expectedTo)
