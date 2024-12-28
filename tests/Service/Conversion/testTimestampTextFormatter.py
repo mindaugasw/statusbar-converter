@@ -5,7 +5,7 @@ from parameterized import parameterized
 
 from src.Constant.ConfigId import ConfigId
 from src.DTO.Timestamp import Timestamp
-from src.Service.Conversion.TimestampTextFormatter import TimestampTextFormatter
+from src.Service.Conversion.Converter.Timestamp.TimestampTextFormatter import TimestampTextFormatter
 from tests.TestUtil.MockLibrary import MockLibrary
 
 

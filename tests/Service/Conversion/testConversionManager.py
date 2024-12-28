@@ -13,9 +13,9 @@ from src.Service.Conversion.Converter.SimpleUnit.DistanceConverter import Distan
 from src.Service.Conversion.Converter.SimpleUnit.SimpleUnitConverter import SimpleUnitConverter
 from src.Service.Conversion.Converter.SimpleUnit.TemperatureConverter import TemperatureConverter
 from src.Service.Conversion.Converter.SimpleUnit.WeightConverter import WeightConverter
-from src.Service.Conversion.Converter.TimestampConverter import TimestampConverter
+from src.Service.Conversion.Converter.Timestamp.TimestampConverter import TimestampConverter
+from src.Service.Conversion.Converter.Timestamp.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.Conversion.ThousandsDetector import ThousandsDetector
-from src.Service.Conversion.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.Debug import Debug
 from src.Service.EventService import EventService
 from src.Service.Logger import Logger

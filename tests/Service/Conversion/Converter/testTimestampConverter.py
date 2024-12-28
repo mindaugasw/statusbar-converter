@@ -4,8 +4,8 @@ from unittest.mock import Mock, patch
 from parameterized import parameterized
 
 from src.Constant.ConfigId import ConfigId
-from src.Service.Conversion.Converter.TimestampConverter import TimestampConverter
-from src.Service.Conversion.TimestampTextFormatter import TimestampTextFormatter
+from src.Service.Conversion.Converter.Timestamp.TimestampConverter import TimestampConverter
+from src.Service.Conversion.Converter.Timestamp.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.Logger import Logger
 from tests.TestUtil.MockLibrary import MockLibrary
 
