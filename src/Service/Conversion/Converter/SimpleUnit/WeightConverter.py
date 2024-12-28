@@ -1,89 +1,36 @@
 import sys
 
 from src.Constant.ConfigId import ConfigId
-from src.DTO.ConvertResult import ConvertResult
+from src.DTO.Converter.MetricImperialUnit import MetricImperialUnit
 from src.DTO.Converter.UnitDefinition import UnitDefinition
 from src.Service.Configuration import Configuration
-from src.Service.Conversion.Converter.SimpleUnit.AbstractSimpleConverter import AbstractSimpleConverter
-from src.Service.Conversion.Converter.SimpleUnit.DistanceConverter import DistanceUnit
+from src.Service.Conversion.Converter.SimpleUnit.AbstractMetricImperialConverter import AbstractMetricImperialConverter
 from src.Service.Conversion.Converter.SimpleUnit.UnitPreprocessor import UnitPreprocessor
 
 
-# TODO maybe convert DistanceUnit to MetricImperialUnit?
-class WeightUnit(DistanceUnit):
-    pass
-
-class WeightConverter(AbstractSimpleConverter):
-    _maxValueKilograms = 999_999  # 1M kg
-    _minValueKilograms = 0.0000001  # 0.1 mg
-
-    _enabled: bool
-    _primaryUnitMetric: bool
-    _unitsDefinition: dict[str, UnitDefinition[WeightUnit]]
-    _unitsExpanded: dict[str, WeightUnit]
-
+class WeightConverter(AbstractMetricImperialConverter):
     def __init__(self, config: Configuration):
         enabled = config.get(ConfigId.Converter_Weight_Enabled)
-        super().__init__(enabled)
+        primaryUnitMetric = config.get(ConfigId.Converter_Weight_PrimaryUnit_Metric)
 
-        self._primaryUnitMetric = config.get(ConfigId.Converter_Weight_PrimaryUnit_Metric)
-        self._unitsDefinition = self._getUnitsDefinition()
-        self._unitsExpanded = UnitPreprocessor.expandAliases(self._unitsDefinition)
+        super().__init__(
+            enabled,
+            primaryUnitMetric,
+            999_999,  # 1M kg
+            0.0000001,  # 0.1 mg
+        )
 
     def getName(self) -> str:
         return 'Weight'
 
-    def getUnitIds(self) -> list[str]:
-        if not self._enabled:
-            raise Exception('Cannot getUnitIds for disabled WeightConverter')
-
-        return list(self._unitsExpanded.keys())
-
-    def tryConvert(self, number: float, unitId: str) -> (bool, ConvertResult | None):
-        unitFrom = self._unitsExpanded[unitId]
-
-        if unitFrom.isMetric == self._primaryUnitMetric:
-            return False, None
-
-        baseUnitNumber = number * unitFrom.multiplierToMeter
-
-        if baseUnitNumber > self._maxValueKilograms or baseUnitNumber < self._minValueKilograms:
-            return False, None
-
-        numberTo: float = -1
-        unitTo: WeightUnit | None = None
-
-        for _, unitDef in self._unitsDefinition.items():
-            unitIteration = unitDef.unit
-
-            if unitIteration.isMetric != self._primaryUnitMetric or not unitIteration.convertToThis:
-                continue
-
-            numberTo = baseUnitNumber / unitIteration.multiplierToMeter
-
-            if numberTo >= unitIteration.limitToShowUnit:
-                continue
-
-            unitTo = unitIteration
-
-            break
-
-        numberFromRounded = round(number, 1)
-        numberToRounded = round(numberTo, 1)
-
-        textFrom = f'{numberFromRounded:g} {unitFrom.prettyFormat}'
-        textTo = f'{numberToRounded:g} {unitTo.prettyFormat}'
-
-        return True, ConvertResult(f'{textFrom}  =  {textTo}', textFrom, textTo, self.getName())
-
-    def _getUnitsDefinition(self) -> dict[str, UnitDefinition[WeightUnit]]:
+    def _getUnitsDefinition(self) -> dict[str, UnitDefinition[MetricImperialUnit]]:
         units = {
             # Units must be increasing order (per metric/imperial system)
 
             # Metric
             'mg': UnitDefinition(
                 UnitPreprocessor.pluralizeAliases(['milligram', 'miligram']),
-                WeightUnit(
+                MetricImperialUnit(
                     'mg',
                     'mg',
                     True,
@@ -96,7 +43,7 @@ class WeightConverter(AbstractSimpleConverter):
             # Copied text is more unlikely to be actual measurement to convert
             'g': UnitDefinition(
                 ['gr', 'grm'] + UnitPreprocessor.pluralizeAliases(['gram', 'grame', 'gramme']),
-                WeightUnit(
+                MetricImperialUnit(
                     'g',
                     'g',
                     True,
@@ -107,7 +54,7 @@ class WeightConverter(AbstractSimpleConverter):
             ),
             'kg': UnitDefinition(
                 ['kgs'] + UnitPreprocessor.pluralizeAliases(['kilogram', 'killogram', 'kilogramme', 'killogramme']),
-                WeightUnit(
+                MetricImperialUnit(
                     'kg',
                     'kg',
                     True,
@@ -120,7 +67,7 @@ class WeightConverter(AbstractSimpleConverter):
             # Imperial
             'ounce': UnitDefinition(
                 ['oz.'] + UnitPreprocessor.pluralizeAliases(['ounce']),
-                WeightUnit(
+                MetricImperialUnit(
                     'oz',
                     'oz',
                     False,
@@ -131,7 +78,7 @@ class WeightConverter(AbstractSimpleConverter):
             ),
             'pound': UnitDefinition(
                 ['lbs', 'lb.', 'lbs.'] + UnitPreprocessor.pluralizeAliases(['pound']),
-                WeightUnit(
+                MetricImperialUnit(
                     'lb',
                     'lb',
                     False,
@@ -142,7 +89,7 @@ class WeightConverter(AbstractSimpleConverter):
             ),
             'stone': UnitDefinition(
                 UnitPreprocessor.pluralizeAliases(['stone']),
-                WeightUnit(
+                MetricImperialUnit(
                     'st',
                     'st',
                     False,
@@ -161,7 +108,7 @@ class WeightConverter(AbstractSimpleConverter):
             units.update({
                 'imperial_ton': UnitDefinition(
                     UnitPreprocessor.pluralizeAliases(['ton', 'tone', 'tonne']),
-                    WeightUnit(
+                    MetricImperialUnit(
                         't',
                         't',
                         False,
@@ -173,7 +120,7 @@ class WeightConverter(AbstractSimpleConverter):
                 # Uncomment to enable converting ton-to-ton:
                 # 'metric_tonne': UnitDefinition(
                 #     [],
-                #     WeightUnit(
+                #     MetricImperialUnit(
                 #         'metric tonne',
                 #         't',
                 #         True,
@@ -187,7 +134,7 @@ class WeightConverter(AbstractSimpleConverter):
             units.update({
                 'metric_tonne': UnitDefinition(
                     UnitPreprocessor.pluralizeAliases(['ton', 'tone', 'tonne']),
-                    WeightUnit(
+                    MetricImperialUnit(
                         't',
                         't',
                         True,
@@ -199,7 +146,7 @@ class WeightConverter(AbstractSimpleConverter):
                 # Uncomment to enable converting ton-to-ton:
                 # 'imperial_ton': UnitDefinition(
                 #     [],
-                #     WeightUnit(
+                #     MetricImperialUnit(
                 #         'imperial ton',
                 #         't',
                 #         False,
