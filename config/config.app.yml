@@ -75,6 +75,10 @@ converters:
             Current timestamp: "{ts}"
             Current datetime: "%Y-%m-%d %H:%M:%S"
 
+    volume:
+        enabled: true
+        primary_unit_metric: true
+
     weight:
         enabled: true
         primary_unit_metric: true
