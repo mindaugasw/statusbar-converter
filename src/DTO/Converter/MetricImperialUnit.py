@@ -17,11 +17,15 @@ class MetricImperialUnit(AbstractUnit):
         multiplierToBaseUnit: float,
     ):
         """
-        @param convertToThis: If false, number will never be converter TO this unit, only from it
-        @param limitToShowUnit: When converting TO this unit, if number is higher than this value,
-            then next bigger unit will be selected instead (to show 5 km instead of 5000 m)
-        @param multiplierToBaseUnit: Multiplier to the primary unit, in metric system.
-            E.g. to get meters for distance units
+        :param primaryAlias:
+        :param prettyFormat: Format that will be used when printing text in the statusbar, no matter
+            which alias was matched
+        :param isMetric:
+        :param convertToThis: If false, number will never be converter TO this unit, only from it
+        :param limitToShowUnit: When converting TO this unit, if number is higher than this value,
+            then the next bigger unit will be selected instead (to show 5 km instead of 5000 m)
+        :param multiplierToBaseUnit: Multiplier to the base unit, in metric system.
+            E.g. to get meters for any distance unit
         """
 
         super().__init__(primaryAlias, prettyFormat)

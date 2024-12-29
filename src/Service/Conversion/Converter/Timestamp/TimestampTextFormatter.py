@@ -69,7 +69,7 @@ class TimestampTextFormatter:
 
     def _getRelativeTimeData(self, timestamp: int) -> dict[str, float | str | bool]:
         """
-        @return: Dictionary with the following keys:
+        :return: Dictionary with the following keys:
             - diff: int, absolute difference in seconds between given timestamp and now
             - number: float, relative time amount, e.g. 5.5
             - unit: str, relative time unit, e.g. 'd'

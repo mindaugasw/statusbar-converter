@@ -219,9 +219,10 @@ class StatusbarApp(ABC):
 
     @abstractmethod
     def _showDialog(self, message: str, buttons: dict[str, Callable | None]) -> None:
-        """Create a dialog window
+        """
+        Create a dialog window
 
-        @return: Clicked button name. On macOS dialog window can time out and then
+        :return: Clicked button name. On macOS dialog window can time out and then
             empty string will be returned
         """
         pass

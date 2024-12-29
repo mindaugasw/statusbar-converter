@@ -21,6 +21,7 @@ class ExceptionHandler:
 
     @staticmethod
     def handleException(exceptionType, message, trace) -> None:
+        """Should not be called manually. Will be called automatically by exception hook"""
         ExceptionHandler._handleException(
             'main [handleException]',
             exceptionType,
@@ -30,6 +31,7 @@ class ExceptionHandler:
 
     @staticmethod
     def handleThreadingException(args) -> None:
+        """Should not be called manually. Will be called automatically by exception hook"""
         ExceptionHandler._handleException(
             f'{args.thread.name} [handleThreadingException]',
             args.exc_type,
@@ -39,6 +41,7 @@ class ExceptionHandler:
 
     @staticmethod
     def handleUnraisableException(args) -> None:
+        """Should not be called manually. Will be called automatically by exception hook"""
         ExceptionHandler._handleException(
             'main [handleUnraisableException]',
             args.exc_type,
@@ -48,6 +51,7 @@ class ExceptionHandler:
 
     @staticmethod
     def handleExit() -> None:
+        """Should not be called manually. Will be called automatically by system hook"""
         Logger.instance.log('[Exit] Exiting app normally')
 
     @staticmethod

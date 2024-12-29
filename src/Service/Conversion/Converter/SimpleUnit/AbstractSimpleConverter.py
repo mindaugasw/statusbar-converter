@@ -23,9 +23,9 @@ class AbstractSimpleConverter(ABC):
     @abstractmethod
     def tryConvert(self, number: float, unitId: str) -> (bool, ConvertResult | None):
         """
-        @param number
-        @param unitId Given unitId will always be an existing one for this converter,
+        :param number:
+        :param unitId: Given unitId will always be an existing one for this converter,
             in lowercase, without any whitespace
-        @return: (True, ConvertResult) if conversion happened. (False, None) otherwise
+        :return: (True, ConvertResult) if conversion happened. (False, None) otherwise
         """
         pass
