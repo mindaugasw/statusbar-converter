@@ -13,6 +13,7 @@ from src.Constant.Logs import Logs
 from src.Service.Configuration import Configuration
 from src.Service.Debug import Debug
 from src.Service.EventService import EventService
+from src.Service.ExceptionHandler import ExceptionHandler
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
 
@@ -61,46 +62,50 @@ class UpdateManager:
     def _checkForUpdates(self, manuallyTriggered: bool) -> None:
         self._logger.log(f'{Logs.catUpdateCheck}Starting check for updates, manual check: {manuallyTriggered}')
 
-        if manuallyTriggered:
-            self._logger.log(f'{Logs.catUpdateCheck}Clearing skipped version state')
-            self._config.setState(ConfigId.Data_Update_SkipVersion, None)
+        try:
+            if manuallyTriggered:
+                self._logger.log(f'{Logs.catUpdateCheck}Clearing skipped version state')
+                self._config.setState(ConfigId.Data_Update_SkipVersion, None)
 
-        currentVersion = self._stringToVersionTuple(self._config.getAppVersion())
-        skippedVersion = self._config.getState(ConfigId.Data_Update_SkipVersion)
+            currentVersion = self._stringToVersionTuple(self._config.getAppVersion())
+            skippedVersion = self._config.getState(ConfigId.Data_Update_SkipVersion)
 
-        if skippedVersion is None:
-            skippedVersion = (-1, -1, -1)
-        else:
-            skippedVersion = self._stringToVersionTuple(skippedVersion)
+            if skippedVersion is None:
+                skippedVersion = (-1, -1, -1)
+            else:
+                skippedVersion = self._stringToVersionTuple(skippedVersion)
 
-        releases = self._queryReleases()
-        newUpdateFound = False
+            releases = self._queryReleases()
+            newUpdateFound = False
 
-        for release in releases:
-            if not self._isNewerVersion(release, currentVersion, skippedVersion):
-                self._logger.log(
-                    f'{Logs.catUpdateCheck}Release {release["tag_name"]} is old version or marked as skipped,'
-                    f' stopping update check',
-                )
+            for release in releases:
+                if not self._isNewerVersion(release, currentVersion, skippedVersion):
+                    self._logger.log(
+                        f'{Logs.catUpdateCheck}Release {release["tag_name"]} is old version or marked as skipped,'
+                        f' stopping update check',
+                    )
+
+                    break
+
+                if not self._doesReleaseContainCurrentPlatform(release):
+                    self._logger.log(f'{Logs.catUpdateCheck}Release {release["tag_name"]} does not contain current platform download')
+
+                    continue
+
+                self._logger.log(f'{Logs.catUpdateCheck}Found a new release {release["tag_name"]}')
+                newUpdateFound = True
+                self._dispatchUpdateResultEvent(release['tag_name'])
 
                 break
 
-            if not self._doesReleaseContainCurrentPlatform(release):
-                self._logger.log(f'{Logs.catUpdateCheck}Release {release["tag_name"]} does not contain current platform download')
+            if manuallyTriggered and not newUpdateFound:
+                self._dispatchUpdateResultEvent(None)
 
-                continue
-
-            self._logger.log(f'{Logs.catUpdateCheck}Found a new release {release["tag_name"]}')
-            newUpdateFound = True
-            self._dispatchUpdateResultEvent(release['tag_name'])
-
-            break
-
-        if manuallyTriggered and not newUpdateFound:
-            self._dispatchUpdateResultEvent(None)
-
-        self._lastCheckAt = int(time.time())
-        self._logger.log(f'{Logs.catUpdateCheck}Completed')
+            self._lastCheckAt = int(time.time())
+            self._logger.log(f'{Logs.catUpdateCheck}Completed')
+        except Exception as e:
+            text = ExceptionHandler.formatExceptionLog(f'{Logs.catUpdateCheck}UPDATE CHECK EXCEPTION:', e)
+            self._logger.log(text)
 
     def _isNewerVersion(
         self,

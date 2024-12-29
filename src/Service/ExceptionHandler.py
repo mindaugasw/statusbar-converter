@@ -51,6 +51,18 @@ class ExceptionHandler:
         Logger.instance.log('[Exit] Exiting app normally')
 
     @staticmethod
+    def formatExceptionLog(message: str, exception: Exception) -> str:
+        traceList = traceback.format_exception(exception)
+        traceString = ''.join(traceList)
+
+        return '%s\nType: %s\nMessage: %s\nTrace: %s' % (
+            message,
+            type(exception),
+            exception,
+            traceString,
+        )
+
+    @staticmethod
     def _handleException(threadName, exceptionType, message, trace) -> None:
         stars = '********************************************************'
         Logger.instance.logRaw(f'\n\n{stars}\n')

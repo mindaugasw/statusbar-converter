@@ -1,5 +1,4 @@
 import time
-import traceback
 
 from src.Constant.ConfigId import ConfigId
 from src.Constant.Logs import Logs
@@ -7,6 +6,7 @@ from src.Service.Configuration import Configuration
 from src.Service.Conversion.Converter.ConverterInterface import ConverterInterface
 from src.Service.Debug import Debug
 from src.Service.EventService import EventService
+from src.Service.ExceptionHandler import ExceptionHandler
 from src.Service.Logger import Logger
 
 
@@ -52,17 +52,11 @@ class ConversionManager:
             try:
                 success, result = converter.tryConvert(text)
             except Exception as e:
-                traceList = traceback.format_exception(e)
-                traceString = ''.join(traceList)
-
-                self._logger.log(
-                    Logs.catConverter + '%s] CONVERTER EXCEPTION:\nType: %s\nMessage: %s\nTrace: %s' % (
-                        converter.getName(),
-                        type(e),
-                        e,
-                        traceString,
-                    ),
+                text = ExceptionHandler.formatExceptionLog(
+                    f'{Logs.catConverter}{converter.getName()}] CONVERTER EXCEPTION:',
+                    e,
                 )
+                self._logger.log(text)
 
                 continue
 
