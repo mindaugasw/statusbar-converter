@@ -156,14 +156,14 @@ class UpdateManager:
         return requests.get(self.RELEASES_URL).json()
 
     def _dispatchUpdateResultEvent(self, version: str | None) -> None:
-        def _handleClickGoToDownloadPage() -> None:
+        def _handleClickGoToDownloadPage(foundVersion: str) -> None:
             self._logger.log(f'{Logs.catUpdateCheck}Dialog button click: Go to download page')
-            downloadPageUrl = f'{AppConstant.website}/releases/tag/{version}'
+            downloadPageUrl = f'{AppConstant.website}/releases/tag/{foundVersion}'
             webbrowser.open(downloadPageUrl)
 
-        def _handleClickSkipThisVersion() -> None:
+        def _handleClickSkipThisVersion(versionToSkip: str) -> None:
             self._logger.log(f'{Logs.catUpdateCheck}Dialog button click: Skip this version')
-            self._config.setState(ConfigId.Data_Update_SkipVersion, version)
+            self._config.setState(ConfigId.Data_Update_SkipVersion, versionToSkip)
 
         def _handleClickRemindMeLater() -> None:
             self._logger.log(f'{Logs.catUpdateCheck}Dialog button click: Remind me later')
@@ -185,9 +185,9 @@ class UpdateManager:
                 f'Download update?'
 
             buttons = {
-                'Go to download page': _handleClickGoToDownloadPage,
-                'Skip this version': _handleClickSkipThisVersion,
-                'Remind me later': _handleClickRemindMeLater,
+                'Go to download page': lambda: _handleClickGoToDownloadPage(version),
+                'Skip this version': lambda: _handleClickSkipThisVersion(version),
+                'Remind me later': lambda: _handleClickRemindMeLater(),
             }
 
         self._events.dispatchUpdateCheckCompleted(text, buttons)
