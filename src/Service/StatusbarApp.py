@@ -133,7 +133,6 @@ class StatusbarApp(ABC):
                 callback=self._onMenuClickRunAtLogin,
             ),
             'check_updates': MenuItem('Check for updates', callback=self._onMenuClickCheckUpdates),
-            'settings': MenuItem('Settings', callback=self._onMenuClickSettings),
             'open_website': MenuItem('Open website', callback=self._onMenuClickOpenWebsite),
             'about': MenuItem('About', callback=self._onMenuClickAbout),
         })
@@ -145,7 +144,7 @@ class StatusbarApp(ABC):
             })
 
         if self._osSwitch.isLinux():
-            # On macOS Quit button is automatically created by rumps app
+            # On macOS Quit button is automatically created by rumps app, so we manually add only for Linux
             items.update({
                 'quit': MenuItem('Quit', callback=self._onMenuClickQuit),
             })
@@ -153,6 +152,7 @@ class StatusbarApp(ABC):
         if self._debug.isDebugEnabled():
             items.update({
                 'separator_debug': MenuItem(isSeparator=True),
+                'settings': MenuItem('Settings [WIP]', callback=self._onMenuClickSettings),
                 'label_debug': MenuItem('Debug tools', isDisabled=True),
                 'gui_demo': MenuItem('Open GUI demo', callback=self._onMenuClickOpenGUIDemo),
                 # TODO remove
