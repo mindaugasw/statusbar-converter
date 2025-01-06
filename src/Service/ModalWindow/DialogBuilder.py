@@ -35,6 +35,8 @@ class DialogBuilder(ModalWindowBuilderInterface):
         text += '\n ' * (self._minimumNewLines - linesInText)
 
         with dpg.window(tag=self._primaryTag, autosize=True):
+            # TODO add app logo to the right.
+            # Like in "About" modal, but smaller. Without any image, the modal looks very dark. Small font requires actually reading it
             with dpg.group():
                 dpg.add_text(text)
                 dpg.add_separator()

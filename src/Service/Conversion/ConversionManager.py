@@ -52,11 +52,13 @@ class ConversionManager:
             try:
                 success, result = converter.tryConvert(text)
             except Exception as e:
-                text = ExceptionHandler.formatExceptionLog(
-                    f'{Logs.catConverter}{converter.getName()}] CONVERTER EXCEPTION:',
-                    e,
+                self._logger.log(
+                    '%s%s] CONVERTER EXCEPTION:\n%s' % (
+                        Logs.catConverter,
+                        converter.getName(),
+                        ExceptionHandler.formatExceptionLog(e),
+                    ),
                 )
-                self._logger.log(text)
 
                 continue
 

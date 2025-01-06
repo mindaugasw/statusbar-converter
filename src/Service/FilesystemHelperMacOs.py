@@ -11,7 +11,7 @@ class FilesystemHelperMacOs(FilesystemHelper):
         return rumps.application_support(AppConstant.appName)
 
     @staticmethod
-    def getAppPath() -> str | None:
+    def getAppExecutablePath() -> str | None:
         projectDir = FilesystemHelper.getProjectDir()
 
         result = re.search('^.+\\.app', projectDir, re.IGNORECASE)

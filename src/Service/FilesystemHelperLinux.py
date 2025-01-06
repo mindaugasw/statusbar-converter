@@ -13,7 +13,7 @@ class FilesystemHelperLinux(FilesystemHelper):
         return path
 
     @staticmethod
-    def getAppPath() -> str | None:
+    def getAppExecutablePath() -> str | None:
         if not FilesystemHelper.isPackagedApp():
             return None
 

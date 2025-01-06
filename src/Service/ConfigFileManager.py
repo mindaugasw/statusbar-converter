@@ -62,4 +62,4 @@ class ConfigFileManager:
     def _createUserFile(self, prettyName: str, exampleFilePath: str, targetFilePath: str) -> None:
         self._logger.logRaw(f'Creating {prettyName} at `{targetFilePath}` from `{exampleFilePath}` ... ')
         shutil.copyfile(exampleFilePath, targetFilePath)
-        self._logger.logRaw('done')
+        self._logger.logRaw('done\n')

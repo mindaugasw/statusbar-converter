@@ -46,10 +46,11 @@ class FilesystemHelper(ABC):
 
     @staticmethod
     @abstractmethod
-    def getAppPath() -> str | None:
+    def getAppExecutablePath() -> str | None:
         """Get path to the application file.
 
-        On macOS will return path to .app or None if code is not packaged into an app
+        Will return path to the app or None if code is not packaged into an app.
+        App path on macOS is .app archive. App path on Linux it is app file.
         """
         pass
 
