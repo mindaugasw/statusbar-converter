@@ -1,5 +1,6 @@
 # Internal app state. This file should not be edited manually.
 auto_run:
+    enabled: false
     initial_setup_complete: false
 update:
     skip_version: null

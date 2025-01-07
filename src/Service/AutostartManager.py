@@ -7,6 +7,7 @@ from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
 
 
+# TODO remove
 class AutostartManager(ABC):
     _configuration: Configuration
     _filesystemHelper: FilesystemHelper
@@ -21,10 +22,10 @@ class AutostartManager(ABC):
         self._logger = logger
 
         self._appName = AppConstant.appName
-        self._appPath = filesystemHelper.getAppPath()
+        self._appPath = filesystemHelper.getAppExecutablePath()
 
     def firstTimeSetup(self) -> None:
-        if self._configuration.getState(ConfigId.Data_Autorun_InitialSetupComplete):
+        if self._configuration.getState(ConfigId.Data_Autostart_InitialSetupComplete, False):
             self._logger.log('[Autostart] Initial setup already completed')
 
             return
@@ -38,7 +39,7 @@ class AutostartManager(ABC):
         success = self.enableAutostart()
 
         if success:
-            self._configuration.setState(ConfigId.Data_Autorun_InitialSetupComplete, True)
+            self._configuration.setState(ConfigId.Data_Autostart_InitialSetupComplete, True)
 
         self._logger.log(f'[Autostart] Initial setup completed, success: {success}')
 

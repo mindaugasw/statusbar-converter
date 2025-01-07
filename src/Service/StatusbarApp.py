@@ -9,7 +9,7 @@ from src.Constant.ConfigId import ConfigId
 from src.Constant.ModalId import ModalId
 from src.DTO.MenuItem import MenuItem
 from src.DTO.Timestamp import Timestamp
-from src.Service.AutostartManager import AutostartManager
+from src.Service.AutostartManagerV2 import AutostartManagerV2
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
@@ -32,7 +32,7 @@ class StatusbarApp(ABC):
     _conversionManager: ConversionManager
     _events: EventService
     _config: Configuration
-    _autostartManager: AutostartManager
+    _autostartManager: AutostartManagerV2
     _updateManager: UpdateManager
     _modalWindowManager: ModalWindowManager
     _logger: Logger
@@ -59,7 +59,7 @@ class StatusbarApp(ABC):
         events: EventService,
         config: Configuration,
         configFileManager: ConfigFileManager,
-        autostartManager: AutostartManager,
+        autostartManager: AutostartManagerV2,
         updateManager: UpdateManager,
         modalWindowManager: ModalWindowManager,
         logger: Logger,
@@ -129,7 +129,7 @@ class StatusbarApp(ABC):
             'edit_config': MenuItem('Edit configuration', callback=self._onMenuClickEditConfiguration),
             'autostart': MenuItem(
                 'Run at login',
-                initialState=self._autostartManager.isEnabledAutostart(),
+                initialState=self._autostartManager.isAutostartEnabled(),
                 callback=self._onMenuClickRunAtLogin,
             ),
             'check_updates': MenuItem('Check for updates', callback=self._onMenuClickCheckUpdates),

@@ -6,7 +6,7 @@ from src.Constant.AppConstant import AppConstant
 from src.Constant.Logs import Logs
 from src.Service.AppLoop import AppLoop
 from src.Service.ArgumentParser import ArgumentParser
-from src.Service.AutostartManager import AutostartManager
+from src.Service.AutostartManagerV2 import AutostartManagerV2
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.Configuration import Configuration
 from src.Service.Debug import Debug
@@ -40,7 +40,9 @@ def main() -> None:
         logger.log(f'{Logs.catStart}Done sleeping, starting the app')
 
     logger.setDebugEnabled(debug.isDebugEnabled())
-    services[AutostartManager].firstTimeSetup()
+    # TODO remove
+    # services[AutostartManager].firstTimeSetup()
+    services[AutostartManagerV2].setupAutostart()
     services[ClipboardManager].initializeClipboardWatch()
     services[AppLoop].startLoop()
     services[StatusbarApp].createApp()

@@ -1,5 +1,6 @@
 class Logs:
     # cat prefix for category
+    catAutostart = '[Autostart] '
     catClipboard = '[Clipboard] '
     catConfig = '[Config] '
     catConvert = '[Convert] '

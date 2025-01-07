@@ -25,4 +25,5 @@ class ConfigId:
 
     # Data keys
     Data_Update_SkipVersion = ['update', 'skip_version']
-    Data_Autorun_InitialSetupComplete = ['auto_run', 'initial_setup_complete']
+    Data_Autostart_Enabled = ['auto_run', 'enabled']
+    Data_Autostart_InitialSetupComplete = ['auto_run', 'initial_setup_complete']

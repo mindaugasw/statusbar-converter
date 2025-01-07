@@ -133,8 +133,7 @@ class StatusbarAppMacOs(StatusbarApp):
 
     def _onMenuClickRunAtLogin(self, menuItem: rumps.MenuItem) -> None:
         if menuItem.state:
-            self._autostartManager.disableAutostart()
-            success = True
+            success = self._autostartManager.disableAutostart()
         else:
             success = self._autostartManager.enableAutostart()
 

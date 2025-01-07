@@ -68,7 +68,7 @@ class UpdateManager:
                 self._config.setState(ConfigId.Data_Update_SkipVersion, None)
 
             currentVersion = self._stringToVersionTuple(self._config.getAppVersion())
-            skippedVersion = self._config.getState(ConfigId.Data_Update_SkipVersion)
+            skippedVersion = self._config.getState(ConfigId.Data_Update_SkipVersion, None)
 
             if skippedVersion is None:
                 skippedVersion = (-1, -1, -1)
@@ -104,8 +104,7 @@ class UpdateManager:
             self._lastCheckAt = int(time.time())
             self._logger.log(f'{Logs.catUpdateCheck}Completed')
         except Exception as e:
-            text = ExceptionHandler.formatExceptionLog(f'{Logs.catUpdateCheck}UPDATE CHECK EXCEPTION:', e)
-            self._logger.log(text)
+            self._logger.log(f'{Logs.catUpdateCheck}UPDATE CHECK EXCEPTION:\n{ExceptionHandler.formatExceptionLog(e)}')
 
     def _isNewerVersion(
         self,

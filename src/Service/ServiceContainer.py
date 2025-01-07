@@ -4,6 +4,7 @@ from src.Constant.ModalId import ModalId
 from src.Service.AppLoop import AppLoop
 from src.Service.ArgumentParser import ArgumentParser
 from src.Service.AutostartManager import AutostartManager
+from src.Service.AutostartManagerV2 import AutostartManagerV2
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
@@ -82,9 +83,12 @@ class ServiceContainer:
 
         # App services
         _[UpdateManager] = updateManager = UpdateManager(filesystemHelper, events, config, logger, debug)
-        _[AutostartManager] = autostartManager = self._getAutostartManager(osSwitch, config, filesystemHelper, logger)
+        # TODO remove
+        # _[AutostartManager] = autostartManager = self._getAutostartManager(osSwitch, config, filesystemHelper, logger)
+        # TODO rename
+        _[AutostartManagerV2] = autostartManagerV2 = self._getAutostartManagerV2(osSwitch, filesystemHelper, config, argumentParser, logger)
         _[ClipboardManager] = clipboardManager = self._getClipboardManager(events, osSwitch, logger)
-        _[StatusbarApp] = statusbarApp = self._getStatusbarApp(osSwitch, timestampTextFormatter, clipboardManager, conversionManager, events, config, configFileManager, autostartManager, updateManager, modalWindowManager, logger, debug)
+        _[StatusbarApp] = statusbarApp = self._getStatusbarApp(osSwitch, timestampTextFormatter, clipboardManager, conversionManager, events, config, configFileManager, autostartManagerV2, updateManager, modalWindowManager, logger, debug)
         _[AppLoop] = appLoop = AppLoop(osSwitch, events)
 
         self._services = _
@@ -94,12 +98,6 @@ class ServiceContainer:
             raise Exception(f'Service with id "{item}" not found in the container')
 
         return self._services[item]
-
-    def get(self, _id: type):
-        if _id not in self._services:
-            raise Exception(f'Service with id "{_id}" not found in the container')
-
-        return self._services[_id]
 
     def _getFilesystemHelper(self, osSwitch: OSSwitch) -> FilesystemHelper:
         if osSwitch.isMacOS():
@@ -117,6 +115,7 @@ class ServiceContainer:
             ModalId.dialog: DialogBuilder(),
         }
 
+    # TODO remove
     def _getAutostartManager(
         self,
         osSwitch: OSSwitch,
@@ -130,6 +129,20 @@ class ServiceContainer:
         else:
             from src.Service.AutostartManagerLinux import AutostartManagerLinux
             return AutostartManagerLinux(config, filesystemHelper, logger)
+
+    def _getAutostartManagerV2(
+        self,
+        osSwitch: OSSwitch,
+        filesystemHelper: FilesystemHelper,
+        config: Configuration,
+        argParser: ArgumentParser,
+        logger: Logger,
+    ) -> AutostartManagerV2:
+        if osSwitch.isMacOS():
+            raise Exception('Not implemented')
+        else:
+            from src.Service.AutostartManagerV2Linux import AutostartManagerV2Linux
+            return AutostartManagerV2Linux(filesystemHelper, config, argParser, logger)
 
     def _getClipboardManager(self, eventService: EventService, osSwitch: OSSwitch, logger: Logger) -> ClipboardManager:
         if osSwitch.isMacOS():
@@ -148,7 +161,7 @@ class ServiceContainer:
         events: EventService,
         config: Configuration,
         configFileManager: ConfigFileManager,
-        autostartManager: AutostartManager,
+        autostartManager: AutostartManagerV2,
         updateManager: UpdateManager,
         modalWindowManager: ModalWindowManager,
         logger: Logger,
