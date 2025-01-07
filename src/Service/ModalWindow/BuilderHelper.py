@@ -1,3 +1,4 @@
+import math
 import webbrowser
 
 import dearpygui.dearpygui as dpg
@@ -25,6 +26,15 @@ class BuilderHelper:
         dpg.delete_item("__demo_hyperlinkTheme")
 
     @staticmethod
-    def hyperlink(text: str, address: str) -> None:
+    def addHyperlink(text: str, address: str) -> None:
         button = dpg.add_button(label=text, callback=lambda: webbrowser.open(address))
         dpg.bind_item_theme(button, BuilderHelper._hyperlinkThemeTag)
+
+    @staticmethod
+    def padButtonText(text: str, minPadding: int=1, minLength: int=5) -> str:
+        missingLength = minLength - len(text)
+        paddingLength = math.ceil(missingLength / 2)
+        paddingLength = max(paddingLength, minPadding)
+        padding = ' ' * paddingLength
+
+        return f'{padding}{text}{padding}'

@@ -3,12 +3,14 @@ from collections.abc import Callable
 import dearpygui.dearpygui as dpg
 
 from src.DTO.ModalWindowParameters import ModalWindowParameters
+from src.Service.FilesystemHelper import FilesystemHelper
+from src.Service.ModalWindow.BuilderHelper import BuilderHelper
 from src.Service.ModalWindow.ModalWindowBuilderInterface import ModalWindowBuilderInterface
 
 
 class DialogBuilder(ModalWindowBuilderInterface):
     _primaryTag = 'primary'
-    _minimumNewLines = 7
+    _minimumNewLines = 8
     _callbacks: dict[str | int, Callable | None]
 
     def __init__(self):
@@ -20,8 +22,8 @@ class DialogBuilder(ModalWindowBuilderInterface):
         return ModalWindowParameters(
             None,
             'Dialog',
-            450,
-            145,
+            470,
+            158,
             self._primaryTag,
         )
 
@@ -35,11 +37,24 @@ class DialogBuilder(ModalWindowBuilderInterface):
         text += '\n ' * (self._minimumNewLines - linesInText)
 
         with dpg.window(tag=self._primaryTag, autosize=True):
-            # TODO add app logo to the right.
-            # Like in "About" modal, but smaller. Without any image, the modal looks very dark. Small font requires actually reading it
-            with dpg.group():
-                dpg.add_text(text)
-                dpg.add_separator()
+            with dpg.group(horizontal=True):
+                with dpg.group():
+                    width, height, channels, data = dpg.load_image(FilesystemHelper.getAssetsDir() + '/icon_colored_small.png')
+
+                    with dpg.texture_registry():
+                        dpg.add_static_texture(
+                            width=width,
+                            height=height,
+                            default_value=data,
+                            tag='image',
+                        )
+
+                    dpg.add_image('image')
+
+                with dpg.group():
+                    dpg.add_text(text)
+
+            dpg.add_separator()
 
             with dpg.group():
                 with dpg.group(horizontal=True, horizontal_spacing=10):
@@ -50,7 +65,9 @@ class DialogBuilder(ModalWindowBuilderInterface):
                         that was actually assigned to that button. We work around this by having a
                         property dictionary with actual callbacks.
                         """
-                        tag = dpg.add_button(label=buttonText, height=25, callback=self._handleButtonPress)
+
+                        text = BuilderHelper.padButtonText(buttonText)
+                        tag = dpg.add_button(label=text, height=25, callback=self._handleButtonPress)
                         self._callbacks[tag] = buttonCallback
 
     def _handleButtonPress(self, sender: str | int, appData, userData) -> None:

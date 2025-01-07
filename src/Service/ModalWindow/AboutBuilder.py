@@ -52,11 +52,11 @@ class AboutBuilder(ModalWindowBuilderInterface):
 
                     with dpg.group(horizontal=True):
                         dpg.add_text('Website:')
-                        BuilderHelper.hyperlink(AppConstant.website.replace('https://', ''), AppConstant.website)
+                        BuilderHelper.addHyperlink(AppConstant.website.replace('https://', ''), AppConstant.website)
 
                     with dpg.group(horizontal=True):
                         dpg.add_text('App icon made by')
-                        BuilderHelper.hyperlink('iconsax at flaticon.com', 'https://www.flaticon.com/free-icons/convert')
+                        BuilderHelper.addHyperlink('iconsax at flaticon.com', 'https://www.flaticon.com/free-icons/convert')
 
     def _onClose(self) -> None:
         BuilderHelper.deleteHyperlinkTheme()
