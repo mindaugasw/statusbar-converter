@@ -23,13 +23,14 @@ class DialogBuilder(ModalWindowBuilderInterface):
             None,
             'Dialog',
             500,
-            200,
+            198,
             self._primaryTag,
         )
 
     def build(self, arguments: dict[str, any]) -> None:
         text = arguments['text']
         buttons = arguments['buttons']
+        buildCallback: Callable[None, None] | None = arguments.get('buildCallback')
 
         # There are no proper tools in dpg for vertical alignment. So we fake it by setting
         # text height to always the same by adding more lines, to reach minimum count
@@ -52,7 +53,10 @@ class DialogBuilder(ModalWindowBuilderInterface):
                     dpg.add_image('image')
 
                 with dpg.group():
-                    dpg.add_text(text)
+                    if buildCallback is not None:
+                        buildCallback()
+                    else:
+                        dpg.add_text(text)
 
             dpg.add_separator()
 

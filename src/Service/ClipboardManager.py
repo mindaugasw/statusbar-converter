@@ -17,6 +17,10 @@ class ClipboardManager(ABC):
         self._logger = logger
 
     @abstractmethod
+    def validateSystem(self) -> bool:
+        pass
+
+    @abstractmethod
     def initializeClipboardWatch(self) -> None:
         pass
 

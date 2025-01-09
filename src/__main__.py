@@ -23,6 +23,7 @@ def main() -> None:
     config = services[Configuration]
     osSwitch = services[OSSwitch]
     debug = services[Debug]
+    clipboardManager = services[ClipboardManager]
 
     logger.logRaw(
         f'\n{AppConstant.appName} v{config.getAppVersion()}\n'
@@ -40,10 +41,16 @@ def main() -> None:
         logger.log(f'{Logs.catStart}Done sleeping, starting the app')
 
     logger.setDebugEnabled(debug.isDebugEnabled())
+
+    if not clipboardManager.validateSystem():
+        logger.log(f'{Logs.catClipboard}Clipboard validate system failed, exiting app')
+
+        return
+
     # TODO remove
     # services[AutostartManager].firstTimeSetup()
     services[AutostartManagerV2].setupAutostart()
-    services[ClipboardManager].initializeClipboardWatch()
+    clipboardManager.initializeClipboardWatch()
     services[AppLoop].startLoop()
     services[StatusbarApp].createApp()
 

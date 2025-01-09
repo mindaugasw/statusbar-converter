@@ -39,11 +39,14 @@ class ModalWindowManager:
         self._isModalOpen = False
 
     def openModal(self, _id: str):
+        """
+        Open a complex UI window
+        """
         self._openModalInternal(_id, {})
 
     def openDialog(self, text: str, buttons: dict[str, Callable | None]):
         """
-        Open a simple window with text and multiple buttons
+        Open a simple parameterized UI window with text and multiple buttons
         """
         self._openModalInternal(ModalId.dialog, {'text': text, 'buttons': buttons})
 
@@ -88,6 +91,11 @@ class ModalWindowManager:
             title=viewportTitle,
             width=parameters.width,
             height=parameters.height,
+            # To position window at the center, we assume standard 1920x1080 resolution.
+            # Getting actual resolution is too complicated for very little benefit.
+            # dpg will always place window within monitor bounds, even if given position exceeds resolution.
+            x_pos=int(1920 / 2 - parameters.width / 2),
+            y_pos=int(1080 / 2 - parameters.height / 2) - 200,
             min_width=parameters.width,
             max_width=parameters.width,
             min_height=parameters.height,

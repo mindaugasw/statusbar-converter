@@ -27,6 +27,7 @@ from src.Service.Logger import Logger
 from src.Service.ModalWindow.AboutBuilder import AboutBuilder
 from src.Service.ModalWindow.DemoBuilder import DemoBuilder
 from src.Service.ModalWindow.DialogBuilder import DialogBuilder
+from src.Service.ModalWindow.DialogMissingXselBuilder import DialogMissingXselBuilder
 from src.Service.ModalWindow.ModalWindowBuilderInterface import ModalWindowBuilderInterface
 from src.Service.ModalWindow.ModalWindowManager import ModalWindowManager
 from src.Service.ModalWindow.SettingsBuilder import SettingsBuilder
@@ -87,7 +88,7 @@ class ServiceContainer:
         # _[AutostartManager] = autostartManager = self._getAutostartManager(osSwitch, config, filesystemHelper, logger)
         # TODO rename
         _[AutostartManagerV2] = autostartManagerV2 = self._getAutostartManagerV2(osSwitch, filesystemHelper, config, argumentParser, logger)
-        _[ClipboardManager] = clipboardManager = self._getClipboardManager(events, osSwitch, logger)
+        _[ClipboardManager] = clipboardManager = self._getClipboardManager(osSwitch, events, logger, modalWindowManager)
         _[StatusbarApp] = statusbarApp = self._getStatusbarApp(osSwitch, timestampTextFormatter, clipboardManager, conversionManager, events, config, configFileManager, autostartManagerV2, updateManager, modalWindowManager, logger, debug)
         _[AppLoop] = appLoop = AppLoop(osSwitch, events)
 
@@ -108,11 +109,14 @@ class ServiceContainer:
             return FilesystemHelperLinux()
 
     def _getModalWindowBuilders(self, config: Configuration) -> dict[str, ModalWindowBuilderInterface]:
+        dialogBuilder = DialogBuilder()
+
         return {
             ModalId.demo: DemoBuilder(),
             ModalId.settings: SettingsBuilder(),
             ModalId.about: AboutBuilder(config),
-            ModalId.dialog: DialogBuilder(),
+            ModalId.dialog: dialogBuilder,
+            ModalId.dialogMissingXsel: DialogMissingXselBuilder(dialogBuilder),
         }
 
     # TODO remove
@@ -144,13 +148,19 @@ class ServiceContainer:
             from src.Service.AutostartManagerV2Linux import AutostartManagerV2Linux
             return AutostartManagerV2Linux(filesystemHelper, config, argParser, logger)
 
-    def _getClipboardManager(self, eventService: EventService, osSwitch: OSSwitch, logger: Logger) -> ClipboardManager:
+    def _getClipboardManager(
+        self,
+        osSwitch: OSSwitch,
+        eventService: EventService,
+        logger: Logger,
+        modalWindowManager: ModalWindowManager,
+    ) -> ClipboardManager:
         if osSwitch.isMacOS():
             from src.Service.ClipboardManagerMacOs import ClipboardManagerMacOs
             return ClipboardManagerMacOs(eventService, logger)
         else:
             from src.Service.ClipboardManagerLinux import ClipboardManagerLinux
-            return ClipboardManagerLinux(eventService, logger)
+            return ClipboardManagerLinux(eventService, logger, modalWindowManager)
 
     def _getStatusbarApp(
         self,

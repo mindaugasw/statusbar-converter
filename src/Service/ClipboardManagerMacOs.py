@@ -15,6 +15,9 @@ class ClipboardManagerMacOs(ClipboardManager):
 
         self._changeCount = -1
 
+    def validateSystem(self) -> bool:
+        return True
+
     def initializeClipboardWatch(self) -> None:
         self._pasteboard = NSPasteboard.generalPasteboard()
         self._changeCount = self._pasteboard.changeCount()

@@ -1,23 +1,38 @@
 import os
+import shutil
 import subprocess
 import threading
 
+from src.Constant.ModalId import ModalId
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.EventService import EventService
 from src.Service.FilesystemHelperLinux import FilesystemHelperLinux
 from src.Service.Logger import Logger
+from src.Service.ModalWindow.ModalWindowManager import ModalWindowManager
 
 
 class ClipboardManagerLinux(ClipboardManager):
+    _modalWindowManager: ModalWindowManager
+
     _clipnotifyPath: str
 
-    def __init__(self, events: EventService, logger: Logger):
+    def __init__(self, events: EventService, logger: Logger, modalWindowManager: ModalWindowManager):
         super().__init__(events, logger)
+
+        self._modalWindowManager = modalWindowManager
 
         self._clipnotifyPath = FilesystemHelperLinux.getBinariesDir() + '/clipnotify/clipnotify'
 
         if not os.path.isfile(self._clipnotifyPath):
             raise Exception('Clipnotify binary not found in: ' + self._clipnotifyPath)
+
+    def validateSystem(self) -> bool:
+        if shutil.which('xsel') is not None:
+            return True
+
+        self._modalWindowManager.openModal(ModalId.dialogMissingXsel)
+
+        return False
 
     def initializeClipboardWatch(self) -> None:
         threading.Thread(target=self._watchClipboard, daemon=True).start()
@@ -38,6 +53,5 @@ class ClipboardManagerLinux(ClipboardManager):
             subprocess.call([self._clipnotifyPath], stdout=None, stderr=None)
 
             selection = os.popen('xsel -o').read()
-            # selection = os.popen('xsel -obp').read()
 
             self._handleChangedClipboard(selection)

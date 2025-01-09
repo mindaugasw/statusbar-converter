@@ -3,3 +3,4 @@ class ModalId:
     settings = 'settings'
     about = 'about'
     dialog = 'dialog'
+    dialogMissingXsel = 'dialog.missingXsel'
