@@ -22,8 +22,8 @@ class DialogBuilder(ModalWindowBuilderInterface):
         return ModalWindowParameters(
             None,
             'Dialog',
-            470,
-            158,
+            500,
+            200,
             self._primaryTag,
         )
 

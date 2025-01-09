@@ -2,10 +2,12 @@ import threading
 from typing import Callable
 
 import dearpygui.dearpygui as dpg
+import dearpygui_ext.themes
 
 from src.Constant.AppConstant import AppConstant
 from src.Constant.Logs import Logs
 from src.Constant.ModalId import ModalId
+from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
 from src.Service.ModalWindow.ModalWindowBuilderInterface import ModalWindowBuilderInterface
 from src.Service.OSSwitch import OSSwitch
@@ -93,9 +95,14 @@ class ModalWindowManager:
             resizable=False,
         )
 
+        with dpg.font_registry():
+            defaultFont = dpg.add_font(FilesystemHelper.getAssetsDir() + '/font_supreme_regular.otf', 18)
+            dpg.bind_font(defaultFont)
+
         # Build dpg-window - one that appears inside the viewport
         builder.build(arguments)
 
+        dpg.bind_theme(dearpygui_ext.themes.create_theme_imgui_dark())
         dpg.setup_dearpygui()
         dpg.show_viewport()
 

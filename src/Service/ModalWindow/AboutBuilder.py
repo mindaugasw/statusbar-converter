@@ -20,8 +20,8 @@ class AboutBuilder(ModalWindowBuilderInterface):
         return ModalWindowParameters(
             'About',
             'About',
-            530,
-            150,
+            540,
+            165,
             self._primaryTag,
         )
 
