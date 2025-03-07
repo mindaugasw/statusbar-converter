@@ -13,6 +13,14 @@ help: ## Get this help.
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 .PHONY:
+activate_instructions:
+	@# make cannot directly modify environment in parent shell. So for easier usage, we print
+	@# command for the user to run manually
+
+	@echo 'Manually run this command:'
+	@echo 'source .venv-*/bin/activate'
+
+.PHONY:
 run: ## Start the app
 	@source .venv-*/bin/activate
 	python -m src

@@ -1,10 +1,10 @@
 PyYAML==6.0
 rumps==0.4.0
-pyinstaller
-requests
+pyinstaller==6.12.0
+requests==2.32.3
 # Pillow is needed for pyinstaller to be able to convert .png image to .icns to allow to use as macOS file icon
-Pillow
-dearpygui
-dearpygui_ext
-parameterized
-coverage
+Pillow==11.1.0
+dearpygui==2.0.0
+dearpygui_ext==2.0.0
+parameterized==0.9.0
+coverage==7.6.12
