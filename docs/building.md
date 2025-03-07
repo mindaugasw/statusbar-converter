@@ -1,10 +1,13 @@
-# Building locally
+# Building app
 
 Install `python3.10`
 
 > On macOS, if you want to build `x86_64` architecture app on Apple Silicon, you need Python
 > with `universal2` support from [python.org](https://www.python.org/downloads/release/python-31011/).
 > Python from Homebrew will support only your current architecture.
+
+On Linux, additional packages are needed to build the app:  
+`sudo apt-get install libx11-dev libxcomposite-dev`
 
 Create virtualenv with:
 - `./builder.sh install arm64 python3.10` (`arm64` native on macOS)
@@ -13,7 +16,7 @@ Create virtualenv with:
 - Or see `Makefile`
 
 Run app:
-- `source .venv-macos-arm64/bin/activate`
+- `source .venv-*/bin/activate`
 - `python -m src`
   - `--help` to see available command-line options
 

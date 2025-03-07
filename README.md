@@ -24,14 +24,16 @@ timestamp and it will automatically show as time in the statusbar:
 
 ## Installation on Linux
 
+The app is built for and tested on Ubuntu, Gnome desktop environment.
+
 - Download the latest release from [GitHub](https://github.com/mindaugasw/statusbar-converter/releases)
 - Extract zip
-- Run `sudo apt-get install xsel gir1.2-appindicator3-0.1`
+- Run `sudo apt-get install xsel`
 - Start the app. A new icon will appear on the statusbar
 
 The app was tested with Ubuntu, Gnome desktop environment.
 
 
-## Building locally
+## Building app
 
-[See documentation for building locally.](/docs/building.md)
+[See documentation for building app yourself.](/docs/building.md)
