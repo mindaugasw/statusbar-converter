@@ -13,7 +13,7 @@ class SimpleUnitConverter(ConverterInterface):
 
     _thousandsDetector: ThousandsDetector
 
-    _patternIsNumberAndText = re.compile(r'^((\-)?([\d,.]*\d[\d,.]*))([a-z/*°\'"`.3]+)')
+    _patternIsNumberAndText = re.compile(r'^((\-)?([\d,.]*\d[\d,.]*))([a-z/*°\'"`′″.3]+)')
     _unitToConverter: dict[str, AbstractSimpleConverter]
     _enabled: bool
 

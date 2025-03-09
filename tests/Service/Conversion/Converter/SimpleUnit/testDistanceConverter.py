@@ -33,6 +33,16 @@ class TestDistanceConverter(AbstractSimpleUnitConverterTest):
 
         ('Do not convert primary unit: metric', 10, 'm', 'metric', False),
         ('Do not convert primary unit: imperial', 10, 'ft', 'imperial', False),
+
+        ('Weird symbols ft 1', 5.5, '\'', 'metric', True, '5.5 ft', '1.7 m'),
+        ('Weird symbols ft 2', 5.5, '`', 'metric', True, '5.5 ft', '1.7 m'),
+        ('Weird symbols ft 3', 5.5, '′', 'metric', True, '5.5 ft', '1.7 m'),
+
+        ('Weird symbols in 1', 5.5, '"', 'metric', True, '5.5 in', '14 cm'),
+        ('Weird symbols in 2', 5.5, '\'\'', 'metric', True, '5.5 in', '14 cm'),
+        ('Weird symbols in 3', 5.5, '``', 'metric', True, '5.5 in', '14 cm'),
+        ('Weird symbols in 4', 5.5, '′′', 'metric', True, '5.5 in', '14 cm'),
+        ('Weird symbols in 5', 5.5, '″', 'metric', True, '5.5 in', '14 cm'),
     ])
     def testConversion(
         self, _: str,

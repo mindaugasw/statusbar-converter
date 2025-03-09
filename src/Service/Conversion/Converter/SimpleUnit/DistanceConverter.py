@@ -86,7 +86,7 @@ class DistanceConverter(AbstractMetricImperialConverter):
 
             # Imperial units
             'in': UnitDefinition(
-                ['ins', 'inch', 'inches', 'inchs', '"', '\'\'', '``'],
+                ['ins', 'inch', 'inches', 'inchs', '"', '\'\'', '``', '′′', '″'],
                 MetricImperialUnit(
                     'in',
                     'in',
@@ -97,7 +97,7 @@ class DistanceConverter(AbstractMetricImperialConverter):
                 ),
             ),
             'ft': UnitDefinition(
-                ['fts', 'feet', 'feets', 'foot', 'foots', '\'', '`'],
+                ['fts', 'feet', 'feets', 'foot', 'foots', '\'', '`', '′'],
                 MetricImperialUnit(
                     'ft',
                     'ft',
