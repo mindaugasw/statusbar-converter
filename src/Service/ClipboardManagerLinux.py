@@ -30,7 +30,7 @@ class ClipboardManagerLinux(ClipboardManager):
         if shutil.which('xsel') is not None:
             return True
 
-        self._modalWindowManager.openModal(ModalId.dialogMissingXsel)
+        self._modalWindowManager.openModal(ModalId.missingXsel)
 
         return False
 

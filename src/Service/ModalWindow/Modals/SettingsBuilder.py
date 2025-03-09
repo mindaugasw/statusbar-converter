@@ -1,7 +1,7 @@
 import dearpygui.dearpygui as dpg
 
 from src.DTO.ModalWindowParameters import ModalWindowParameters
-from src.Service.ModalWindow.ModalWindowBuilderInterface import ModalWindowBuilderInterface
+from src.Service.ModalWindow.Modals.ModalWindowBuilderInterface import ModalWindowBuilderInterface
 
 
 class SettingsBuilder(ModalWindowBuilderInterface):

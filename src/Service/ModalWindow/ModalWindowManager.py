@@ -1,5 +1,4 @@
 import threading
-from typing import Callable
 
 import dearpygui.dearpygui as dpg
 import dearpygui_ext.themes
@@ -9,8 +8,9 @@ from src.Constant.Logs import Logs
 from src.Constant.ModalId import ModalId
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
-from src.Service.ModalWindow.ModalWindowBuilderInterface import ModalWindowBuilderInterface
+from src.Service.ModalWindow.Modals.ModalWindowBuilderInterface import ModalWindowBuilderInterface
 from src.Service.OSSwitch import OSSwitch
+from src.Type.DialogButtonsDict import DialogButtonsDict
 
 
 class ModalWindowManager:
@@ -40,15 +40,15 @@ class ModalWindowManager:
 
     def openModal(self, _id: str):
         """
-        Open a complex UI window
+        Open a complex, pre-built UI window
         """
         self._openModalInternal(_id, {})
 
-    def openDialog(self, text: str, buttons: dict[str, Callable | None]):
+    def openCustomizedDialog(self, text: str, buttons: DialogButtonsDict):
         """
         Open a simple parameterized UI window with text and multiple buttons
         """
-        self._openModalInternal(ModalId.dialog, {'text': text, 'buttons': buttons})
+        self._openModalInternal(ModalId.customizedDialog, {'text': text, 'buttons': buttons})
 
     def _openModalInternal(self,  _id: str, arguments: dict[str, any]):
         if _id not in self._builders:

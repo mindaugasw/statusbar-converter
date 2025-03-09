@@ -3,7 +3,6 @@ import platform
 import threading
 import time
 import webbrowser
-from typing import Callable
 
 import requests
 
@@ -16,6 +15,7 @@ from src.Service.EventService import EventService
 from src.Service.ExceptionHandler import ExceptionHandler
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
+from src.Type.DialogButtonsDict import DialogButtonsDict
 
 
 class UpdateManager:
@@ -168,7 +168,7 @@ class UpdateManager:
             self._logger.log(f'{Logs.catUpdateCheck}Dialog button click: Remind me later')
 
         text: str
-        buttons: dict[str, Callable | None]
+        buttons: DialogButtonsDict
 
         if version is None:
             text = \

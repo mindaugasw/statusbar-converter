@@ -2,26 +2,26 @@ import dearpygui.dearpygui as dpg
 
 from src.Constant.AppConstant import AppConstant
 from src.DTO.ModalWindowParameters import ModalWindowParameters
-from src.Service.ModalWindow.DialogBuilder import DialogBuilder
-from src.Service.ModalWindow.ModalWindowBuilderInterface import ModalWindowBuilderInterface
+from src.Service.ModalWindow.Modals.CustomizedDialogBuilder import CustomizedDialogBuilder
+from src.Service.ModalWindow.Modals.ModalWindowBuilderInterface import ModalWindowBuilderInterface
 
 
 class DialogMissingXselBuilder(ModalWindowBuilderInterface):
-    _dialogBuilder: DialogBuilder
+    _customizedDialogBuilder: CustomizedDialogBuilder
 
-    def __init__(self, dialogBuilder: DialogBuilder):
+    def __init__(self, customizedDialogBuilder: CustomizedDialogBuilder):
         super().__init__()
 
-        self._dialogBuilder = dialogBuilder
+        self._customizedDialogBuilder = customizedDialogBuilder
 
     def getParameters(self) -> ModalWindowParameters:
-        parameters = self._dialogBuilder.getParameters()
+        parameters = self._customizedDialogBuilder.getParameters()
         parameters.height = 198
 
         return parameters
 
     def build(self, arguments: dict[str, any]) -> None:
-        self._dialogBuilder.build({
+        self._customizedDialogBuilder.build({
             'text': '',
             'buttons': {'Close': None},
             'buildCallback': lambda: self._buildInternal()

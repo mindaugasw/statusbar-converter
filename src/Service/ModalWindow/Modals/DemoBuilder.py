@@ -2,7 +2,7 @@ import dearpygui.dearpygui as dpg
 import dearpygui.demo as demo
 
 from src.DTO.ModalWindowParameters import ModalWindowParameters
-from src.Service.ModalWindow.ModalWindowBuilderInterface import ModalWindowBuilderInterface
+from src.Service.ModalWindow.Modals.ModalWindowBuilderInterface import ModalWindowBuilderInterface
 
 
 class DemoBuilder(ModalWindowBuilderInterface):

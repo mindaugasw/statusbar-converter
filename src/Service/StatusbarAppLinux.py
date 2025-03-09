@@ -3,7 +3,6 @@ import subprocess
 import sys
 import threading
 import time
-from collections.abc import Callable
 
 import gi
 
@@ -26,6 +25,7 @@ from src.Service.ModalWindow.ModalWindowManager import ModalWindowManager
 from src.Service.OSSwitch import OSSwitch
 from src.Service.StatusbarApp import StatusbarApp
 from src.Service.UpdateManager import UpdateManager
+from src.Type.DialogButtonsDict import DialogButtonsDict
 
 gi.require_version('Gtk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
@@ -159,9 +159,8 @@ class StatusbarAppLinux(StatusbarApp):
 
         return menu
 
-    def _showAppUpdateDialog(self, text: str, buttons: dict[str, Callable | None]) -> None:
-        # TODO port changes to macOS as well
-        self._showDialog(text, buttons)
+    def _showAppUpdateDialog(self, text: str, buttons: DialogButtonsDict) -> None:
+        self._showDialogDpg(text, buttons)
 
     def _onMenuClickLastTimestamp(self, menuItem: Gtk.MenuItem) -> None:
         label = menuItem.get_label()
@@ -175,12 +174,11 @@ class StatusbarAppLinux(StatusbarApp):
 
     def _onMenuClickEditConfiguration(self, menuItem: Gtk.MenuItem | None) -> None:
         buttons = {
-            'open': 'Open in default editor',
-            'close': 'Cancel',
+            'Open in default editor': lambda: subprocess.call(['xdg-open', self._configFilePath]),
+            'Cancel': None,
         }
 
-        # TODO refactor to use dpg
-        response = self._showDialogGtk(
+        self._showDialogLegacy(
             f'Configuration can be edited in the file: \n'
             f'<tt>{self._configFilePath}</tt>\n\n'
             f'After editing, the application must be restarted.\n\n'
@@ -189,9 +187,6 @@ class StatusbarAppLinux(StatusbarApp):
             f'Open configuration file in default text editor?',
             buttons,
         )
-
-        if response == buttons['open']:
-            subprocess.call(['xdg-open', self._configFilePath])
 
     def _onMenuClickRunAtLogin(self, menuItem: Gtk.MenuItem) -> None:
         checked = self._isMenuItemChecked(menuItem)
@@ -204,14 +199,20 @@ class StatusbarAppLinux(StatusbarApp):
         if success:
             menuItem.set_label(f'{"" if checked else self.CHECK}Run at login')
 
-    # TODO remove
-    def _onMenuClickAboutOld(self, menuItem: Gtk.MenuItem) -> None:
-        self._showDialogGtk(
+    def _onMenuClickAboutLegacy(self, menuItem: Gtk.MenuItem) -> None:
+        """
+        Deprecated, to be removed
+        """
+        self._showDialogLegacy(
             f'Version: {self._config.getAppVersion()}\n\n'
             f'App website: <a href="{AppConstant.website}">{AppConstant.website}</a>\n\n'
             f'App icon made by <a href="https://www.flaticon.com/free-icons/convert">iconsax at flaticon.com</a>',
-            ['Ok'],
+            {'Ok': None},
         )
+
+    def _onMenuClickRestart(self, menuItem) -> None:
+        # On Linux restart throws error on 2nd restart, so we don't add this button on Linux
+        raise Exception('Not implemented')
 
     def _onMenuClickQuit(self, menuItem) -> None:
         Gtk.main_quit()
@@ -241,22 +242,13 @@ class StatusbarAppLinux(StatusbarApp):
     def _onStatusbarClear(self) -> None:
         self._app.set_label('', '')
 
-    def _showDialog(self, text: str, buttons: dict[str, Callable | None]) -> None:
-        self._modalWindowManager.openDialog(text, buttons)
-
-    def _isMenuItemChecked(self, menuItem: Gtk.MenuItem) -> bool:
-        return menuItem.get_label().startswith(self.CHECK)
-
-    def _showDialogGtk(self, message: str, buttons: list | dict) -> str:
+    def _showDialogLegacy(self, message: str, buttons: DialogButtonsDict) -> None:
         """
-        Deprecated, old way to show dialog on Linux.
-        Does not work reliably, often crashes. Possibly got worse after installing dpg.
+        Does not work very reliably, sometimes crashes. dpg should be used instead when possible.
 
         Message can contain formatting (only on Linux). See supported formatting example:
         https://python-gtk-3-tutorial.readthedocs.io/en/latest/label.html#example
         """
-        if isinstance(buttons, dict):
-            buttons = list(buttons.values())
 
         dialog = Gtk.MessageDialog(
             message_type=Gtk.MessageType.OTHER,
@@ -266,10 +258,18 @@ class StatusbarAppLinux(StatusbarApp):
 
         dialog.format_secondary_markup(message)
 
-        for i, button in enumerate(buttons):
-            dialog.add_button(button, i)
+        buttonList = [{'name': key, 'callback': value} for key, value in buttons.items()]
 
-        response = dialog.run()
+        for i, button in enumerate(buttonList):
+            dialog.add_button(button['name'], i)
+
+        responseIndex = dialog.run()
         dialog.destroy()
 
-        return buttons[response]
+        buttonCallback = buttonList[responseIndex]['callback'];
+
+        if buttonCallback is not None:
+            buttonCallback()
+
+    def _isMenuItemChecked(self, menuItem: Gtk.MenuItem) -> bool:
+        return menuItem.get_label().startswith(self.CHECK)

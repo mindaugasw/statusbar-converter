@@ -5,7 +5,7 @@ from src.DTO.ModalWindowParameters import ModalWindowParameters
 from src.Service.Configuration import Configuration
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.ModalWindow.BuilderHelper import BuilderHelper
-from src.Service.ModalWindow.ModalWindowBuilderInterface import ModalWindowBuilderInterface
+from src.Service.ModalWindow.Modals.ModalWindowBuilderInterface import ModalWindowBuilderInterface
 
 
 class AboutBuilder(ModalWindowBuilderInterface):

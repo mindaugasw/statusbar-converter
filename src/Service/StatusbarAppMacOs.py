@@ -1,8 +1,8 @@
 import os
 import subprocess
+import sys
 import threading
 import time
-from typing import Callable
 
 import rumps
 
@@ -25,6 +25,7 @@ from src.Service.ModalWindow.ModalWindowManager import ModalWindowManager
 from src.Service.OSSwitch import OSSwitch
 from src.Service.StatusbarApp import StatusbarApp
 from src.Service.UpdateManager import UpdateManager
+from src.Type.DialogButtonsDict import DialogButtonsDict
 
 
 class StatusbarAppMacOs(StatusbarApp):
@@ -102,9 +103,9 @@ class StatusbarAppMacOs(StatusbarApp):
 
         return menu
 
-    def _showAppUpdateDialog(self, text: str, buttons: dict[str, Callable | None]) -> None:
+    def _showAppUpdateDialog(self, text: str, buttons: DialogButtonsDict) -> None:
         text = text.replace('\n', '\\n')
-        self._showDialog(text, buttons)
+        self._showDialogLegacy(text, buttons)
 
     def _onMenuClickLastTimestamp(self, menuItem: rumps.MenuItem) -> None:
         self._clipboard.setClipboardContent(menuItem.title)
@@ -121,7 +122,7 @@ class StatusbarAppMacOs(StatusbarApp):
             'Cancel': None,
         }
 
-        self._showDialog(
+        self._showDialogLegacy(
             f'Configuration can be edited in the file:\\n'
             f'{self._configFilePath}\\n\\n'
             f'After editing, the application must be restarted.\\n\\n'
@@ -140,14 +141,23 @@ class StatusbarAppMacOs(StatusbarApp):
         if success:
             menuItem.state = not menuItem.state
 
-    # TODO remove
-    def _onMenuClickAboutOld(self, menuItem: rumps.MenuItem) -> None:
-        self._showDialog(
+    def _onMenuClickAboutLegacy(self, menuItem: rumps.MenuItem) -> None:
+        """
+        Deprecated, to be removed
+        """
+        self._showDialogLegacy(
             f'Version: {self._config.getAppVersion()}\\n\\n'
             f'App website: {AppConstant.website}\\n\\n'
             f'App icon made by iconsax at flaticon.com',
             {'Ok': None},
         )
+
+    def _onMenuClickRestart(self, menuItem) -> None:
+        os.execl(sys.executable, '-m src.main', *sys.argv)
+
+    def _onMenuClickQuit(self, menuItem) -> None:
+        # On macOS quit is handled automatically by rumps
+        raise Exception('Not implemented')
 
     def _onConverted(self, result: ConvertResult) -> None:
         if self._flashIconOnChange:
@@ -167,12 +177,18 @@ class StatusbarAppMacOs(StatusbarApp):
     def _onStatusbarClear(self) -> None:
         self._app.title = None
 
-    def _showDialog(self, message: str, buttons: dict[str, Callable | None]) -> None:
-        # Here rumps dialog cannot be shown because it's initiated from a different thread.
-        # And can't be initiated from the main thread because of async request.
-        # Also, automatic update check can't trigger dialog from rumps main thread.
-        # Same problem with dpg.
-        # So we're using non-rumps and non-dpg dialog
+    def _showDialogDpg(self, text: str, buttons: DialogButtonsDict) -> None:
+        # Note that both rumps and dpg dialogs must be initiated from the main UI thread (rumps thread).
+        # So it's impossible to use this method after async operation.
+        #
+        # Trying to show dpg after async update check:
+        # NSInternalInconsistencyException, reason: NSWindow should only be instantiated on the main thread!
+
+        super()._showDialogDpg(text, buttons)
+
+    def _showDialogLegacy(self, message: str, buttons: DialogButtonsDict) -> None:
+        # Note that both rumps and dpg dialogs must be initiated from the main UI thread (rumps thread).
+        # So for async operations this legacy method should be used.
 
         buttonNames = list(buttons.keys())
         buttonsText = '", "'.join(buttonNames)
@@ -183,7 +199,7 @@ class StatusbarAppMacOs(StatusbarApp):
             f'buttons {{"{buttonsText}"}} ' \
             f'default button "{buttonNames[0]}" ' \
             f'with icon POSIX file "{self._iconPathDefault}" ' \
-            f'giving up after 60\''
+            f'giving up after 90\''
 
         # "giving up after" clause would not be needed, but after 120 seconds
         # AppleEvent timeouts with an exception.
@@ -191,10 +207,13 @@ class StatusbarAppMacOs(StatusbarApp):
 
         result = os.popen(dialogCommand).read().strip()
 
+        if 'gave up:true' in result:
+            return
+
         for replaceText in ['button returned:', ', gave up:false', ', gave up:true']:
             result = result.replace(replaceText, '')
 
-        buttonCallback = buttons[result]
+        buttonCallback = buttons.get(result)
 
         if buttonCallback is not None:
             buttonCallback()

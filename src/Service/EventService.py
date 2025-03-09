@@ -2,6 +2,7 @@ from typing import Callable
 
 from src.DTO.ConvertResult import ConvertResult
 from src.DTO.Event import Event
+from src.Type.DialogButtonsDict import DialogButtonsDict
 
 
 class EventService:
@@ -52,7 +53,7 @@ class EventService:
     def dispatchStatusbarClear(self) -> None:
         self._dispatch(self._idStatusbarClear)
 
-    def subscribeUpdateCheckCompleted(self, callback: Callable[[str, dict[str, Callable | None]], None]) -> None:
+    def subscribeUpdateCheckCompleted(self, callback: Callable[[str, DialogButtonsDict], None]) -> None:
         """Raised when check for app updates is completed.
 
         This could be instead directly coupled between UpdateManager <-> StatusbarApp, but then it
@@ -60,11 +61,11 @@ class EventService:
 
         Params:
         - text: str, text to show in a dialog
-        - buttons: dict[str, Callable | None], buttons to show and their callbacks
+        - buttons: DialogButtonsDict, buttons to show and their callbacks
         """
         self._subscribe(self._idUpdateCheckCompleted, callback)
 
-    def dispatchUpdateCheckCompleted(self, text: str, buttons: dict[str, Callable | None]) -> None:
+    def dispatchUpdateCheckCompleted(self, text: str, buttons: DialogButtonsDict) -> None:
         self._dispatch(self._idUpdateCheckCompleted, text, buttons)
 
     def _subscribe(self, _eventId: str, callback: Callable) -> None:

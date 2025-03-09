@@ -1,8 +1,5 @@
-import os
-import sys
 import webbrowser
 from abc import ABC, abstractmethod
-from typing import Callable
 
 from src.Constant.AppConstant import AppConstant
 from src.Constant.ConfigId import ConfigId
@@ -18,9 +15,10 @@ from src.Service.Conversion.Converter.Timestamp.TimestampTextFormatter import Ti
 from src.Service.Debug import Debug
 from src.Service.EventService import EventService
 from src.Service.Logger import Logger
-from src.Service.ModalWindow import ModalWindowManager
+from src.Service.ModalWindow.ModalWindowManager import ModalWindowManager
 from src.Service.OSSwitch import OSSwitch
 from src.Service.UpdateManager import UpdateManager
+from src.Type.DialogButtonsDict import DialogButtonsDict
 
 
 class StatusbarApp(ABC):
@@ -156,7 +154,7 @@ class StatusbarApp(ABC):
                 'label_debug': MenuItem('Debug tools', isDisabled=True),
                 'gui_demo': MenuItem('Open GUI demo', callback=self._onMenuClickOpenGUIDemo),
                 # TODO remove
-                'about_old': MenuItem('About [Old]', callback=self._onMenuClickAboutOld),
+                'about_old': MenuItem('About [Old]', callback=self._onMenuClickAboutLegacy),
             })
 
         self._menuItems = items
@@ -168,7 +166,7 @@ class StatusbarApp(ABC):
         pass
 
     @abstractmethod
-    def _showAppUpdateDialog(self, text: str, buttons: dict[str, Callable | None]) -> None:
+    def _showAppUpdateDialog(self, text: str, buttons: DialogButtonsDict) -> None:
         pass
 
     @abstractmethod
@@ -205,24 +203,24 @@ class StatusbarApp(ABC):
     def _onMenuClickAbout(self, menuItem) -> None:
         self._modalWindowManager.openModal(ModalId.about)
 
-    # TODO remove
     @abstractmethod
-    def _onMenuClickAboutOld(self, menuItem) -> None:
+    def _onMenuClickAboutLegacy(self, menuItem) -> None:
+        """
+        Deprecated, to be removed
+        """
         pass
 
+    @abstractmethod
     def _onMenuClickRestart(self, menuItem) -> None:
-        # On Linux this fails on 2nd restart, sys.executable is not set after the 1st restart
-        os.execl(sys.executable, '-m src.main', *sys.argv)
-
-    def _onMenuClickQuit(self, menuItem) -> None:
-        raise Exception('Not implemented')
+        pass
 
     @abstractmethod
-    def _showDialog(self, message: str, buttons: dict[str, Callable | None]) -> None:
-        """
-        Create a dialog window
+    def _onMenuClickQuit(self, menuItem) -> None:
+        pass
 
-        :return: Clicked button name. On macOS dialog window can time out and then
-            empty string will be returned
-        """
+    def _showDialogDpg(self, text: str, buttons: DialogButtonsDict) -> None:
+        self._modalWindowManager.openCustomizedDialog(text, buttons)
+
+    @abstractmethod
+    def _showDialogLegacy(self, message: str, buttons: DialogButtonsDict) -> None:
         pass

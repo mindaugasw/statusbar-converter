@@ -5,10 +5,10 @@ import dearpygui.dearpygui as dpg
 from src.DTO.ModalWindowParameters import ModalWindowParameters
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.ModalWindow.BuilderHelper import BuilderHelper
-from src.Service.ModalWindow.ModalWindowBuilderInterface import ModalWindowBuilderInterface
+from src.Service.ModalWindow.Modals.ModalWindowBuilderInterface import ModalWindowBuilderInterface
 
 
-class DialogBuilder(ModalWindowBuilderInterface):
+class CustomizedDialogBuilder(ModalWindowBuilderInterface):
     _primaryTag = 'primary'
     _minimumNewLines = 8
     _callbacks: dict[str | int, Callable | None]

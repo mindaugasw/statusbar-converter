@@ -23,13 +23,13 @@ from src.Service.EventService import EventService
 from src.Service.ExceptionHandler import ExceptionHandler
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
-from src.Service.ModalWindow.AboutBuilder import AboutBuilder
-from src.Service.ModalWindow.DemoBuilder import DemoBuilder
-from src.Service.ModalWindow.DialogBuilder import DialogBuilder
-from src.Service.ModalWindow.DialogMissingXselBuilder import DialogMissingXselBuilder
-from src.Service.ModalWindow.ModalWindowBuilderInterface import ModalWindowBuilderInterface
+from src.Service.ModalWindow.Modals.AboutBuilder import AboutBuilder
+from src.Service.ModalWindow.Modals.DemoBuilder import DemoBuilder
+from src.Service.ModalWindow.Modals.CustomizedDialogBuilder import CustomizedDialogBuilder
+from src.Service.ModalWindow.Modals.MissingXselBuilder import DialogMissingXselBuilder
+from src.Service.ModalWindow.Modals.ModalWindowBuilderInterface import ModalWindowBuilderInterface
 from src.Service.ModalWindow.ModalWindowManager import ModalWindowManager
-from src.Service.ModalWindow.SettingsBuilder import SettingsBuilder
+from src.Service.ModalWindow.Modals.SettingsBuilder import SettingsBuilder
 from src.Service.OSSwitch import OSSwitch
 from src.Service.StatusbarApp import StatusbarApp
 from src.Service.UpdateManager import UpdateManager
@@ -105,14 +105,14 @@ class ServiceContainer:
             return FilesystemHelperLinux()
 
     def _getModalWindowBuilders(self, config: Configuration) -> dict[str, ModalWindowBuilderInterface]:
-        dialogBuilder = DialogBuilder()
+        customizedDialogBuilder = CustomizedDialogBuilder()
 
         return {
             ModalId.demo: DemoBuilder(),
             ModalId.settings: SettingsBuilder(),
             ModalId.about: AboutBuilder(config),
-            ModalId.dialog: dialogBuilder,
-            ModalId.dialogMissingXsel: DialogMissingXselBuilder(dialogBuilder),
+            ModalId.customizedDialog: customizedDialogBuilder,
+            ModalId.missingXsel: DialogMissingXselBuilder(customizedDialogBuilder),
         }
 
     def _getAutostartManager(
