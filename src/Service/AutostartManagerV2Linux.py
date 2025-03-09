@@ -23,14 +23,18 @@ class AutostartManagerV2Linux(AutostartManagerV2):
 
         self._autostartScriptPath = f'{filesystemHelper.getStartupScriptDir()}/{self._appNamePretty}.desktop'
 
-    def _enableAutostartOsSpecific(self) -> None:
+    def _enableAutostartOsSpecific(self) -> str | None:
         scriptContent = self._getAutostartScriptTargetContent()
 
         with open(self._autostartScriptPath, 'w') as scriptFile:
             scriptFile.write(scriptContent)
 
-    def _disableAutostartOsSpecific(self) -> None:
+        return None
+
+    def _disableAutostartOsSpecific(self) -> str | None:
         pathlib.Path.unlink(pathlib.Path(self._autostartScriptPath), missing_ok=True)
+
+        return None
 
     def _validateSetup(self) -> bool:
         targetContent = self._getAutostartScriptTargetContent()

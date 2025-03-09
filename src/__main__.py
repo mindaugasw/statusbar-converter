@@ -47,8 +47,6 @@ def main() -> None:
 
         return
 
-    # TODO remove
-    # services[AutostartManager].firstTimeSetup()
     services[AutostartManagerV2].setupAutostart()
     clipboardManager.initializeClipboardWatch()
     services[AppLoop].startLoop()

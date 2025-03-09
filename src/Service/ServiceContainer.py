@@ -3,7 +3,6 @@ from typing import TypeVar
 from src.Constant.ModalId import ModalId
 from src.Service.AppLoop import AppLoop
 from src.Service.ArgumentParser import ArgumentParser
-from src.Service.AutostartManager import AutostartManager
 from src.Service.AutostartManagerV2 import AutostartManagerV2
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager
@@ -84,8 +83,6 @@ class ServiceContainer:
 
         # App services
         _[UpdateManager] = updateManager = UpdateManager(filesystemHelper, events, config, logger, debug)
-        # TODO remove
-        # _[AutostartManager] = autostartManager = self._getAutostartManager(osSwitch, config, filesystemHelper, logger)
         # TODO rename
         _[AutostartManagerV2] = autostartManagerV2 = self._getAutostartManagerV2(osSwitch, filesystemHelper, config, argumentParser, logger)
         _[ClipboardManager] = clipboardManager = self._getClipboardManager(osSwitch, events, logger, modalWindowManager)
@@ -119,21 +116,7 @@ class ServiceContainer:
             ModalId.dialogMissingXsel: DialogMissingXselBuilder(dialogBuilder),
         }
 
-    # TODO remove
-    def _getAutostartManager(
-        self,
-        osSwitch: OSSwitch,
-        config: Configuration,
-        filesystemHelper: FilesystemHelper,
-        logger: Logger,
-    ) -> AutostartManager:
-        if osSwitch.isMacOS():
-            from src.Service.AutostartManagerMacOS import AutostartManagerMacOS
-            return AutostartManagerMacOS(config, filesystemHelper, logger)
-        else:
-            from src.Service.AutostartManagerLinux import AutostartManagerLinux
-            return AutostartManagerLinux(config, filesystemHelper, logger)
-
+    # TODO rename
     def _getAutostartManagerV2(
         self,
         osSwitch: OSSwitch,
@@ -143,7 +126,8 @@ class ServiceContainer:
         logger: Logger,
     ) -> AutostartManagerV2:
         if osSwitch.isMacOS():
-            raise Exception('Not implemented')
+            from src.Service.AutostartManagerV2MacOS import AutostartManagerV2MacOS
+            return AutostartManagerV2MacOS(filesystemHelper, config, argParser, logger)
         else:
             from src.Service.AutostartManagerV2Linux import AutostartManagerV2Linux
             return AutostartManagerV2Linux(filesystemHelper, config, argParser, logger)
