@@ -11,7 +11,7 @@ from src.Constant.Logs import Logs
 from src.DTO.ConvertResult import ConvertResult
 from src.DTO.MenuItem import MenuItem
 from src.DTO.Timestamp import Timestamp
-from src.Service.AutostartManagerV2 import AutostartManagerV2
+from src.Service.AutostartManager import AutostartManager
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
@@ -39,7 +39,7 @@ class StatusbarAppMacOs(StatusbarApp):
         events: EventService,
         config: Configuration,
         configFileManager: ConfigFileManager,
-        autostartManager: AutostartManagerV2,
+        autostartManager: AutostartManager,
         updateManager: UpdateManager,
         modalWindowManager: ModalWindowManager,
         logger: Logger,

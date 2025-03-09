@@ -9,7 +9,10 @@ from tests.TestUtil.MockLibrary import MockLibrary
 
 class TestDistanceConverter(AbstractSimpleUnitConverterTest):
     @parameterized.expand([
-        # TODO rounding could be improved: (commented on specific cases)
+        # TODO rounding could be improved:
+        # Eg: "0.0035 fl oz" (selected text) => "0 fl oz = ..." (shown in the statusbar)
+        # More examples commented on specific test cases below
+        #
         # Maybe manually specifying zeroes based on digits count would be better?
 
         ('To mm', 0.3, 'in', 'metric', True, '0.3 in', '7.6 mm'),

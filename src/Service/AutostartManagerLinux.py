@@ -2,14 +2,14 @@ import pathlib
 
 from src.Constant.Logs import Logs
 from src.Service.ArgumentParser import ArgumentParser
-from src.Service.AutostartManagerV2 import AutostartManagerV2
+from src.Service.AutostartManager import AutostartManager
 from src.Service.Configuration import Configuration
 from src.Service.ExceptionHandler import ExceptionHandler
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
 
 
-class AutostartManagerV2Linux(AutostartManagerV2):
+class AutostartManagerLinux(AutostartManager):
     _autostartScriptPath: str
 
     def __init__(

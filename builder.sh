@@ -59,7 +59,7 @@ _installLinux() {(set -e
 
     _log "Successfully installed clipnotify"
 
-    # TODO solve this somehow better. Installing PyGObject directly into virtualenv seems not possible
+    # This should be solved somehow better. But installing PyGObject directly into virtualenv seems not possible
     cp -r /usr/lib/python3/dist-packages/gi "$venvPath/lib/python3.10/site-packages/gi"
 
     _log "Successfully copied gi"

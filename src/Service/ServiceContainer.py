@@ -3,7 +3,7 @@ from typing import TypeVar
 from src.Constant.ModalId import ModalId
 from src.Service.AppLoop import AppLoop
 from src.Service.ArgumentParser import ArgumentParser
-from src.Service.AutostartManagerV2 import AutostartManagerV2
+from src.Service.AutostartManager import AutostartManager
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
@@ -83,10 +83,9 @@ class ServiceContainer:
 
         # App services
         _[UpdateManager] = updateManager = UpdateManager(filesystemHelper, events, config, logger, debug)
-        # TODO rename
-        _[AutostartManagerV2] = autostartManagerV2 = self._getAutostartManagerV2(osSwitch, filesystemHelper, config, argumentParser, logger)
+        _[AutostartManager] = autostartManager = self._getAutostartManager(osSwitch, filesystemHelper, config, argumentParser, logger)
         _[ClipboardManager] = clipboardManager = self._getClipboardManager(osSwitch, events, logger, modalWindowManager)
-        _[StatusbarApp] = statusbarApp = self._getStatusbarApp(osSwitch, timestampTextFormatter, clipboardManager, conversionManager, events, config, configFileManager, autostartManagerV2, updateManager, modalWindowManager, logger, debug)
+        _[StatusbarApp] = statusbarApp = self._getStatusbarApp(osSwitch, timestampTextFormatter, clipboardManager, conversionManager, events, config, configFileManager, autostartManager, updateManager, modalWindowManager, logger, debug)
         _[AppLoop] = appLoop = AppLoop(osSwitch, events)
 
         self._services = _
@@ -116,21 +115,20 @@ class ServiceContainer:
             ModalId.dialogMissingXsel: DialogMissingXselBuilder(dialogBuilder),
         }
 
-    # TODO rename
-    def _getAutostartManagerV2(
+    def _getAutostartManager(
         self,
         osSwitch: OSSwitch,
         filesystemHelper: FilesystemHelper,
         config: Configuration,
         argParser: ArgumentParser,
         logger: Logger,
-    ) -> AutostartManagerV2:
+    ) -> AutostartManager:
         if osSwitch.isMacOS():
-            from src.Service.AutostartManagerV2MacOS import AutostartManagerV2MacOS
-            return AutostartManagerV2MacOS(filesystemHelper, config, argParser, logger)
+            from src.Service.AutostartManagerMacOS import AutostartManagerMacOS
+            return AutostartManagerMacOS(filesystemHelper, config, argParser, logger)
         else:
-            from src.Service.AutostartManagerV2Linux import AutostartManagerV2Linux
-            return AutostartManagerV2Linux(filesystemHelper, config, argParser, logger)
+            from src.Service.AutostartManagerLinux import AutostartManagerLinux
+            return AutostartManagerLinux(filesystemHelper, config, argParser, logger)
 
     def _getClipboardManager(
         self,
@@ -155,7 +153,7 @@ class ServiceContainer:
         events: EventService,
         config: Configuration,
         configFileManager: ConfigFileManager,
-        autostartManager: AutostartManagerV2,
+        autostartManager: AutostartManager,
         updateManager: UpdateManager,
         modalWindowManager: ModalWindowManager,
         logger: Logger,

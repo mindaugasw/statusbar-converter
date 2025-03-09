@@ -10,8 +10,7 @@ from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
 
 
-# TODO rename: remove v2
-class AutostartManagerV2(ABC):
+class AutostartManager(ABC):
     _filesystemHelper: FilesystemHelper
     _config: Configuration
     _argParser: ArgumentParser

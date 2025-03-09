@@ -1,13 +1,13 @@
 import os
 
 from src.Service.ArgumentParser import ArgumentParser
-from src.Service.AutostartManagerV2 import AutostartManagerV2
+from src.Service.AutostartManager import AutostartManager
 from src.Service.Configuration import Configuration
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
 
 
-class AutostartManagerV2MacOS(AutostartManagerV2):
+class AutostartManagerMacOS(AutostartManager):
     # Login items scripting via Apple script source/reference:
     # https://gist.github.com/nweddle/e8cece424a8c8c1e121ad33922dc7dd0
 

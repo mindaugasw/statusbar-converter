@@ -6,7 +6,7 @@ from src.Constant.AppConstant import AppConstant
 from src.Constant.Logs import Logs
 from src.Service.AppLoop import AppLoop
 from src.Service.ArgumentParser import ArgumentParser
-from src.Service.AutostartManagerV2 import AutostartManagerV2
+from src.Service.AutostartManager import AutostartManager
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.Configuration import Configuration
 from src.Service.Debug import Debug
@@ -47,7 +47,7 @@ def main() -> None:
 
         return
 
-    services[AutostartManagerV2].setupAutostart()
+    services[AutostartManager].setupAutostart()
     clipboardManager.initializeClipboardWatch()
     services[AppLoop].startLoop()
     services[StatusbarApp].createApp()
