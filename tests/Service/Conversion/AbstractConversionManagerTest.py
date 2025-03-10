@@ -1,7 +1,5 @@
 from unittest import TestCase
-from unittest.mock import Mock, patch, MagicMock
-
-from parameterized import parameterized
+from unittest.mock import Mock, MagicMock
 
 from src.Constant.ConfigId import ConfigId
 from src.DTO.ConvertResult import ConvertResult
@@ -12,6 +10,7 @@ from src.Service.Conversion.Converter.SimpleUnit.AbstractSimpleConverter import 
 from src.Service.Conversion.Converter.SimpleUnit.DistanceConverter import DistanceConverter
 from src.Service.Conversion.Converter.SimpleUnit.SimpleUnitConverter import SimpleUnitConverter
 from src.Service.Conversion.Converter.SimpleUnit.TemperatureConverter import TemperatureConverter
+from src.Service.Conversion.Converter.SimpleUnit.VolumeConverter import VolumeConverter
 from src.Service.Conversion.Converter.SimpleUnit.WeightConverter import WeightConverter
 from src.Service.Conversion.Converter.Timestamp.TimestampConverter import TimestampConverter
 from src.Service.Conversion.Converter.Timestamp.TimestampTextFormatter import TimestampTextFormatter
@@ -20,51 +19,56 @@ from src.Service.Debug import Debug
 from src.Service.EventService import EventService
 from src.Service.Logger import Logger
 from tests.TestUtil.MockLibrary import MockLibrary
+from tests.TestUtil.Types import ConfigurationsList
 
 
-class TestConversionManager(TestCase):
+class AbstractConversionManagerTest(TestCase):
+    # All converters are tested with a single integration test to ensure proper service config.
+    # E.g. SimpleUnitConverter has correct regex, that multiple converters are not clashing, etc
+
     _events: EventService
 
     _convertedWasDispatched: bool
-    _convertResult : ConvertResult | None
+    _convertResult: ConvertResult | None
 
     def setUp(self) -> None:
-        self._events = EventService()
-        self._convertedWasDispatched = False
-        self._convertResult = None
-
-    @parameterized.expand([
-        ('Empty string', '', False, None),
-        ('Random text', 'Random text', False, None),
-        ('No matched converter', '123 asd', False, None),
-        ('Timestamp converter', '1555522011', True, '1555522011'),
-        ('Temperature converter', '15 F', True, '-9 °C'),
-        ('Distance converter', '15 ft', True, '4.6 m'),
-        ('Weight converter', '15 lb', True, '6.8 kg'),
-    ])
-    @patch('time.time', return_value=1733022011.42)
-    def testOnClipboardChange(
-        self, _: str,
-        text: str, expectSuccess: bool, expectText: str | None,
-        timeMock,
-    ) -> None:
         def onConverted(result: ConvertResult) -> None:
             self._convertedWasDispatched = True
             self._convertResult = result
 
+        self._convertedWasDispatched = False
+        self._convertResult = None
+        self._events = EventService()
         self._events.subscribeConverted(onConverted)
-        conversionManager = self._buildConversionManager()
+
+    def runConverterTest(
+        self,
+        text: str | None, expectSuccess: bool, expectFrom: str | None, expectTo: str | None,
+        configOverrides: ConfigurationsList | None = None,
+    ) -> None:
+        if text is not None and text != text.strip():
+            raise Exception('This service should always receive only whitespace-stripped input')
+
+        conversionManager = self.buildConversionManager(configOverrides)
 
         conversionManager.onClipboardChange(text)
 
-        self.assertEqual(expectSuccess, self._convertedWasDispatched)
+        self.assertConvertResult(expectSuccess, expectFrom, expectTo)
+
+
+    def assertConvertResult(self, expectSuccess: bool, expectFrom: str | None = None, expectTo: str | None = None) -> None:
+        self.assertEqual(
+            expectSuccess,
+            self._convertedWasDispatched,
+            f'Expected convert success {expectSuccess}, got success {self._convertedWasDispatched}',
+        )
 
         if expectSuccess:
-            self.assertEqual(expectText, self._convertResult.convertedText)
+            self.assertEqual(expectFrom, self._convertResult.originalText)
+            self.assertEqual(expectTo, self._convertResult.convertedText)
 
-    def _buildConversionManager(self) -> ConversionManager:
-        loggerMock = Mock(Logger)
-        configMock = MockLibrary.getConfig([
+    def buildConversionManager(self, configOverrides: ConfigurationsList | None = None) -> ConversionManager:
+        configDefault = [
             (ConfigId.ClearOnChange, False),
             (ConfigId.ClearAfterTime, 0),
             (ConfigId.Debug, False),
@@ -74,16 +78,22 @@ class TestConversionManager(TestCase):
             (ConfigId.Converter_Temperature_PrimaryUnit, 'C'),
             (ConfigId.Converter_Timestamp_Enabled, True),
             (ConfigId.Converter_Timestamp_IconFormat, {'default': ''}),
-            (ConfigId.Converter_Timestamp_Menu_LastConversion_OriginalText, ''),
+            (ConfigId.Converter_Timestamp_Menu_LastConversion_OriginalText, '{ts_ms_sep}'),
             (ConfigId.Converter_Timestamp_Menu_LastConversion_ConvertedText, '{ts_ms_sep}'),
+            (ConfigId.Converter_Volume_Enabled, True),
+            (ConfigId.Converter_Volume_PrimaryUnit_Metric, True),
             (ConfigId.Converter_Weight_Enabled, True),
             (ConfigId.Converter_Weight_PrimaryUnit_Metric, True),
-        ])
+        ]
+
+        loggerMock = Mock(Logger)
+        configMock = MockLibrary.getConfig(configDefault, configOverrides)
 
         simpleConverters: list[AbstractSimpleConverter] = [
             DistanceConverter(configMock),
             WeightConverter(configMock),
             TemperatureConverter(configMock),
+            VolumeConverter(configMock),
         ]
 
         converters: list[ConverterInterface] = [
