@@ -1,16 +1,12 @@
-from unittest import TestCase
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 from parameterized import parameterized
 
 from src.Constant.ConfigId import ConfigId
-from src.Service.Conversion.Converter.Timestamp.TimestampConverter import TimestampConverter
-from src.Service.Conversion.Converter.Timestamp.TimestampTextFormatter import TimestampTextFormatter
-from src.Service.Logger import Logger
-from tests.TestUtil.MockLibrary import MockLibrary
+from tests.Service.Conversion.AbstractConversionManagerTest import AbstractConversionManagerTest
 
 
-class TestTimestampConverter(TestCase):
+class TestTimestampConverter(AbstractConversionManagerTest):
     @parameterized.expand([
         ('Empty string', '', False, None),
         ('Random text', 'Random text', False, None),
@@ -28,28 +24,14 @@ class TestTimestampConverter(TestCase):
         ('15 chars: too long for ms', '10000000000000', False, None),
     ])
     @patch('time.time', return_value=1733022011.42)
-    def testTryConvert(
+    def testTimestampConverter(
         self, _: str,
-        text: str, expectSuccess: bool, expectText: str | None,
+        text: str, expectSuccess: bool, expectParsed: str | None,
         timeMock,
     ) -> None:
-        configMock = MockLibrary.getConfig([
-            (ConfigId.Converter_Timestamp_Enabled, True),
-            (ConfigId.Converter_Timestamp_IconFormat, {
-                'default': '{ts_ms_sep}',
-            }),
-            (ConfigId.Converter_Timestamp_Menu_LastConversion_OriginalText, ''),
-            (ConfigId.Converter_Timestamp_Menu_LastConversion_ConvertedText, ''),
-        ])
-        converter = TimestampConverter(
-            TimestampTextFormatter(configMock),
-            configMock,
-            Mock(Logger),
-        )
+        configOverrides = [
+            (ConfigId.Converter_Timestamp_Menu_LastConversion_OriginalText, '{ts_ms_sep}'),
+            (ConfigId.Converter_Timestamp_Menu_LastConversion_ConvertedText, '{ts_ms_sep}'),
+        ]
 
-        success, convertResult = converter.tryConvert(text)
-
-        self.assertEqual(expectSuccess, success)
-
-        if expectSuccess:
-            self.assertEqual(expectText, convertResult.iconText)
+        self.runConverterTest(text, expectSuccess, expectParsed, expectParsed, configOverrides)
