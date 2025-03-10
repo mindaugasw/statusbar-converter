@@ -42,8 +42,9 @@ class AbstractMetricImperialConverter(AbstractSimpleConverter, ABC):
             return False, None
 
         meters = number * unitFrom.multiplierToBaseUnit
+        metersAbs = abs(meters)
 
-        if meters > self._maxValueBaseUnit or meters < self._minValueBaseUnit:
+        if metersAbs > self._maxValueBaseUnit or metersAbs < self._minValueBaseUnit:
             return False, None
 
         numberTo: float = -1
@@ -57,7 +58,7 @@ class AbstractMetricImperialConverter(AbstractSimpleConverter, ABC):
 
             numberTo = meters / unitIteration.multiplierToBaseUnit
 
-            if numberTo >= unitIteration.limitToShowUnit:
+            if abs(numberTo) >= unitIteration.limitToShowUnit:
                 continue
 
             unitTo = unitIteration
