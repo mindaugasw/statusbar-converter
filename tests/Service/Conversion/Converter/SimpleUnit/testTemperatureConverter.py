@@ -25,7 +25,7 @@ class TestTemperatureConverter(AbstractConversionManagerTest):
         text: str, expectSuccess: bool, expectFrom: str | None = None, expectTo: str | None = None,
     ) -> None:
         configOverrides = [
-            (ConfigId.Converter_Temperature_PrimaryUnit, primaryUnitId),
+            (ConfigId.Converter_Temperature_PrimaryUnit_Celsius, True if primaryUnitId.lower() == 'c' else False),
         ]
 
         self.runConverterTest(text, expectSuccess, expectFrom, expectTo, configOverrides)

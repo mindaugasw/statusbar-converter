@@ -19,7 +19,7 @@ converters:
 
     temperature:
         enabled: true
-        primary_unit: C
+        primary_unit_celsius: true
 
     timestamp:
         enabled: true

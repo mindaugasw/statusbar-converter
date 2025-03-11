@@ -23,7 +23,9 @@ class TemperatureConverter(AbstractSimpleConverter):
 
         self._unitsExpanded = UnitPreprocessor.expandAliases(self._getUnitsDefinition())
 
-        primaryUnitId = config.get(ConfigId.Converter_Temperature_PrimaryUnit).lower()
+        primaryUnitId = self._primaryAliasCelsius\
+            if config.get(ConfigId.Converter_Temperature_PrimaryUnit_Celsius)\
+            else self._primaryAliasFahrenheit
         self._primaryUnit = self._unitsExpanded[primaryUnitId]
 
     def getName(self) -> str:

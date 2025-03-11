@@ -75,7 +75,7 @@ class AbstractConversionManagerTest(TestCase):
             (ConfigId.Converter_Distance_Enabled, True),
             (ConfigId.Converter_Distance_PrimaryUnit_Metric, True),
             (ConfigId.Converter_Temperature_Enabled, True),
-            (ConfigId.Converter_Temperature_PrimaryUnit, 'C'),
+            (ConfigId.Converter_Temperature_PrimaryUnit_Celsius, True),
             (ConfigId.Converter_Timestamp_Enabled, True),
             (ConfigId.Converter_Timestamp_IconFormat, {'default': ''}),
             (ConfigId.Converter_Timestamp_Menu_LastConversion_OriginalText, '{ts_ms_sep}'),

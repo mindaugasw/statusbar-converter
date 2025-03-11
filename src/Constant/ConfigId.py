@@ -9,7 +9,7 @@ class ConfigId:
     Converter_Distance_PrimaryUnit_Metric = ['converters', 'distance', 'primary_unit_metric']
 
     Converter_Temperature_Enabled = ['converters', 'temperature', 'enabled']
-    Converter_Temperature_PrimaryUnit = ['converters', 'temperature', 'primary_unit']
+    Converter_Temperature_PrimaryUnit_Celsius = ['converters', 'temperature', 'primary_unit_celsius']
 
     Converter_Timestamp_Enabled = ['converters', 'timestamp', 'enabled']
     Converter_Timestamp_IconFormat = ['converters', 'timestamp', 'icon_text_format']
