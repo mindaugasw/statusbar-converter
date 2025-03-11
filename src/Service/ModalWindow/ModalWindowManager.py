@@ -6,6 +6,7 @@ import dearpygui_ext.themes
 from src.Constant.AppConstant import AppConstant
 from src.Constant.Logs import Logs
 from src.Constant.ModalId import ModalId
+from src.Service.EventService import EventService
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
 from src.Service.ModalWindow.Modals.ModalWindowBuilderInterface import ModalWindowBuilderInterface
@@ -22,6 +23,7 @@ class ModalWindowManager:
 
     _builders: dict[str, ModalWindowBuilderInterface]
     _osSwitch: OSSwitch
+    _events: EventService
     _logger: Logger
 
     _isModalOpen: bool
@@ -30,10 +32,12 @@ class ModalWindowManager:
         self,
         builders: dict[str, ModalWindowBuilderInterface],
         osSwitch: OSSwitch,
+        events: EventService,
         logger: Logger,
     ):
         self._builders = builders
         self._osSwitch = osSwitch
+        self._events = events
         self._logger = logger
 
         self._isModalOpen = False
@@ -60,6 +64,7 @@ class ModalWindowManager:
             return
 
         self._isModalOpen = True
+        self._events.setEventBlocking(True)
         self._showWindow(self._builders[_id], arguments)
 
     def _showWindow(self, builder: ModalWindowBuilderInterface, arguments: dict[str, any]) -> None:
@@ -83,7 +88,7 @@ class ModalWindowManager:
 
         viewportTitle = AppConstant.appName
         if parameters.title is not None:
-            viewportTitle += ' - ' + parameters.title
+            viewportTitle = parameters.title + ' - ' + viewportTitle
 
         dpg.create_context()
         # Viewport is OS-drawn window
@@ -119,8 +124,9 @@ class ModalWindowManager:
 
         self._logger.logDebug(logCategory + 'Start')
         dpg.start_dearpygui()
-        self._logger.logDebug(logCategory + 'Closed')
+
         dpg.destroy_context()
-        self._logger.logDebug(logCategory + 'Destroyed')
+        self._logger.logDebug(logCategory + 'Closed')
 
         self._isModalOpen = False
+        self._events.setEventBlocking(False)

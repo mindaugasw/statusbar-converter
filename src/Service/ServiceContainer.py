@@ -23,12 +23,12 @@ from src.Service.EventService import EventService
 from src.Service.ExceptionHandler import ExceptionHandler
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
+from src.Service.ModalWindow.ModalWindowManager import ModalWindowManager
 from src.Service.ModalWindow.Modals.AboutBuilder import AboutBuilder
-from src.Service.ModalWindow.Modals.DemoBuilder import DemoBuilder
 from src.Service.ModalWindow.Modals.CustomizedDialogBuilder import CustomizedDialogBuilder
+from src.Service.ModalWindow.Modals.DemoBuilder import DemoBuilder
 from src.Service.ModalWindow.Modals.MissingXselBuilder import DialogMissingXselBuilder
 from src.Service.ModalWindow.Modals.ModalWindowBuilderInterface import ModalWindowBuilderInterface
-from src.Service.ModalWindow.ModalWindowManager import ModalWindowManager
 from src.Service.ModalWindow.Modals.SettingsBuilder import SettingsBuilder
 from src.Service.OSSwitch import OSSwitch
 from src.Service.StatusbarApp import StatusbarApp
@@ -79,7 +79,7 @@ class ServiceContainer:
 
         # GUI services
         _[list[ModalWindowBuilderInterface]] = modalWindowBuilders = self._getModalWindowBuilders(config)
-        _[ModalWindowManager] = modalWindowManager = ModalWindowManager(modalWindowBuilders, osSwitch, logger)
+        _[ModalWindowManager] = modalWindowManager = ModalWindowManager(modalWindowBuilders, osSwitch, events, logger)
 
         # App services
         _[UpdateManager] = updateManager = UpdateManager(filesystemHelper, events, config, logger, debug)
