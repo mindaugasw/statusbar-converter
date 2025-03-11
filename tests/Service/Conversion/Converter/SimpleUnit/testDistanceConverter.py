@@ -42,6 +42,15 @@ class TestDistanceConverter(AbstractConversionManagerTest):
         ('Weird unit symbols in 5', 'metric', '5.5 ″', True, '5.5 in', '14 cm'),
 
         ('Negative', 'metric', '-5.5 ″', True, '-5.5 in', '-14 cm'),
+
+        # Compound units like 5'11" generally are not supported. But current parsers
+        # already half-parse them, treating as 5ft (cutting off inches).
+        # So we test to ensure this compatibility remains
+        ('Compound ft 1', 'metric', '1\'2"', True, '1 ft', '30.5 cm'),
+        ('Compound ft 2', 'metric', '3 ft 4 in', True, '3 ft', '91.4 cm'),
+        ('Compound ft 3', 'metric', '5\'6 in', True, '5 ft', '1.5 m'),
+        ('Compound ft 4', 'metric', '7 ft8in', True, '7 ft', '2.1 m'),
+        ('Compound ft 5', 'metric', '99`1234567', True, '99 ft', '30.2 m'),
     ])
     def testDistanceConverter(
         self, _: str,
