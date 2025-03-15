@@ -2,6 +2,7 @@ import datetime
 import time
 
 from src.Constant.ConfigId import ConfigId
+from src.DTO.RelativeTimeData import RelativeTimeData
 from src.DTO.Timestamp import Timestamp
 from src.Service.Configuration import Configuration
 
@@ -22,7 +23,7 @@ class TimestampTextFormatter:
         formatTemplate: str | None = None
 
         for key, template in self._iconFormats.items():
-            if key == 'default' or int(key) > timeData['diff']:
+            if key == 'default' or int(key) > timeData.diff:
                 formatTemplate = template
                 break
 
@@ -31,7 +32,7 @@ class TimestampTextFormatter:
 
         return self._formatInternal(timestamp, formatTemplate, timeData)
 
-    def _formatInternal(self, timestamp: Timestamp, template: str, relativeTimeData: dict) -> str:
+    def _formatInternal(self, timestamp: Timestamp, template: str, relativeTimeData: RelativeTimeData) -> str:
         """Format timestamp with relative time support
 
         Formatter supports all standard strftime() codes:
@@ -49,10 +50,10 @@ class TimestampTextFormatter:
         """
 
         relativeFormatArguments = (
-            '' if relativeTimeData['past'] else 'in ',
-            relativeTimeData['number'],
-            relativeTimeData['unit'],
-            ' ago' if relativeTimeData['past'] else '',
+            '' if relativeTimeData.isPast else 'in ',
+            relativeTimeData.number,
+            relativeTimeData.unit,
+            ' ago' if relativeTimeData.isPast else '',
         )
 
         formatted = template.format(
@@ -67,38 +68,29 @@ class TimestampTextFormatter:
 
         return dateTime.strftime(formatted)
 
-    def _getRelativeTimeData(self, timestamp: int) -> dict[str, int | float | str | bool]:
-        """
-        :return: Dictionary with the following keys:
-            - diff: int, absolute difference in seconds between given timestamp and now
-            - number: float, relative time amount, e.g. 5.5
-            - unit: str, relative time unit, e.g. 'd'
-            - past: bool, if timestamp is in the past or in the future
-        """
-
+    def _getRelativeTimeData(self, timestamp: int) -> RelativeTimeData:
         currentTimestamp = int(time.time())
         diff = abs(currentTimestamp - timestamp)
         isPastTime = currentTimestamp >= timestamp
 
-        # TODO refactor to DTO
-        data: dict[str, int | float | str | bool] = {'diff': diff, 'past': isPastTime}
+        data = RelativeTimeData(diff, isPastTime)
 
         if diff < 60:
             # up to 60 seconds, return seconds
-            data.update({'number': float(diff), 'unit': 's'})
+            data.setRelativeTime(float(diff), 's')
         elif diff < 3600:
             # up to 60 minutes
-            data.update({'number': diff / 60.0, 'unit': 'min'})
+            data.setRelativeTime(diff / 60.0, 'min')
         elif diff < 86400:
             # up to 24 hours
-            data.update({'number': diff / 3600.0, 'unit': 'h'})
+            data.setRelativeTime(diff / 3600.0, 'h')
         elif diff < 2678400:
             # up to 31 days
-            data.update({'number': diff / 86400.0, 'unit': 'days'})
+            data.setRelativeTime(diff / 86400.0, 'days')
         elif diff < 31536000:
             # up to 365 days
-            data.update({'number': diff / 2678400.0, 'unit': 'months'})
+            data.setRelativeTime(diff / 2678400.0, 'months')
         else:
-            data.update({'number': diff / 31536000.0, 'unit': 'years'})
+            data.setRelativeTime(diff / 31536000.0, 'years')
 
         return data
