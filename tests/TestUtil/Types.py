@@ -1,3 +1,5 @@
 from typing import Any
 
-ConfigurationsList = list[tuple[list[str], Any]]
+from src.DTO.ConfigParameter import ConfigParameter
+
+ConfigurationsList = list[tuple[ConfigParameter, Any]]

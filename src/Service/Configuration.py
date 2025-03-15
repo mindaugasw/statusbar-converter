@@ -1,6 +1,9 @@
+from typing import Any
+
 import yaml
 
 from src.Constant.Logs import Logs
+from src.DTO.ConfigParameter import ConfigParameter
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
@@ -16,16 +19,19 @@ class Configuration:
     Default config of the application.
     Located in the project directory, should never be changed by the user.
     """
+
     _configUser: dict
     """
     User overrides of app config.
-    Located in user temp files directory, can be changed by the user.
+    Located in user files directory, can be changed by the user.
     """
-    _stateData: dict
+
+    _state: dict
     """
     App internal state.
-    Writable by the app itself and should not be modified by the user
+    Writable by the app itself and should not be modified by the user (but there are no protections against it)
     """
+
     _configInitialized: bool
 
     def __init__(self, configFileManager: ConfigFileManager, logger: Logger):
@@ -34,43 +40,26 @@ class Configuration:
 
         self._configInitialized = False
 
-    def get(self, key: list[str]):
-        self._initializeConfig()
-        userValue = self._queryDictionary(key, self._configUser)
-
-        if userValue is not None:
-            return userValue
-
-        return self._queryDictionary(key, self._configApp)
-
-    def getState(self, key: list[str], default = None):
-        self._initializeConfig()
-
-        value = self._queryDictionary(key, self._stateData)
-
-        if value is None and default is not None:
-            # Since we will return a default value, depending on which other actions may happen,
-            # we need to ensure it stays consistent. So we set value on "get" action
-            self._logger.log(f'{Logs.catConfig}Missing state value {key} in file. Will persist given default value: {default}')
-
-            self.setState(key, default)
-            value = default
-
-        return value
-
-    def setState(self, key: list[str], value) -> None:
-        self._logger.log(f'{Logs.catConfig}Persisting state: {key}: {value}')
-        self._setValue(key, value, self._stateData)
-
-        stateContent = yaml.dump(self._stateData)
-        stateContent = '# Internal app state. THIS FILE SHOULD NOT BE EDITED MANUALLY.\n\n' + stateContent
-
-        self._configFileManager.writeStateData(stateContent)
-
     def getAppVersion(self) -> str:
         self._initializeConfig()
 
         return self._appVersion
+
+    def get(self, parameter: ConfigParameter) -> Any:
+        self._initializeConfig()
+
+        if parameter.isState:
+            return self._getStateParameter(parameter.key, parameter.defaultValue)
+        else:
+            return self._getConfigParameter(parameter.key)
+
+    def set(self, parameter: ConfigParameter, value: Any) -> None:
+        self._initializeConfig()
+
+        if not parameter.isState:
+            raise Exception('Cannot persist ConfigParameter that is not "state" stype')
+
+        self._setState(parameter.key, value)
 
     def _initializeConfig(self) -> None:
         if self._configInitialized:
@@ -86,7 +75,7 @@ class Configuration:
             yaml.Loader,
         )
 
-        self._stateData = yaml.load(
+        self._state = yaml.load(
             self._configFileManager.getStateDataContent(),
             yaml.Loader,
         )
@@ -96,6 +85,29 @@ class Configuration:
 
         self._configInitialized = True
 
+    def _getConfigParameter(self, key: list[str]) -> Any:
+        userValue = self._queryDictionary(key, self._configUser)
+
+        if userValue is not None:
+            return userValue
+
+        return self._queryDictionary(key, self._configApp)
+
+    def _getStateParameter(self, key: list[str], defaultValue: Any) -> Any:
+        value = self._queryDictionary(key, self._state)
+
+        if value is None and defaultValue is not None:
+            # If we return default value, that means for whatever reason it does
+            # not exist in the file. So we write that value even on "get" action.
+            self._logger.log(
+                f'{Logs.catConfig}Missing state value {key} in file. Will persist given default value: {defaultValue}',
+            )
+
+            self._setState(key, defaultValue)
+            value = defaultValue
+
+        return value
+
     def _queryDictionary(self, key: list[str], config: dict):
         if config is None:
             return None
@@ -103,12 +115,21 @@ class Configuration:
         valuePartial = config
 
         for keyPartial in key:
-            valuePartial = valuePartial.get(keyPartial)
+            valuePartial = valuePartial.get(keyPartial)  # type: ignore[assignment]
 
             if valuePartial is None:
                 return None
 
         return valuePartial
+
+    def _setState(self, key: list[str], value: Any) -> None:
+        self._logger.log(f'{Logs.catConfig}Persisting state: {key}: {value}')
+        self._setValue(key, value, self._state)
+
+        stateContent = yaml.dump(self._state)
+        stateContent = '# Internal app state. THIS FILE SHOULD NOT BE EDITED MANUALLY.\n\n' + stateContent
+
+        self._configFileManager.writeStateData(stateContent)
 
     def _setValue(self, key: list[str], value, config: dict) -> None:
         configPath = config

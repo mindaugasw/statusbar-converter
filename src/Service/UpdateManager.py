@@ -66,10 +66,10 @@ class UpdateManager:
         try:
             if manuallyTriggered:
                 self._logger.log(f'{Logs.catUpdateCheck}Clearing skipped version state')
-                self._config.setState(ConfigId.Data_Update_SkipVersion, None)
+                self._config.set(ConfigId.Update_SkipVersion, None)
 
             currentVersion = self._stringToVersionTuple(self._config.getAppVersion())
-            skippedVersion = self._config.getState(ConfigId.Data_Update_SkipVersion, None)
+            skippedVersion = self._config.get(ConfigId.Update_SkipVersion)
 
             if skippedVersion is None:
                 skippedVersion = (-1, -1, -1)
@@ -163,7 +163,7 @@ class UpdateManager:
 
         def _handleClickSkipThisVersion(versionToSkip: str) -> None:
             self._logger.log(f'{Logs.catUpdateCheck}Dialog button click: Skip this version')
-            self._config.setState(ConfigId.Data_Update_SkipVersion, versionToSkip)
+            self._config.set(ConfigId.Update_SkipVersion, versionToSkip)
 
         def _handleClickRemindMeLater() -> None:
             self._logger.log(f'{Logs.catUpdateCheck}Dialog button click: Remind me later')

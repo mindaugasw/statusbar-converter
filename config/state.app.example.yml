@@ -1,6 +1,26 @@
-# Internal app state. This file should not be edited manually.
+# Internal app state. THIS FILE SHOULD NOT BE EDITED MANUALLY.
+
 auto_run:
-    enabled: false
-    initial_setup_complete: false
+  enabled: false
+  initial_setup_complete: false
+converters:
+  distance:
+    enabled: true
+    primary_unit_metric: true
+  temperature:
+    enabled: true
+    primary_unit_celsius: true
+  timestamp:
+    enabled: true
+  volume:
+    enabled: true
+    primary_unit_metric: true
+  weight:
+    enabled: true
+    primary_unit_metric: true
+general_settings:
+  clear_after_time: 300
+  clear_on_change: false
+  flash_icon_on_change: true
 update:
-    skip_version: null
+  skip_version: null

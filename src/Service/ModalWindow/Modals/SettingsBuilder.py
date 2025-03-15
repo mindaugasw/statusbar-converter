@@ -79,8 +79,8 @@ class SettingsBuilder(ModalWindowBuilderInterface):
                 self._callbacks[dpg.add_checkbox(
                     label='Flash statusbar icon on successful conversion',
                     callback=self._controlCallback,
-                    default_value=self._config.getState(ConfigId.FlashIconOnChange, True),
-                )] = lambda appData: self._config.setState(ConfigId.FlashIconOnChange, bool(appData))
+                    default_value=self._config.get(ConfigId.FlashIconOnChange),
+                )] = lambda appData: self._config.set(ConfigId.FlashIconOnChange, bool(appData))
 
                 # TODO next add callback for this
                 # TODO test if this works without custom callback

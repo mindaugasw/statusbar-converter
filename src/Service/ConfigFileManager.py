@@ -21,11 +21,11 @@ class ConfigFileManager:
         self._configAppPath = filesystemHelper.getConfigDir() + '/config.app.yml'
         self._configUserExamplePath = filesystemHelper.getConfigDir() + '/config.user.example.yml'
         self.configUserPath = filesystemHelper.getUserDataDir() + '/config.user.yml'
-        self._stateDataPath = filesystemHelper.getUserDataDir() + '/app.data.yml'
-        self._stateDataExamplePath = filesystemHelper.getConfigDir() + '/app.data.example.yml'
+        self._stateDataPath = filesystemHelper.getUserDataDir() + '/state.app.yml'
+        self._stateDataExamplePath = filesystemHelper.getConfigDir() + '/state.app.example.yml'
 
     def getAppConfigContent(self) -> str:
-        # Debug service is not yet initialized, so we simply always print debug information
+        # Debug service is not yet initialized, so we always print debug information
         self._logger.logRaw(f'Loading app config from `{self._configAppPath}` ... ')
 
         with open(self._configAppPath, 'r') as appConfigFile:

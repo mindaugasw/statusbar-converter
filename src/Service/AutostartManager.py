@@ -47,15 +47,15 @@ class AutostartManager(ABC):
 
                 return
 
-            initialSetupCompleted = self._config.getState(ConfigId.Data_Autostart_InitialSetupComplete, False)
-            enabled = self._config.getState(ConfigId.Data_Autostart_Enabled, False)
+            initialSetupCompleted = self._config.get(ConfigId.Autostart_InitialSetupComplete)
+            enabled = self._config.get(ConfigId.Autostart_Enabled)
 
             self._logger.log(f'{Logs.catAutostart}Starting setup. enabled={enabled}, initialSetupCompleted={initialSetupCompleted}')
 
             if not initialSetupCompleted:
                 if enabled:
                     self._logger.log(f'{Logs.catAutostart}Found invalid state. enabled=True, initialSetupCompleted=False. Setting initialSetupCompleted=True')
-                    self._config.setState(ConfigId.Data_Autostart_InitialSetupComplete, True)
+                    self._config.set(ConfigId.Autostart_InitialSetupComplete, True)
                 else:
                     self._runInitialSetup()
 
@@ -78,7 +78,7 @@ class AutostartManager(ABC):
     def _runInitialSetup(self) -> None:
         self._logger.log(f'{Logs.catAutostart}Starting initial setup')
         self.enableAutostart()
-        self._config.setState(ConfigId.Data_Autostart_InitialSetupComplete, True)
+        self._config.set(ConfigId.Autostart_InitialSetupComplete, True)
 
     def enableAutostart(self) -> bool:
         """
@@ -93,7 +93,7 @@ class AutostartManager(ABC):
 
             output = self._enableAutostartOsSpecific()
 
-            self._config.setState(ConfigId.Data_Autostart_Enabled, True)
+            self._config.set(ConfigId.Autostart_Enabled, True)
             self._logger.log(f'{Logs.catAutostart}Enabled autostart, output: {output}')
 
             return True
@@ -115,7 +115,7 @@ class AutostartManager(ABC):
 
             output = self._disableAutostartOsSpecific()
 
-            self._config.setState(ConfigId.Data_Autostart_Enabled, False)
+            self._config.set(ConfigId.Autostart_Enabled, False)
             self._logger.log(f'{Logs.catAutostart}Disabled autostart, output: {output}')
 
             return True
@@ -133,4 +133,4 @@ class AutostartManager(ABC):
         pass
 
     def isAutostartEnabled(self) -> bool:
-        return self._config.getState(ConfigId.Data_Autostart_Enabled, False)
+        return self._config.get(ConfigId.Autostart_Enabled)

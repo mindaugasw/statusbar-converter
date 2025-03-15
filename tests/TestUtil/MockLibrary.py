@@ -1,6 +1,7 @@
 from typing import Any
 from unittest.mock import Mock
 
+from src.DTO.ConfigParameter import ConfigParameter
 from src.Service.Configuration import Configuration
 from tests.TestUtil.Types import ConfigurationsList
 
@@ -24,14 +25,14 @@ class MockLibrary:
     def _configGetSideEffect(
         defaultConfig: ConfigurationsList,
         overrides: ConfigurationsList,
-        configId: list[str],
+        configId: ConfigParameter,
     ) -> Any:
-        for configKey, configValue in overrides:
-            if configKey == configId:
+        for configParam, configValue in overrides:
+            if configParam.key == configId.key:
                 return configValue
 
-        for configKey, configValue in defaultConfig:
-            if configKey == configId:
+        for configParam, configValue in defaultConfig:
+            if configParam.key == configId.key:
                 return configValue
 
-        raise Exception(f'configId "{configId}" not found in Configuration mock')
+        raise Exception(f'configId "{configId.key}" not found in Configuration mock')

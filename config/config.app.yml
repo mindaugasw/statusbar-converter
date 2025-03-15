@@ -1,29 +1,9 @@
-# If enabled, text in the statusbar will be cleared after copying anything else
-clear_on_change: false
-
-# Automatically clear text in the status bar after this time, in seconds.
-# 0 to disable automatic clearing.
-clear_after_time: 300
-
-# If enabled, will shortly flash status bar icon on timestamp change
-flash_icon_on_change: true
-
-# If enabled, will log additional info when running from the terminal.
+# If enabled, will log more verbose info.
 # Alternatively, can be enabled with --debug option when running from the command line.
 debug: false
 
 converters:
-    distance:
-        enabled: true
-        primary_unit_metric: true
-
-    temperature:
-        enabled: true
-        primary_unit_celsius: true
-
     timestamp:
-        enabled: true
-
         # Formatting template for text on the statusbar.
         #
         # Used template will be the first one, where relative time difference in
@@ -37,7 +17,7 @@ converters:
         # - {ts} - unix timestamp. Without milliseconds.
         # - {ts_ms} - unix timestamp. With milliseconds, if millisecond timestamp was copied.
         #             Without milliseconds otherwise.
-        #             Can be used to copy a valid millisecond timestamp.
+        #             Can be used to copy a valid millisecond timestamp into clipboard.
         # - {ts_ms_sep} - unix timestamp. With milliseconds, separated by a dot, if millisecond
         #                 timestamp was copied. Without milliseconds otherwise.
         #                 Can be used for easier readability.
@@ -71,14 +51,7 @@ converters:
         # Menu items to create under "Current timestamp" category.
         # Supports the same formats as in "icon_text_format".
         menu_items_current_timestamp:
-            # Label text: "format to copy on click"
+            # Key is value to show in the UI
+            # Value is value to copy into clipboard
             Current timestamp: "{ts}"
             Current datetime: "%Y-%m-%d %H:%M:%S"
-
-    volume:
-        enabled: true
-        primary_unit_metric: true
-
-    weight:
-        enabled: true
-        primary_unit_metric: true
