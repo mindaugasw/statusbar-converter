@@ -11,7 +11,7 @@ from src.Service.ModalWindow.Modals.ModalWindowBuilderInterface import ModalWind
 class CustomizedDialogBuilder(ModalWindowBuilderInterface):
     _primaryTag = 'primary'
     _minimumNewLines = 8
-    _callbacks: dict[str | int, Callable | None]
+    _callbacks: dict[int, Callable | None]
 
     def __init__(self):
         super().__init__()
@@ -65,7 +65,7 @@ class CustomizedDialogBuilder(ModalWindowBuilderInterface):
                         tag = dpg.add_button(label=text, height=25, callback=self._handleButtonPress)
                         self._callbacks[tag] = buttonCallback
 
-    def _handleButtonPress(self, sender: str | int, appData, userData) -> None:
+    def _handleButtonPress(self, sender: int, appData, userData) -> None:
         if self._callbacks[sender] is not None:
             self._callbacks[sender]()
 

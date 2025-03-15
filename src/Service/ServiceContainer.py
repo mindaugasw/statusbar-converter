@@ -78,7 +78,7 @@ class ServiceContainer:
         _[ConversionManager] = conversionManager = ConversionManager(converters, events, config, logger, debug)
 
         # GUI services
-        _[list[ModalWindowBuilderInterface]] = modalWindowBuilders = self._getModalWindowBuilders(config)
+        _[list[ModalWindowBuilderInterface]] = modalWindowBuilders = self._getModalWindowBuilders(config, logger)
         _[ModalWindowManager] = modalWindowManager = ModalWindowManager(modalWindowBuilders, osSwitch, events, logger)
 
         # App services
@@ -104,12 +104,12 @@ class ServiceContainer:
             from src.Service.FilesystemHelperLinux import FilesystemHelperLinux
             return FilesystemHelperLinux()
 
-    def _getModalWindowBuilders(self, config: Configuration) -> dict[str, ModalWindowBuilderInterface]:
+    def _getModalWindowBuilders(self, config: Configuration, logger: Logger) -> dict[str, ModalWindowBuilderInterface]:
         customizedDialogBuilder = CustomizedDialogBuilder()
 
         return {
             ModalId.demo: DemoBuilder(),
-            ModalId.settings: SettingsBuilder(),
+            ModalId.settings: SettingsBuilder(config, logger),
             ModalId.about: AboutBuilder(config),
             ModalId.customizedDialog: customizedDialogBuilder,
             ModalId.missingXsel: DialogMissingXselBuilder(customizedDialogBuilder),
