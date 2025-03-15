@@ -58,3 +58,16 @@ class BuilderHelper:
             )
 
         dpg.add_image(tag)
+
+    @staticmethod
+    def addHelpText(text: str) -> None:
+        lastItem = dpg.last_item()
+
+        group = dpg.add_group(horizontal=True)
+        dpg.move_item(lastItem, parent=group)
+
+        dpg.capture_next_item(lambda s: dpg.move_item(s, parent=group))
+        textItem = dpg.add_text('(?)', color=[0, 255, 0])
+
+        with dpg.tooltip(textItem):
+            dpg.add_text(text)
