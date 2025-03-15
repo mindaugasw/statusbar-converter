@@ -24,6 +24,10 @@ class ThousandsDetector:
 
         number = number.strip().lstrip('0')
 
+        if number == '':
+            # If number is '0', the lstrip() above will return empty string
+            number = '0'
+
         # "certain" - concept from algorithm source. Not needed currently, since there's no "max value"
         # certain = True
 

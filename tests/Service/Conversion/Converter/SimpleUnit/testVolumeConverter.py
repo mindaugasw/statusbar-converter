@@ -12,6 +12,8 @@ class TestVolumeConverter(AbstractConversionManagerTest):
         ('To cl/dl (unit skipped)', 'metric', '10 floz', True, '10 fl oz', '338.1 ml'),
         ('To l', 'metric', '5 gal', True, '5 gal', '1.3 l'),
         ('To m3 (unit skipped)', 'metric', '7922 gal', True, '7922 gal', '2092.8 l'),
+        ('From tbsp', 'metric', '3.5 tbsp.', True, '3.5 tbsp', '51.8 ml'),
+        ('From tsp', 'metric', '2 tsp', True, '2 tsp', '9.9 ml'),
 
         ('To fl oz', 'imperial', '80 ml', True, '80 ml', '2.4 fl oz'),
         ('To gal', 'imperial', '80 l', True, '80 l', '302.8 gal'),

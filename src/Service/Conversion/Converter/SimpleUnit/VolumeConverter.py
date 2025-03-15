@@ -139,4 +139,26 @@ class VolumeConverter(AbstractMetricImperialConverter):
                     0.2641720524,
                 ),
             ),
+            'tablespoon': UnitDefinition(
+                ['tablespoon', 'tablespoons', 'tbsp.', 'tb', 'tb.'],
+                MetricImperialUnit(
+                    'tbsp',
+                    'tbsp',
+                    False,
+                    False,
+                    -1,
+                    0.0148,
+                ),
+            ),
+            'teaspoon': UnitDefinition(
+                ['teaspoon', 'teaspoons', 'tsp.', 'ts', 'ts.', 'tspn', 'tspn.'],
+                MetricImperialUnit(
+                    'tsp',
+                    'tsp',
+                    False,
+                    False,
+                    -1,
+                    0.0049289,
+                ),
+            ),
         }

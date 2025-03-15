@@ -18,6 +18,7 @@ class TestConversionManager(AbstractConversionManagerTest):
         ('Weight converter', '15 lb', True, '15 lb', '6.8 kg'),
 
         # Edge cases
+        ('Zero', '0 ft', False, None, None),
         ('Negative', '-15 lb', True, '-15 lb', '-6.8 kg'),
 
         ('Whitespace - no whitespace', '5.5″', True, '5.5 in', '14 cm'),
