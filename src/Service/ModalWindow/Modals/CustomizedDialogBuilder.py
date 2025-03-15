@@ -16,8 +16,6 @@ class CustomizedDialogBuilder(ModalWindowBuilderInterface):
     def __init__(self):
         super().__init__()
 
-        self._callbacks = {}
-
     def getParameters(self) -> ModalWindowParameters:
         return ModalWindowParameters(
             None,
@@ -26,6 +24,9 @@ class CustomizedDialogBuilder(ModalWindowBuilderInterface):
             198,
             self._primaryTag,
         )
+
+    def reinitializeState(self) -> None:
+        self._callbacks = {}
 
     def build(self, arguments: dict[str, any]) -> None:
         text = arguments['text']

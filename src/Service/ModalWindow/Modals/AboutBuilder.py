@@ -25,6 +25,9 @@ class AboutBuilder(ModalWindowBuilderInterface):
             self._primaryTag,
         )
 
+    def reinitializeState(self) -> None:
+        pass
+
     def build(self, arguments: dict[str, any]) -> None:
         BuilderHelper.registerHyperlinkTheme()
 

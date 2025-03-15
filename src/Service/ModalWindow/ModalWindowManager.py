@@ -112,6 +112,8 @@ class ModalWindowManager:
             defaultFont = dpg.add_font(FilesystemHelper.getAssetsDir() + '/font_supreme_regular.otf', 18)
             dpg.bind_font(defaultFont)
 
+        builder.reinitializeState()
+
         # Build dpg-window - one that appears inside the viewport
         builder.build(arguments)
 

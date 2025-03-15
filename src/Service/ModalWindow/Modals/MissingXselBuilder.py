@@ -20,6 +20,9 @@ class DialogMissingXselBuilder(ModalWindowBuilderInterface):
 
         return parameters
 
+    def reinitializeState(self) -> None:
+        self._customizedDialogBuilder.reinitializeState()
+
     def build(self, arguments: dict[str, any]) -> None:
         self._customizedDialogBuilder.build({
             'text': '',

@@ -9,5 +9,9 @@ class ModalWindowBuilderInterface(ABC):
         pass
 
     @abstractmethod
+    def reinitializeState(self) -> None:
+        pass
+
+    @abstractmethod
     def build(self, arguments: dict[str, any]) -> None:
         pass
