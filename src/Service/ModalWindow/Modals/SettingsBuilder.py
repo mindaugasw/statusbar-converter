@@ -4,7 +4,9 @@ import dearpygui.dearpygui as dpg
 
 from src.Constant.ConfigId import ConfigId
 from src.Constant.Logs import Logs
+from src.DTO.ConfigParameter import ConfigParameter
 from src.DTO.ModalWindowParameters import ModalWindowParameters
+from src.DTO.SettingsControlProperties import SettingsControlProperties
 from src.Service.Configuration import Configuration
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
@@ -23,7 +25,7 @@ class SettingsBuilder(ModalWindowBuilderInterface):
     _config: Configuration
     _logger: Logger
 
-    _callbacks: dict[DpgTag, Callable[[Any], None]]
+    _controls: dict[DpgTag, SettingsControlProperties]
     _appRestartNoteDefaultTag: DpgTag
     _appRestartNoteEditedTag: DpgTag
     _appRestartNoteChanged: bool
@@ -42,7 +44,7 @@ class SettingsBuilder(ModalWindowBuilderInterface):
         )
 
     def reinitializeState(self) -> None:
-        self._callbacks = {}
+        self._controls = {}
         self._appRestartNoteDefaultTag = -1
         self._appRestartNoteEditedTag = -1
         self._appRestartNoteChanged = False
@@ -81,30 +83,32 @@ class SettingsBuilder(ModalWindowBuilderInterface):
             with dpg.group():
                 dpg.add_spacer(height=self._SPACER_SECTION_TOP_HEIGHT)
 
-                self._callbacks[dpg.add_checkbox(
-                    label='Flash statusbar icon on successful conversion',
-                    callback=self._controlCallback,
-                    default_value=self._config.get(ConfigId.FlashIconOnChange),
-                )] = lambda appData: self._config.set(ConfigId.FlashIconOnChange, bool(appData))
+                self._registerControl(
+                    dpg.add_checkbox(label='Flash statusbar icon on successful conversion'),
+                    ConfigId.FlashIconOnChange,
+                    bool,
+                )
 
-                self._callbacks[dpg.add_checkbox(
-                    label='Clear statusbar text on clipboard change',
-                    callback=self._controlCallback,
-                    default_value=self._config.get(ConfigId.ClearOnChange),
-                )] = lambda appData: self._config.set(ConfigId.ClearOnChange, bool(appData))
+                self._registerControl(
+                    dpg.add_checkbox(label='Clear statusbar text on clipboard change'),
+                    ConfigId.ClearOnChange,
+                    bool,
+                )
 
-                self._callbacks[dpg.add_input_int(
-                    label='Automatically clear statusbar text after this many seconds',
-                    width=50,
-                    callback=self._controlCallback,
-                    default_value=self._config.get(ConfigId.ClearAfterTime),
-                    min_value=0,
-                    max_value=3600,
-                    step=0,
-                    step_fast=0,
-                    min_clamped=True,
-                    max_clamped=True,
-                )] = lambda appData: self._config.set(ConfigId.ClearAfterTime, int(appData))
+                self._registerControl(
+                    dpg.add_input_int(
+                        label='Automatically clear statusbar text after this many seconds',
+                        width=50,
+                        min_value=0,
+                        max_value=3600,
+                        step=0,
+                        step_fast=0,
+                        min_clamped=True,
+                        max_clamped=True,
+                    ),
+                    ConfigId.ClearAfterTime,
+                    int,
+                )
                 BuilderHelper.addHelpText('Enter zero to disable automatic text clearing')
 
     def _buildFooter(self) -> None:
@@ -117,14 +121,19 @@ class SettingsBuilder(ModalWindowBuilderInterface):
 
                 dpg.add_button(label='Reset all to default')
 
-    def _registerControl(self, tag: DpgTag, callback: Callable[[DpgTag], None], castToType: Type):
-        pass
+    def _registerControl(self, tag: DpgTag, configId: ConfigParameter, castToType: Type):
+        dpg.set_item_callback(tag, self._controlCallback)
+        dpg.set_value(tag, self._config.get(configId))
+        self._controls[tag] = SettingsControlProperties(configId, castToType)
 
     def _controlCallback(self, sender: DpgTag, appData, userData, action: Callable) -> None:
-        label = dpg.get_item_label(sender)
-        self._logger.log(f'{Logs.catSettings}Callback #{sender} ({label}) with data: {appData}')
+        controlProperties = self._controls[sender]
+        value = controlProperties.castToType(appData)
 
-        self._callbacks[sender](appData)
+        label = dpg.get_item_label(sender)
+        self._logger.log(f'{Logs.catSettings}Callback #{sender} ({label}) with data: {value} ({type(value).__name__})')
+
+        self._config.set(controlProperties.configId, value)
 
         if self._appRestartNoteChanged is False:
             dpg.hide_item(self._appRestartNoteDefaultTag)
