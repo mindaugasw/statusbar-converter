@@ -1,3 +1,4 @@
+# mypy: disable-error-code="union-attr"
 import atexit
 import os
 import sys

@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
 from src.DTO.ModalWindowParameters import ModalWindowParameters
 
@@ -13,5 +14,5 @@ class ModalWindowBuilderInterface(ABC):
         pass
 
     @abstractmethod
-    def build(self, arguments: dict[str, any]) -> None:
+    def build(self, arguments: dict[str, Any]) -> None:
         pass

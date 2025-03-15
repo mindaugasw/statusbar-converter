@@ -1,3 +1,5 @@
+from typing import Any
+
 import dearpygui.dearpygui as dpg
 
 from src.Constant.AppConstant import AppConstant
@@ -28,7 +30,7 @@ class AboutBuilder(ModalWindowBuilderInterface):
     def reinitializeState(self) -> None:
         pass
 
-    def build(self, arguments: dict[str, any]) -> None:
+    def build(self, arguments: dict[str, Any]) -> None:
         BuilderHelper.registerHyperlinkTheme()
 
         with dpg.window(tag=self._primaryTag, on_close=self._onClose):

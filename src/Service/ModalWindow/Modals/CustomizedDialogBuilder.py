@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from typing import Any
 
 import dearpygui.dearpygui as dpg
 
@@ -6,12 +7,13 @@ from src.DTO.ModalWindowParameters import ModalWindowParameters
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.ModalWindow.BuilderHelper import BuilderHelper
 from src.Service.ModalWindow.Modals.ModalWindowBuilderInterface import ModalWindowBuilderInterface
+from src.Type.Types import DpgTag
 
 
 class CustomizedDialogBuilder(ModalWindowBuilderInterface):
     _primaryTag = 'primary'
     _minimumNewLines = 8
-    _callbacks: dict[int, Callable | None]
+    _callbacks: dict[DpgTag, Callable | None]
 
     def __init__(self):
         super().__init__()
@@ -28,10 +30,10 @@ class CustomizedDialogBuilder(ModalWindowBuilderInterface):
     def reinitializeState(self) -> None:
         self._callbacks = {}
 
-    def build(self, arguments: dict[str, any]) -> None:
+    def build(self, arguments: dict[str, Any]) -> None:
         text = arguments['text']
         buttons = arguments['buttons']
-        buildCallback: Callable[None, None] | None = arguments.get('buildCallback')
+        buildCallback: Callable[[], None] | None = arguments.get('buildCallback')
 
         # There are no proper tools in dpg for vertical alignment. So we fake it by setting
         # text height to always the same by adding more lines, to reach minimum count
@@ -65,8 +67,10 @@ class CustomizedDialogBuilder(ModalWindowBuilderInterface):
                         tag = dpg.add_button(label=text, height=25, callback=self._handleButtonPress)
                         self._callbacks[tag] = buttonCallback
 
-    def _handleButtonPress(self, sender: int, appData, userData) -> None:
-        if self._callbacks[sender] is not None:
-            self._callbacks[sender]()
+    def _handleButtonPress(self, sender: DpgTag, appData, userData) -> None:
+        callback = self._callbacks[sender]
+
+        if callback is not None:
+            callback()
 
         dpg.stop_dearpygui()

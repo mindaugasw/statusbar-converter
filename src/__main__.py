@@ -1,3 +1,4 @@
+# mypy: disable-error-code="type-abstract"
 import platform
 import sys
 import time

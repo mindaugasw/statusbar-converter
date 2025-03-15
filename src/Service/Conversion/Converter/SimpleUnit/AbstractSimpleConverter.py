@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Tuple
 
 from src.DTO.ConvertResult import ConvertResult
 
@@ -21,7 +22,7 @@ class AbstractSimpleConverter(ABC):
         pass
 
     @abstractmethod
-    def tryConvert(self, number: float, unitId: str) -> (bool, ConvertResult | None):
+    def tryConvert(self, number: float, unitId: str) -> Tuple[bool, ConvertResult | None]:
         """
         :param number:
         :param unitId: Given unitId will always be an existing one for this converter,

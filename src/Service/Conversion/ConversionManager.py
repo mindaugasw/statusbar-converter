@@ -1,3 +1,4 @@
+# mypy: disable-error-code="union-attr"
 import time
 
 from src.Constant.ConfigId import ConfigId
@@ -76,7 +77,7 @@ class ConversionManager:
                 )
 
             self._convertedAt = int(time.time())
-            self._events.dispatchConverted(result)
+            self._events.dispatchConverted(result)  # type: ignore[arg-type]
 
             return
 

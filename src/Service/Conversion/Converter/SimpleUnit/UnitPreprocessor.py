@@ -1,13 +1,12 @@
 import copy
 
-from src.DTO.Converter.AbstractUnit import AbstractUnit
 from src.DTO.Converter.UnitDefinition import UnitDefinition, UnitDefT
 
 
 class UnitPreprocessor:
     @staticmethod
     def expandAliases(units: dict[str, UnitDefinition[UnitDefT]]) -> dict[str, UnitDefT]:
-        unitsExpanded: dict[str, AbstractUnit] = {}
+        unitsExpanded: dict[str, UnitDefT] = {}
 
         for _, unitDef in units.items():
             primaryAlias = UnitPreprocessor._cleanString(unitDef.unit.primaryAlias)

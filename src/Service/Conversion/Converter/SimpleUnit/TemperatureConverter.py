@@ -1,3 +1,5 @@
+from typing import Tuple
+
 from src.Constant.ConfigId import ConfigId
 from src.DTO.ConvertResult import ConvertResult
 from src.DTO.Converter.AbstractUnit import AbstractUnit
@@ -5,6 +7,7 @@ from src.DTO.Converter.UnitDefinition import UnitDefinition
 from src.Service.Configuration import Configuration
 from src.Service.Conversion.Converter.SimpleUnit.AbstractSimpleConverter import AbstractSimpleConverter
 from src.Service.Conversion.Converter.SimpleUnit.UnitPreprocessor import UnitPreprocessor
+
 
 class TemperatureUnit(AbstractUnit):
     pass
@@ -37,7 +40,7 @@ class TemperatureConverter(AbstractSimpleConverter):
 
         return list(self._unitsExpanded.keys())
 
-    def tryConvert(self, number: float, unitId: str) -> (bool, ConvertResult | None):
+    def tryConvert(self, number: float, unitId: str) -> Tuple[bool, ConvertResult | None]:
         unitFrom = self._unitsExpanded[unitId]
 
         if unitFrom == self._primaryUnit:

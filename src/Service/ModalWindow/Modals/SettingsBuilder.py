@@ -19,9 +19,9 @@ class SettingsBuilder(ModalWindowBuilderInterface):
     _windowWidth = 600
     _primaryTag = 'primary'
 
-    _callbacks: dict[int, Callable[[Any], None]]
-    _appRestartNoteDefaultTag: int
-    _appRestartNoteEditedTag: int
+    _callbacks: dict[DpgTag, Callable[[Any], None]]
+    _appRestartNoteDefaultTag: DpgTag
+    _appRestartNoteEditedTag: DpgTag
     _appRestartNoteChanged: bool
 
     def __init__(self, config: Configuration, logger: Logger):
@@ -92,7 +92,7 @@ class SettingsBuilder(ModalWindowBuilderInterface):
                 dpg.add_button(label='but 2', callback=lambda: print('but 2'))
                 dpg.add_button(label='but 3', callback=self._controlCallback)
 
-    def _controlCallback(self, sender: int, appData, userData, action: Callable) -> None:
+    def _controlCallback(self, sender: DpgTag, appData, userData, action: Callable) -> None:
         label = dpg.get_item_label(sender)
 
         self._logger.log(f'{Logs.catSettings}Callback #{sender} ({label}) with data: {appData}')

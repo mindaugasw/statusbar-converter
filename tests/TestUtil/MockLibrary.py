@@ -1,3 +1,4 @@
+from typing import Any
 from unittest.mock import Mock
 
 from src.Service.Configuration import Configuration
@@ -24,7 +25,7 @@ class MockLibrary:
         defaultConfig: ConfigurationsList,
         overrides: ConfigurationsList,
         configId: list[str],
-    ) -> any:
+    ) -> Any:
         for configKey, configValue in overrides:
             if configKey == configId:
                 return configValue

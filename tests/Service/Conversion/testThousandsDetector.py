@@ -5,7 +5,7 @@ from src.Service.Conversion.ThousandsDetector import ThousandsDetector
 
 
 class TestThousandsDetector(TestCase):
-    _testCaseType = Union[Tuple[str, int | None], Tuple[str, int | None, bool]]
+    _testCaseType = Union[Tuple[str, int | float | None], Tuple[str, int | float | None, bool]]
 
     def testParseNumber(self) -> None:
         casesInitial: list[TestThousandsDetector._testCaseType] = [

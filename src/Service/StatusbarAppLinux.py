@@ -8,6 +8,7 @@ import gi
 
 from src.Constant.AppConstant import AppConstant
 from src.Constant.Logs import Logs
+from src.Constant.ModalId import ModalId
 from src.DTO.ConvertResult import ConvertResult
 from src.DTO.MenuItem import MenuItem
 from src.DTO.Timestamp import Timestamp
@@ -30,7 +31,7 @@ from src.Type.DialogButtonsDict import DialogButtonsDict
 gi.require_version('Gtk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
 
-from gi.repository import Gtk, AppIndicator3
+from gi.repository import Gtk, AppIndicator3  # type: ignore[attr-defined]
 
 
 """
@@ -266,7 +267,7 @@ class StatusbarAppLinux(StatusbarApp):
         responseIndex = dialog.run()
         dialog.destroy()
 
-        buttonCallback = buttonList[responseIndex]['callback'];
+        buttonCallback = buttonList[responseIndex]['callback']
 
         if buttonCallback is not None:
             buttonCallback()

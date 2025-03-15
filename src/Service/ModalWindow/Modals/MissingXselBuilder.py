@@ -1,3 +1,5 @@
+from typing import Any
+
 import dearpygui.dearpygui as dpg
 
 from src.Constant.AppConstant import AppConstant
@@ -23,7 +25,7 @@ class DialogMissingXselBuilder(ModalWindowBuilderInterface):
     def reinitializeState(self) -> None:
         self._customizedDialogBuilder.reinitializeState()
 
-    def build(self, arguments: dict[str, any]) -> None:
+    def build(self, arguments: dict[str, Any]) -> None:
         self._customizedDialogBuilder.build({
             'text': '',
             'buttons': {'Close': None},

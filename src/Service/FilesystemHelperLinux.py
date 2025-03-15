@@ -21,7 +21,7 @@ class FilesystemHelperLinux(FilesystemHelper):
 
     @staticmethod
     def getStartupScriptDir() -> str:
-        path = os.path.expanduser(f'~/.config/autostart')
+        path = os.path.expanduser('~/.config/autostart')
         os.makedirs(path, exist_ok=True)
 
         return path

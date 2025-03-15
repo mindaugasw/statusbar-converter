@@ -1,1 +1,3 @@
-ConfigurationsList = list[tuple[list[str], any]]
+from typing import Any
+
+ConfigurationsList = list[tuple[list[str], Any]]

@@ -1,3 +1,5 @@
+from typing import Any
+
 import dearpygui.dearpygui as dpg
 import dearpygui.demo as demo
 
@@ -18,6 +20,6 @@ class DemoBuilder(ModalWindowBuilderInterface):
     def reinitializeState(self) -> None:
         pass
 
-    def build(self, arguments: dict[str, any]) -> None:
+    def build(self, arguments: dict[str, Any]) -> None:
         demo.show_demo()
         dpg.set_item_pos('__demo_id', [0, 0])

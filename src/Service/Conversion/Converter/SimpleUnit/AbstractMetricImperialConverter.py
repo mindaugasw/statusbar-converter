@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Tuple
 
 from src.DTO.ConvertResult import ConvertResult
 from src.DTO.Converter.MetricImperialUnit import MetricImperialUnit
@@ -35,7 +36,7 @@ class AbstractMetricImperialConverter(AbstractSimpleConverter, ABC):
 
         return list(self._unitsExpanded.keys())
 
-    def tryConvert(self, number: float, unitId: str) -> (bool, ConvertResult | None):
+    def tryConvert(self, number: float, unitId: str) -> Tuple[bool, ConvertResult | None]:
         unitFrom = self._unitsExpanded[unitId]
 
         if unitFrom.isMetric == self._primaryUnitMetric:
@@ -69,7 +70,7 @@ class AbstractMetricImperialConverter(AbstractSimpleConverter, ABC):
         numberToRounded = round(numberTo, 1)
 
         textFrom = f'{numberFromRounded:g} {unitFrom.prettyFormat}'
-        textTo = f'{numberToRounded:g} {unitTo.prettyFormat}'
+        textTo = f'{numberToRounded:g} {unitTo.prettyFormat}'  # type: ignore[union-attr]
 
         return True, ConvertResult(f'{textFrom}  =  {textTo}', textFrom, textTo, self.getName())
 

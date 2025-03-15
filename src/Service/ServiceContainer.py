@@ -94,7 +94,7 @@ class ServiceContainer:
         if item not in self._services:
             raise Exception(f'Service with id "{item}" not found in the container')
 
-        return self._services[item]
+        return self._services[item]  # type: ignore[return-value]
 
     def _getFilesystemHelper(self, osSwitch: OSSwitch) -> FilesystemHelper:
         if osSwitch.isMacOS():

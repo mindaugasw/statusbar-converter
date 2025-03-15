@@ -1,4 +1,5 @@
 import re
+from typing import Tuple
 
 from src.DTO.ConvertResult import ConvertResult
 from src.Service.Conversion.Converter.ConverterInterface import ConverterInterface
@@ -41,7 +42,7 @@ class SimpleUnitConverter(ConverterInterface):
     def getName(self) -> str:
         return 'Simple'
 
-    def tryConvert(self, text: str) -> (bool, ConvertResult | None):
+    def tryConvert(self, text: str) -> Tuple[bool, ConvertResult | None]:
         number, unit = self._parseText(text)
 
         if number is None or unit is None:
@@ -56,7 +57,7 @@ class SimpleUnitConverter(ConverterInterface):
 
         return True, result
 
-    def _parseText(self, text: str) -> (float | None, str | None):
+    def _parseText(self, text: str) -> Tuple[float | None, str | None]:
         # Remove all whitespace from anywhere in the string
         textSplit = text.split()
         text = ''.join(textSplit).lower()

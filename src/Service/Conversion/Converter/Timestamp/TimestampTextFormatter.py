@@ -67,7 +67,7 @@ class TimestampTextFormatter:
 
         return dateTime.strftime(formatted)
 
-    def _getRelativeTimeData(self, timestamp: int) -> dict[str, float | str | bool]:
+    def _getRelativeTimeData(self, timestamp: int) -> dict[str, int | float | str | bool]:
         """
         :return: Dictionary with the following keys:
             - diff: int, absolute difference in seconds between given timestamp and now
@@ -80,7 +80,8 @@ class TimestampTextFormatter:
         diff = abs(currentTimestamp - timestamp)
         isPastTime = currentTimestamp >= timestamp
 
-        data = {'diff': diff, 'past': isPastTime}
+        # TODO refactor to DTO
+        data: dict[str, int | float | str | bool] = {'diff': diff, 'past': isPastTime}
 
         if diff < 60:
             # up to 60 seconds, return seconds

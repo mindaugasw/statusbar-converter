@@ -64,8 +64,8 @@ class AbstractConversionManagerTest(TestCase):
         )
 
         if expectSuccess:
-            self.assertEqual(expectFrom, self._convertResult.originalText)
-            self.assertEqual(expectTo, self._convertResult.convertedText)
+            self.assertEqual(expectFrom, self._convertResult.originalText)  # type: ignore[union-attr]
+            self.assertEqual(expectTo, self._convertResult.convertedText)  # type: ignore[union-attr]
 
     def buildConversionManager(self, configOverrides: ConfigurationsList | None = None) -> ConversionManager:
         configDefault = [

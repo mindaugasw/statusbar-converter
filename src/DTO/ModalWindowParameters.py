@@ -1,5 +1,5 @@
 class ModalWindowParameters:
-    title: str
+    title: str | None
     logCategory: str
     width: int
     height: int

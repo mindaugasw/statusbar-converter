@@ -1,4 +1,5 @@
 import threading
+from typing import Any
 
 import dearpygui.dearpygui as dpg
 import dearpygui_ext.themes
@@ -54,7 +55,7 @@ class ModalWindowManager:
         """
         self._openModalInternal(ModalId.customizedDialog, {'text': text, 'buttons': buttons})
 
-    def _openModalInternal(self,  _id: str, arguments: dict[str, any]):
+    def _openModalInternal(self,  _id: str, arguments: dict[str, Any]):
         if _id not in self._builders:
             raise Exception('Tried opening modal by non-existing id: ' + _id)
 
@@ -67,7 +68,7 @@ class ModalWindowManager:
         self._events.setEventBlocking(True)
         self._showWindow(self._builders[_id], arguments)
 
-    def _showWindow(self, builder: ModalWindowBuilderInterface, arguments: dict[str, any]) -> None:
+    def _showWindow(self, builder: ModalWindowBuilderInterface, arguments: dict[str, Any]) -> None:
         if self._osSwitch.isLinux():
             # On Linux, dpg UI is blocking, so we start it in a thread to allow other events to still function.
             # Thread must be non-daemon for that to work.
@@ -81,7 +82,7 @@ class ModalWindowManager:
         # from the main thread
         self._buildWindow(builder, arguments)
 
-    def _buildWindow(self, builder: ModalWindowBuilderInterface, arguments: dict[str, any]) -> None:
+    def _buildWindow(self, builder: ModalWindowBuilderInterface, arguments: dict[str, Any]) -> None:
         parameters = builder.getParameters()
         logCategory = Logs.catModalSub + parameters.logCategory + '] '
         self._logger.logDebug(logCategory + 'Initialize')

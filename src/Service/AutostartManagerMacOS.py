@@ -28,7 +28,7 @@ class AutostartManagerMacOS(AutostartManager):
         return output
 
     def _disableAutostartOsSpecific(self) -> str | None:
-        executableName = self._appExecutablePath.split('/')[-1]
+        executableName = self._appExecutablePath.split('/')[-1]  # type: ignore[union-attr]
         command = f'osascript -e \'tell application "System Events" to delete login item "{executableName}"\' 2>&1'
         output = os.popen(command).read().strip()
 
@@ -46,4 +46,3 @@ class AutostartManagerMacOS(AutostartManager):
         # os.popen('osascript -e \'tell application "System Events" to get the properties of every login item\'').read()
 
         return True
-

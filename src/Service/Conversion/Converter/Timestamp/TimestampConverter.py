@@ -1,4 +1,5 @@
 import re
+from typing import Tuple
 
 from src.Constant.ConfigId import ConfigId
 from src.Constant.Logs import Logs
@@ -42,7 +43,7 @@ class TimestampConverter(ConverterInterface):
     def getName(self) -> str:
         return 'Timestamp'
 
-    def tryConvert(self, text: str) -> (bool, ConvertResult | None):
+    def tryConvert(self, text: str) -> Tuple[bool, ConvertResult | None]:
         timestamp = self._extractTimestamp(text)
 
         if timestamp is None:
