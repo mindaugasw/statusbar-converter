@@ -40,17 +40,7 @@ class CustomizedDialogBuilder(ModalWindowBuilderInterface):
         with dpg.window(tag=self._primaryTag, autosize=True):
             with dpg.group(horizontal=True):
                 with dpg.group():
-                    width, height, channels, data = dpg.load_image(FilesystemHelper.getAssetsDir() + '/icon_colored_small.png')
-
-                    with dpg.texture_registry():
-                        dpg.add_static_texture(
-                            width=width,
-                            height=height,
-                            default_value=data,
-                            tag='image',
-                        )
-
-                    dpg.add_image('image')
+                    BuilderHelper.addImage(FilesystemHelper.getAssetsDir() + '/icon_colored_small.png')
 
                 with dpg.group():
                     if buildCallback is not None:

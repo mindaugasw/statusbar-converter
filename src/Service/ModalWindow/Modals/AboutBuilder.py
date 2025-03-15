@@ -33,17 +33,7 @@ class AboutBuilder(ModalWindowBuilderInterface):
             # group with `horizontal` to make 2 "columns" for image and text
             with dpg.group(horizontal=True):
                 with dpg.group():
-                    width, height, channels, data = dpg.load_image(FilesystemHelper.getAssetsDir() + '/icon_linux.png')
-
-                    with dpg.texture_registry():
-                        dpg.add_static_texture(
-                            width=width,
-                            height=height,
-                            default_value=data,
-                            tag='image',
-                        )
-
-                    dpg.add_image('image')
+                    BuilderHelper.addImage(FilesystemHelper.getAssetsDir() + '/icon_linux.png')
 
                 with dpg.group():
                     dpg.add_text(AppConstant.appName)

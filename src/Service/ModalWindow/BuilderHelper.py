@@ -38,3 +38,22 @@ class BuilderHelper:
         padding = ' ' * paddingLength
 
         return f'{padding}{text}{padding}'
+
+    @staticmethod
+    def addImage(filepath: str, tag : str = 'image') -> None:
+        """
+        :param filepath:
+        :param tag: Tag should be changed if adding more than 1 image in 1 modal
+        """
+
+        width, height, channels, data = dpg.load_image(filepath)
+
+        with dpg.texture_registry():
+            dpg.add_static_texture(
+                width=width,
+                height=height,
+                default_value=data,
+                tag=tag,
+            )
+
+        dpg.add_image(tag)
