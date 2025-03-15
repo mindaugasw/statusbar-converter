@@ -18,6 +18,7 @@ activate_instructions:
 	@# command for the user to run manually
 
 	@echo 'Manually run this command:'
+	@echo
 	@echo 'source .venv-*/bin/activate'
 
 .PHONY:
@@ -37,6 +38,16 @@ coverage: ## Run unit tests with coverage
 	@coverage html
 	@echo 'Coverage %'
 	@coverage report --format=total
+
+.PHONY:
+mypy: ## Run mypy static analysis
+	@source .venv-*/bin/activate
+	mypy \
+		--follow-untyped-imports \
+		--ignore-missing-imports \
+		--show-error-code-links \
+		--pretty \
+ 		src tests
 
 .PHONY:
 install_macOS_AppleSilicon: ## Install Python virtual env
