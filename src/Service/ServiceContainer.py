@@ -79,7 +79,7 @@ class ServiceContainer:
 
         # GUI services
         _[list[ModalWindowBuilderInterface]] = modalWindowBuilders = self._getModalWindowBuilders(config, logger)
-        _[ModalWindowManager] = modalWindowManager = ModalWindowManager(modalWindowBuilders, osSwitch, events, logger)
+        _[ModalWindowManager] = modalWindowManager = ModalWindowManager(modalWindowBuilders, osSwitch, logger)
 
         # App services
         _[UpdateManager] = updateManager = UpdateManager(filesystemHelper, events, config, logger, debug)

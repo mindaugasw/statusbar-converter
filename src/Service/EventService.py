@@ -15,11 +15,9 @@ class EventService:
     _ID_UPDATE_CHECK_COMPLETED: Final[str] = 'update_check_completed'
 
     _events: dict[str, Event]
-    _eventsBlocked: bool
 
     def __init__(self):
         self._events = {}
-        self._eventsBlocked = False
 
     def subscribeAppLoopIteration(self, callback: Callable[[], None]) -> None:
         self._subscribe(self._ID_APP_LOOP_ITERATION, callback)
@@ -67,9 +65,6 @@ class EventService:
     def dispatchUpdateCheckCompleted(self, text: str, buttons: DialogButtonsDict) -> None:
         self._dispatch(self._ID_UPDATE_CHECK_COMPLETED, text, buttons)
 
-    def setEventBlocking(self, blocked: bool) -> None:
-        self._eventsBlocked = blocked
-
     def _subscribe(self, _eventId: str, callback: Callable) -> None:
         if _eventId not in self._events:
             self._events[_eventId] = Event()
@@ -77,7 +72,4 @@ class EventService:
         self._events[_eventId].append(callback)
 
     def _dispatch(self, _eventId: str, *args) -> None:
-        if self._eventsBlocked:
-            return
-
         self._events[_eventId](*args)
