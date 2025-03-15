@@ -2,10 +2,11 @@ import math
 import webbrowser
 
 import dearpygui.dearpygui as dpg
+from typing_extensions import Final
 
 
 class BuilderHelper:
-    _hyperlinkThemeTag = '_app_hyperlink_theme'
+    _HYPERLINK_THEME_TAG: Final[str] = '_app_hyperlink_theme'
 
     @staticmethod
     def registerHyperlinkTheme() -> None:
@@ -14,7 +15,7 @@ class BuilderHelper:
         """
         dpg.add_texture_registry(label='_app_texture_container', tag='_app_texture_container')
 
-        with dpg.theme(tag=BuilderHelper._hyperlinkThemeTag):
+        with dpg.theme(tag=BuilderHelper._HYPERLINK_THEME_TAG):
             with dpg.theme_component(dpg.mvButton):
                 dpg.add_theme_color(dpg.mvThemeCol_Button, [0, 0, 0, 0])
                 dpg.add_theme_color(dpg.mvThemeCol_ButtonActive, [0, 0, 0, 0])
@@ -28,7 +29,7 @@ class BuilderHelper:
     @staticmethod
     def addHyperlink(text: str, address: str) -> None:
         button = dpg.add_button(label=text, callback=lambda: webbrowser.open(address))
-        dpg.bind_item_theme(button, BuilderHelper._hyperlinkThemeTag)
+        dpg.bind_item_theme(button, BuilderHelper._HYPERLINK_THEME_TAG)
 
     @staticmethod
     def padButtonText(text: str, minPadding: int=1, minLength: int=5) -> str:

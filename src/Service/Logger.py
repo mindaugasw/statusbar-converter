@@ -4,12 +4,13 @@ import random
 import string
 import subprocess
 import time
+from typing import Final
 
 from src.Service.FilesystemHelper import FilesystemHelper
 
 
 class Logger:
-    LOG_FILE_TRUNCATE_LENGTH = 1000
+    _LOG_FILE_TRUNCATE_LENGTH: Final[int] = 1000
 
     # static
     instance = None
@@ -57,6 +58,6 @@ class Logger:
 
     def _truncateLogFile(self) -> None:
         tempLogPath = self._logPath + '.tmp'
-        subprocess.call(f'tail -n {Logger.LOG_FILE_TRUNCATE_LENGTH} "{self._logPath}" > "{tempLogPath}"', shell=True)
+        subprocess.call(f'tail -n {Logger._LOG_FILE_TRUNCATE_LENGTH} "{self._logPath}" > "{tempLogPath}"', shell=True)
         os.remove(self._logPath)
         os.rename(tempLogPath, self._logPath)

@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 import dearpygui.dearpygui as dpg
 
@@ -11,7 +11,7 @@ from src.Service.ModalWindow.Modals.ModalWindowBuilderInterface import ModalWind
 
 
 class AboutBuilder(ModalWindowBuilderInterface):
-    _primaryTag = 'primary'
+    _PRIMARY_TAG: Final[str] = 'primary'
 
     _config: Configuration
 
@@ -24,7 +24,7 @@ class AboutBuilder(ModalWindowBuilderInterface):
             'About',
             540,
             165,
-            self._primaryTag,
+            self._PRIMARY_TAG,
         )
 
     def reinitializeState(self) -> None:
@@ -33,7 +33,7 @@ class AboutBuilder(ModalWindowBuilderInterface):
     def build(self, arguments: dict[str, Any]) -> None:
         BuilderHelper.registerHyperlinkTheme()
 
-        with dpg.window(tag=self._primaryTag, on_close=self._onClose):
+        with dpg.window(tag=self._PRIMARY_TAG, on_close=self._onClose):
 
             # group with `horizontal` to make 2 "columns" for image and text
             with dpg.group(horizontal=True):
@@ -41,13 +41,13 @@ class AboutBuilder(ModalWindowBuilderInterface):
                     BuilderHelper.addImage(FilesystemHelper.getAssetsDir() + '/icon_linux.png')
 
                 with dpg.group():
-                    dpg.add_text(AppConstant.appName)
+                    dpg.add_text(AppConstant.APP_NAME)
                     dpg.add_text('v' + self._config.getAppVersion())
                     dpg.add_text()
 
                     with dpg.group(horizontal=True):
                         dpg.add_text('Website:')
-                        BuilderHelper.addHyperlink(AppConstant.website.replace('https://', ''), AppConstant.website)
+                        BuilderHelper.addHyperlink(AppConstant.WEBSITE.replace('https://', ''), AppConstant.WEBSITE)
 
                     with dpg.group(horizontal=True):
                         dpg.add_text('App icon made by')

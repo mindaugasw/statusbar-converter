@@ -1,5 +1,5 @@
 from collections.abc import Callable
-from typing import Any
+from typing import Any, Final
 
 import dearpygui.dearpygui as dpg
 
@@ -11,8 +11,9 @@ from src.Type.Types import DpgTag
 
 
 class CustomizedDialogBuilder(ModalWindowBuilderInterface):
-    _primaryTag = 'primary'
-    _minimumNewLines = 8
+    _PRIMARY_TAG: Final[str] = 'primary'
+    _MINIMUM_NEW_LINES: Final[int] = 8
+
     _callbacks: dict[DpgTag, Callable | None]
 
     def __init__(self):
@@ -24,7 +25,7 @@ class CustomizedDialogBuilder(ModalWindowBuilderInterface):
             'Dialog',
             500,
             198,
-            self._primaryTag,
+            self._PRIMARY_TAG,
         )
 
     def reinitializeState(self) -> None:
@@ -38,9 +39,9 @@ class CustomizedDialogBuilder(ModalWindowBuilderInterface):
         # There are no proper tools in dpg for vertical alignment. So we fake it by setting
         # text height to always the same by adding more lines, to reach minimum count
         linesInText = text.count('\n') + 1
-        text += '\n ' * (self._minimumNewLines - linesInText)
+        text += '\n ' * (self._MINIMUM_NEW_LINES - linesInText)
 
-        with dpg.window(tag=self._primaryTag, autosize=True):
+        with dpg.window(tag=self._PRIMARY_TAG, autosize=True):
             with dpg.group(horizontal=True):
                 with dpg.group():
                     BuilderHelper.addImage(FilesystemHelper.getAssetsDir() + '/icon_colored_small.png')

@@ -5,6 +5,7 @@ import time
 import webbrowser
 
 import requests
+from typing_extensions import Final
 
 from src.Constant.AppConstant import AppConstant
 from src.Constant.ConfigId import ConfigId
@@ -19,8 +20,8 @@ from src.Type.DialogButtonsDict import DialogButtonsDict
 
 
 class UpdateManager:
-    CHECK_INTERVAL = 3600 * 24 * 2  # Check every 2 days
-    RELEASES_URL = 'https://api.github.com/repos/mindaugasw/statusbar-converter/releases?per_page=100'
+    _CHECK_INTERVAL: Final[int] = 3600 * 24 * 2  # Check every 2 days
+    _RELEASES_URL: Final[str] = 'https://api.github.com/repos/mindaugasw/statusbar-converter/releases?per_page=100'
 
     _filesystemHelper: FilesystemHelper
     _events: EventService
@@ -54,7 +55,7 @@ class UpdateManager:
         threading.Thread(target=self._checkForUpdates, args=[manuallyTriggered], daemon=True).start()
 
     def _updateCheckIteration(self) -> None:
-        if self._lastCheckAt and (int(time.time()) - self.CHECK_INTERVAL) < self._lastCheckAt:
+        if self._lastCheckAt and (int(time.time()) - self._CHECK_INTERVAL) < self._lastCheckAt:
             return
 
         self.checkForUpdatesAsync(False)
@@ -152,12 +153,12 @@ class UpdateManager:
             with open(f'{self._filesystemHelper.getAssetsDevDir()}/releases_response_mock_{mockUpdate}.json') as file:
                 return json.load(file)
 
-        return requests.get(self.RELEASES_URL).json()
+        return requests.get(self._RELEASES_URL).json()
 
     def _dispatchUpdateResultEvent(self, version: str | None) -> None:
         def _handleClickGoToDownloadPage(foundVersion: str) -> None:
             self._logger.log(f'{Logs.catUpdateCheck}Dialog button click: Go to download page')
-            downloadPageUrl = f'{AppConstant.website}/releases/tag/{foundVersion}'
+            downloadPageUrl = f'{AppConstant.WEBSITE}/releases/tag/{foundVersion}'
             webbrowser.open(downloadPageUrl)
 
         def _handleClickSkipThisVersion(versionToSkip: str) -> None:

@@ -108,11 +108,11 @@ class ServiceContainer:
         customizedDialogBuilder = CustomizedDialogBuilder()
 
         return {
-            ModalId.demo: DemoBuilder(),
-            ModalId.settings: SettingsBuilder(config, logger),
-            ModalId.about: AboutBuilder(config),
-            ModalId.customizedDialog: customizedDialogBuilder,
-            ModalId.missingXsel: DialogMissingXselBuilder(customizedDialogBuilder),
+            ModalId.DEMO: DemoBuilder(),
+            ModalId.SETTINGS: SettingsBuilder(config, logger),
+            ModalId.ABOUT: AboutBuilder(config),
+            ModalId.CUSTOMIZED_DIALOG: customizedDialogBuilder,
+            ModalId.MISSING_XSEL: DialogMissingXselBuilder(customizedDialogBuilder),
         }
 
     def _getAutostartManager(

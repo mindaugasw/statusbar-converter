@@ -1,4 +1,5 @@
 import re
+from typing import Final
 
 
 class ThousandsDetector:
@@ -7,14 +8,14 @@ class ThousandsDetector:
     E.g. what number is 1,234.567 and what number is 100,500 ?
     """
 
-    _patternConfusionDotThousands = re.compile(
+    _PATTERN_CONFUSION_DOT_THOUSANDS: Final = re.compile(
         r'^(?:[-+]?(?=.*\d)(?=.*[1-9]).{1,3}\.\d{3})$',  # for numbers like '100.000' (is it 100.0 or 100000?)
     )
-    _patternConfusionCommaThousands = re.compile(
+    _PATTERN_CONFUSION_COMMA_THOUSANDS: Final = re.compile(
         r'^(?:[-+]?(?=.*\d)(?=.*[1-9]).{1,3},\d{3})$',  # for numbers like '100,000' (is it 100.0 or 100000?)
     )
-    _patternCommaThousandsDotDecimal = re.compile(r'^[-+]?((\d{1,3}(,\d{3})*)|(\d*))(\.|\.\d*)?$')
-    _patternDotThousandsCommaDecimal = re.compile(r'^[-+]?((\d{1,3}(\.\d{3})*)|(\d*))(,|,\d*)?$')
+    _PATTERN_COMMA_THOUSANDS_DOT_DECIMAL: Final = re.compile(r'^[-+]?((\d{1,3}(,\d{3})*)|(\d*))(\.|\.\d*)?$')
+    _PATTERN_DOT_THOUSANDS_COMMA_DECIMAL: Final = re.compile(r'^[-+]?((\d{1,3}(\.\d{3})*)|(\d*))(,|,\d*)?$')
 
     def parseNumber(self, number: str) -> float | None:
         """
@@ -26,15 +27,15 @@ class ThousandsDetector:
         # "certain" - concept from algorithm source. Not needed currently, since there's no "max value"
         # certain = True
 
-        if self._patternConfusionDotThousands.match(number) is not None:
+        if self._PATTERN_CONFUSION_DOT_THOUSANDS.match(number) is not None:
             number = number.replace('.', '')  # assume dot is thousands separator
             # certain = False
-        elif self._patternConfusionCommaThousands.match(number) is not None:
+        elif self._PATTERN_CONFUSION_COMMA_THOUSANDS.match(number) is not None:
             number = number.replace(',', '')  # assume comma is thousands separator
             # certain = False
-        elif self._patternCommaThousandsDotDecimal.match(number) is not None:
+        elif self._PATTERN_COMMA_THOUSANDS_DOT_DECIMAL.match(number) is not None:
             number = number.replace(',', '')
-        elif self._patternDotThousandsCommaDecimal.match(number) is not None:
+        elif self._PATTERN_DOT_THOUSANDS_COMMA_DECIMAL.match(number) is not None:
             number = number.replace('.', '').replace(',', '.')
         else:
             # For stuff like '10,000.000,0' and other nonsense

@@ -1,4 +1,4 @@
-from typing import Callable, Any
+from typing import Callable, Any, Final
 
 import dearpygui.dearpygui as dpg
 
@@ -10,14 +10,15 @@ from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
 from src.Service.ModalWindow.BuilderHelper import BuilderHelper
 from src.Service.ModalWindow.Modals.ModalWindowBuilderInterface import ModalWindowBuilderInterface
+from src.Type.Types import DpgTag
 
 
 class SettingsBuilder(ModalWindowBuilderInterface):
+    _WINDOW_WIDTH: Final[int] = 600
+    _PRIMARY_TAG: Final[str] = 'primary'
+
     _config: Configuration
     _logger: Logger
-
-    _windowWidth = 600
-    _primaryTag = 'primary'
 
     _callbacks: dict[DpgTag, Callable[[Any], None]]
     _appRestartNoteDefaultTag: DpgTag
@@ -32,9 +33,9 @@ class SettingsBuilder(ModalWindowBuilderInterface):
         return ModalWindowParameters(
             'Settings',
             'Settings',
-            self._windowWidth,
+            self._WINDOW_WIDTH,
             300,
-            self._primaryTag,
+            self._PRIMARY_TAG,
         )
 
     def reinitializeState(self) -> None:
@@ -43,8 +44,8 @@ class SettingsBuilder(ModalWindowBuilderInterface):
         self._appRestartNoteEditedTag = -1
         self._appRestartNoteChanged = False
 
-    def build(self, arguments: dict[str, any]) -> None:
-        with dpg.window(label='Window title', tag=self._primaryTag):
+    def build(self, arguments: dict[str, Any]) -> None:
+        with dpg.window(label='Window title', tag=self._PRIMARY_TAG):
 
             with dpg.group(horizontal=True):
                 with dpg.group():
@@ -52,7 +53,7 @@ class SettingsBuilder(ModalWindowBuilderInterface):
 
                 with dpg.group():
                     dpg.add_text('Settings')
-                    dpg.add_text('v' + self._config.getAppVersion(), pos=[self._windowWidth - 50, 8])
+                    dpg.add_text('v' + self._config.getAppVersion(), pos=[self._WINDOW_WIDTH - 50, 8])
 
                     dpg.add_spacer(height=5)
 

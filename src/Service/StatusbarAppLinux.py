@@ -3,12 +3,12 @@ import subprocess
 import sys
 import threading
 import time
+from typing import Final
 
 import gi
 
 from src.Constant.AppConstant import AppConstant
 from src.Constant.Logs import Logs
-from src.Constant.ModalId import ModalId
 from src.DTO.ConvertResult import ConvertResult
 from src.DTO.MenuItem import MenuItem
 from src.DTO.Timestamp import Timestamp
@@ -64,7 +64,7 @@ Other menu alternatives, instead of using Gtk directly:
 
 
 class StatusbarAppLinux(StatusbarApp):
-    CHECK = '✔  '
+    _CHECK: Final[str] = '✔  '
 
     _app: AppIndicator3.Indicator
 
@@ -107,7 +107,7 @@ class StatusbarAppLinux(StatusbarApp):
 
         # https://lazka.github.io/pgi-docs/#AyatanaAppIndicator3-0.1/classes/Indicator.html#AyatanaAppIndicator3.Indicator.new
         self._app = AppIndicator3.Indicator.new(
-            AppConstant.appName,
+            AppConstant.APP_NAME,
             # Icons can be also used from `/usr/share/icons`, e.g. 'clock-app'
             FilesystemHelper.getAssetsDir() + '/icon_linux.png',
             AppIndicator3.IndicatorCategory.APPLICATION_STATUS,
@@ -145,7 +145,7 @@ class StatusbarAppLinux(StatusbarApp):
                 So simulating check behavior with text is simpler
                 """
 
-                nativeItem.set_label(f'{self.CHECK}{item.label}')
+                nativeItem.set_label(f'{self._CHECK}{item.label}')
 
             if item.isDisabled:
                 nativeItem.set_sensitive(False)
@@ -184,7 +184,7 @@ class StatusbarAppLinux(StatusbarApp):
             f'<tt>{self._configFilePath}</tt>\n\n'
             f'After editing, the application must be restarted.\n\n'
             f'All supported configuration can be found at:\n'
-            f'<a href="{AppConstant.website}">{AppConstant.website}</a>\n\n'
+            f'<a href="{AppConstant.WEBSITE}">{AppConstant.WEBSITE}</a>\n\n'
             f'Open configuration file in default text editor?',
             buttons,
         )
@@ -198,7 +198,7 @@ class StatusbarAppLinux(StatusbarApp):
             success = self._autostartManager.enableAutostart()
 
         if success:
-            menuItem.set_label(f'{"" if checked else self.CHECK}Run at login')
+            menuItem.set_label(f'{"" if checked else self._CHECK}Run at login')
 
     def _onMenuClickAboutLegacy(self, menuItem: Gtk.MenuItem) -> None:
         """
@@ -206,7 +206,7 @@ class StatusbarAppLinux(StatusbarApp):
         """
         self._showDialogLegacy(
             f'Version: {self._config.getAppVersion()}\n\n'
-            f'App website: <a href="{AppConstant.website}">{AppConstant.website}</a>\n\n'
+            f'App website: <a href="{AppConstant.WEBSITE}">{AppConstant.WEBSITE}</a>\n\n'
             f'App icon made by <a href="https://www.flaticon.com/free-icons/convert">iconsax at flaticon.com</a>',
             {'Ok': None},
         )
@@ -227,17 +227,17 @@ class StatusbarAppLinux(StatusbarApp):
 
         self._logger.logDebug(Logs.changingIconTextTo % result.iconText)
         self._app.set_label(result.iconText, '')
-        self._menuItems[self._menuIdLastConversionOriginalText].nativeItem.set_label(result.originalText)
+        self._menuItems[self._MENU_ID_LAST_CONVERSION_ORIGINAL_TEXT].nativeItem.set_label(result.originalText)
 
         # If menu items are changed too quickly, UI fails to actually update labels.
         # So a small delay is needed
         time.sleep(0.1)
 
-        self._menuItems[self._menuIdLastConversionConvertedText].nativeItem.set_label(result.convertedText)
+        self._menuItems[self._MENU_ID_LAST_CONVERSION_CONVERTED_TEXT].nativeItem.set_label(result.convertedText)
 
     def _flashIcon(self) -> None:
         self._app.set_icon(FilesystemHelper.getAssetsDir() + '/icon_linux_flash.png')
-        time.sleep(StatusbarAppLinux.ICON_FLASH_DURATION)
+        time.sleep(StatusbarAppLinux._ICON_FLASH_DURATION)
         self._app.set_icon(FilesystemHelper.getAssetsDir() + '/icon_linux.png')
 
     def _onStatusbarClear(self) -> None:
@@ -254,7 +254,7 @@ class StatusbarAppLinux(StatusbarApp):
         dialog = Gtk.MessageDialog(
             message_type=Gtk.MessageType.OTHER,
             buttons=Gtk.ButtonsType.NONE,
-            text=AppConstant.appName,
+            text=AppConstant.APP_NAME,
         )
 
         dialog.format_secondary_markup(message)
@@ -273,4 +273,4 @@ class StatusbarAppLinux(StatusbarApp):
             buttonCallback()
 
     def _isMenuItemChecked(self, menuItem: Gtk.MenuItem) -> bool:
-        return menuItem.get_label().startswith(self.CHECK)
+        return menuItem.get_label().startswith(self._CHECK)

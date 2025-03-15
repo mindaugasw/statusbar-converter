@@ -53,7 +53,7 @@ class ModalWindowManager:
         """
         Open a simple parameterized UI window with text and multiple buttons
         """
-        self._openModalInternal(ModalId.customizedDialog, {'text': text, 'buttons': buttons})
+        self._openModalInternal(ModalId.CUSTOMIZED_DIALOG, {'text': text, 'buttons': buttons})
 
     def _openModalInternal(self,  _id: str, arguments: dict[str, Any]):
         if _id not in self._builders:
@@ -87,7 +87,7 @@ class ModalWindowManager:
         logCategory = Logs.catModalSub + parameters.logCategory + '] '
         self._logger.logDebug(logCategory + 'Initialize')
 
-        viewportTitle = AppConstant.appName
+        viewportTitle = AppConstant.APP_NAME
         if parameters.title is not None:
             viewportTitle = parameters.title + ' - ' + viewportTitle
 

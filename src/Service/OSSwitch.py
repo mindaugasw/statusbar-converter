@@ -1,9 +1,11 @@
 import platform
 
+from typing_extensions import Final
+
 
 class OSSwitch:
-    OS_MAC_OS = 'Darwin'
-    OS_LINUX = 'Linux'
+    _OS_MAC_OS: Final[str] = 'Darwin'
+    _OS_LINUX: Final[str] = 'Linux'
 
     os: str
 
@@ -14,7 +16,7 @@ class OSSwitch:
             raise Exception('Unsupported OS: ' + self.os)
 
     def isMacOS(self) -> bool:
-        return self.os == OSSwitch.OS_MAC_OS
+        return self.os == OSSwitch._OS_MAC_OS
 
     def isLinux(self) -> bool:
-        return self.os == OSSwitch.OS_LINUX
+        return self.os == OSSwitch._OS_LINUX

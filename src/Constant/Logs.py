@@ -1,15 +1,18 @@
+from typing import Final
+
+
 class Logs:
     # cat prefix for category
-    catAutostart = '[Autostart] '
-    catClipboard = '[Clipboard] '
-    catConfig = '[Config] '
-    catConvert = '[Convert] '
-    catConverter = '[Convert.'
-    catMenuApp = '[Menu app] '
-    catModal = '[Modal] '
-    catModalSub = '[Modal.'
-    catUpdateCheck = '[Update check] '
-    catStart = '[Start] '
-    catSettings = catModalSub + 'Settings] '
+    catAutostart: Final[str] = '[Autostart] '
+    catClipboard: Final[str] = '[Clipboard] '
+    catConfig: Final[str] = '[Config] '
+    catConvert: Final[str] = '[Convert] '
+    catConverter: Final[str] = '[Convert.'
+    catMenuApp: Final[str] = '[Menu app] '
+    catModal: Final[str] = '[Modal] '
+    catModalSub: Final[str] = '[Modal.'
+    catUpdateCheck: Final[str] = '[Update check] '
+    catStart: Final[str] = '[Start] '
+    catSettings: Final[str] = catModalSub + 'Settings] '
 
-    changingIconTextTo = catMenuApp + 'Changing icon text to: %s'
+    changingIconTextTo: Final[str] = catMenuApp + 'Changing icon text to: %s'

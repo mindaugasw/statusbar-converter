@@ -1,5 +1,6 @@
 import webbrowser
 from abc import ABC, abstractmethod
+from typing import Final
 
 from src.Constant.AppConstant import AppConstant
 from src.Constant.ConfigId import ConfigId
@@ -22,7 +23,10 @@ from src.Type.DialogButtonsDict import DialogButtonsDict
 
 
 class StatusbarApp(ABC):
-    ICON_FLASH_DURATION = 0.35
+    _ICON_FLASH_DURATION: Final[float] = 0.35
+
+    _MENU_ID_LAST_CONVERSION_ORIGINAL_TEXT: Final[str] = 'last_conversion_original_text'
+    _MENU_ID_LAST_CONVERSION_CONVERTED_TEXT: Final[str] = 'last_conversion_converted_text'
 
     _osSwitch: OSSwitch
     _formatter: TimestampTextFormatter
@@ -44,9 +48,6 @@ class StatusbarApp(ABC):
     _iconPathFlash: str
     _flashIconOnChange: bool
     _configFilePath: str
-
-    _menuIdLastConversionOriginalText = 'last_conversion_original_text'
-    _menuIdLastConversionConvertedText = 'last_conversion_converted_text'
 
     def __init__(
         self,
@@ -95,14 +96,14 @@ class StatusbarApp(ABC):
         # Last conversion
         items.update({'label_last_conversion': MenuItem('Last conversion - click to copy', True)})
         items.update({
-            self._menuIdLastConversionOriginalText:
+            self._MENU_ID_LAST_CONVERSION_ORIGINAL_TEXT:
                 MenuItem(
                     self._formatter.format(lastTimestamp, self._menuTemplateLastConversionOriginalText),
                     callback=self._onMenuClickLastTimestamp,
                 ),
         })
         items.update({
-            self._menuIdLastConversionConvertedText:
+            self._MENU_ID_LAST_CONVERSION_CONVERTED_TEXT:
                 MenuItem(
                     self._formatter.format(lastTimestamp, self._menuTemplateLastConversionConvertedText),
                     callback=self._onMenuClickLastTimestamp,
@@ -192,16 +193,16 @@ class StatusbarApp(ABC):
         self._updateManager.checkForUpdatesAsync(True)
 
     def _onMenuClickSettings(self, menuItem) -> None:
-        self._modalWindowManager.openModal(ModalId.settings)
+        self._modalWindowManager.openModal(ModalId.SETTINGS)
 
     def _onMenuClickOpenGUIDemo(self, menuItem) -> None:
-        self._modalWindowManager.openModal(ModalId.demo)
+        self._modalWindowManager.openModal(ModalId.DEMO)
 
     def _onMenuClickOpenWebsite(self, menuItem) -> None:
-        webbrowser.open(AppConstant.website)
+        webbrowser.open(AppConstant.WEBSITE)
 
     def _onMenuClickAbout(self, menuItem) -> None:
-        self._modalWindowManager.openModal(ModalId.about)
+        self._modalWindowManager.openModal(ModalId.ABOUT)
 
     @abstractmethod
     def _onMenuClickAboutLegacy(self, menuItem) -> None:

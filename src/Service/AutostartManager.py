@@ -31,7 +31,7 @@ class AutostartManager(ABC):
         self._argParser = argParser
         self._logger = logger
 
-        self._appNamePretty = AppConstant.appName
+        self._appNamePretty = AppConstant.APP_NAME
         self._appExecutablePath = filesystemHelper.getAppExecutablePath()
 
         if argParser.getMockPackaged():

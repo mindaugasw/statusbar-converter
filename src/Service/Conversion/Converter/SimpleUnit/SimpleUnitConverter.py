@@ -1,5 +1,5 @@
 import re
-from typing import Tuple
+from typing import Tuple, Final
 
 from src.DTO.ConvertResult import ConvertResult
 from src.Service.Conversion.Converter.ConverterInterface import ConverterInterface
@@ -12,9 +12,10 @@ class SimpleUnitConverter(ConverterInterface):
     Convert simple units, where a single number is followed by a single unit, e.g.: 50 km/h
     """
 
+    _PATTERN_IS_NUMBER_AND_TEXT: Final = re.compile(r'^((\-)?([\d,.]*\d[\d,.]*))([a-z/*°\'"`′″.3]+)')
+
     _thousandsDetector: ThousandsDetector
 
-    _patternIsNumberAndText = re.compile(r'^((\-)?([\d,.]*\d[\d,.]*))([a-z/*°\'"`′″.3]+)')
     _unitToConverter: dict[str, AbstractSimpleConverter]
     _enabled: bool
 
@@ -63,7 +64,7 @@ class SimpleUnitConverter(ConverterInterface):
         text = ''.join(textSplit).lower()
 
         # Test if it meets basic format of number followed by text
-        regexResult = re.match(self._patternIsNumberAndText, text)
+        regexResult = re.match(self._PATTERN_IS_NUMBER_AND_TEXT, text)
 
         if regexResult is None:
             return None, None

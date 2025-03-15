@@ -1,3 +1,6 @@
+from typing import Final
+
+
 class AppConstant:
-    appName = 'Statusbar Converter'
-    website = 'https://github.com/mindaugasw/statusbar-converter'
+    APP_NAME: Final[str] = 'Statusbar Converter'
+    WEBSITE: Final[str] = 'https://github.com/mindaugasw/statusbar-converter'

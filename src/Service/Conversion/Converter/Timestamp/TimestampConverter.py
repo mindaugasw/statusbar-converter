@@ -1,5 +1,5 @@
 import re
-from typing import Tuple
+from typing import Tuple, Final
 
 from src.Constant.ConfigId import ConfigId
 from src.Constant.Logs import Logs
@@ -12,15 +12,16 @@ from src.Service.Logger import Logger
 
 
 class TimestampConverter(ConverterInterface):
-    REGEX_PATTERN = '^\\d{1,14}$'
-    MIN_VALUE = 100000000  # 1973-03-03
-    MAX_VALUE = 9999999999  # 2286-11-20
+    _REGEX_PATTERN: Final[str] = '^\\d{1,14}$'
+    _MIN_VALUE: Final[int] = 100000000  # 1973-03-03
+    _MAX_VALUE: Final[int] = 9999999999  # 2286-11-20
+
+    _MILLIS_MIN_CHARACTERS: Final[int] = 12
+    _MILLIS_MAX_CHARACTERS: Final[int] = 14
     """
     If a number has between MILLIS_MIN_CHARACTERS and MILLIS_MAX_CHARACTERS digits,
     it will be considered a millisecond timestamp. Otherwise a regular timestamp.
     """
-    MILLIS_MIN_CHARACTERS = 12
-    MILLIS_MAX_CHARACTERS = 14
 
     _formatter: TimestampTextFormatter
     _logger: Logger
@@ -60,7 +61,7 @@ class TimestampConverter(ConverterInterface):
         )
 
     def _extractTimestamp(self, text: str) -> Timestamp | None:
-        regexResult = re.match(self.REGEX_PATTERN, text)
+        regexResult = re.match(self._REGEX_PATTERN, text)
 
         if regexResult is None:
             return None
@@ -80,14 +81,14 @@ class TimestampConverter(ConverterInterface):
 
         numberString = str(number)
 
-        if self.MILLIS_MIN_CHARACTERS <= len(numberString) <= self.MILLIS_MAX_CHARACTERS:
+        if self._MILLIS_MIN_CHARACTERS <= len(numberString) <= self._MILLIS_MAX_CHARACTERS:
             seconds = int(numberString[:-3])
             milliseconds = int(numberString[-3:])
         else:
             seconds = number
             milliseconds = None
 
-        if self.MIN_VALUE <= seconds <= self.MAX_VALUE:
+        if self._MIN_VALUE <= seconds <= self._MAX_VALUE:
             return Timestamp(seconds, milliseconds)
 
         return None

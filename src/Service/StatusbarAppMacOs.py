@@ -71,7 +71,7 @@ class StatusbarAppMacOs(StatusbarApp):
         menu = self._createOsNativeMenu(self._createCommonMenu())
 
         self._app = rumps.App(
-            AppConstant.appName,
+            AppConstant.APP_NAME,
             None,
             self._iconPathDefault,
             True,
@@ -127,7 +127,7 @@ class StatusbarAppMacOs(StatusbarApp):
             f'{self._configFilePath}\\n\\n'
             f'After editing, the application must be restarted.\\n\\n'
             f'All supported configuration can be found at:\\n'
-            f'{AppConstant.website}/blob/master/config.app.yml\\n\\n'
+            f'{AppConstant.WEBSITE}/blob/master/config.app.yml\\n\\n'
             f'Open configuration file in default text editor?',
             buttons,
         )
@@ -147,7 +147,7 @@ class StatusbarAppMacOs(StatusbarApp):
         """
         self._showDialogLegacy(
             f'Version: {self._config.getAppVersion()}\\n\\n'
-            f'App website: {AppConstant.website}\\n\\n'
+            f'App website: {AppConstant.WEBSITE}\\n\\n'
             f'App icon made by iconsax at flaticon.com',
             {'Ok': None},
         )
@@ -166,12 +166,12 @@ class StatusbarAppMacOs(StatusbarApp):
         self._logger.logDebug(Logs.changingIconTextTo % result.iconText)
         self._app.title = result.iconText
 
-        self._menuItems[self._menuIdLastConversionOriginalText].nativeItem.title = result.originalText
-        self._menuItems[self._menuIdLastConversionConvertedText].nativeItem.title = result.convertedText
+        self._menuItems[self._MENU_ID_LAST_CONVERSION_ORIGINAL_TEXT].nativeItem.title = result.originalText
+        self._menuItems[self._MENU_ID_LAST_CONVERSION_CONVERTED_TEXT].nativeItem.title = result.convertedText
 
     def _flashIcon(self) -> None:
         self._app.icon = self._iconPathFlash
-        time.sleep(StatusbarAppMacOs.ICON_FLASH_DURATION)
+        time.sleep(StatusbarAppMacOs._ICON_FLASH_DURATION)
         self._app.icon = self._iconPathDefault
 
     def _onStatusbarClear(self) -> None:
@@ -195,7 +195,7 @@ class StatusbarAppMacOs(StatusbarApp):
         dialogCommand =\
             f'osascript -e \'Tell application "System Events" to display dialog ' \
             f'"{message}" ' \
-            f'with title "{AppConstant.appName}" ' \
+            f'with title "{AppConstant.APP_NAME}" ' \
             f'buttons {{"{buttonsText}"}} ' \
             f'default button "{buttonNames[0]}" ' \
             f'with icon POSIX file "{self._iconPathDefault}" ' \

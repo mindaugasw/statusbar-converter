@@ -27,7 +27,7 @@ def main() -> None:
     clipboardManager = services[ClipboardManager]
 
     logger.logRaw(
-        f'\n{AppConstant.appName} v{config.getAppVersion()}\n'
+        f'\n{AppConstant.APP_NAME} v{config.getAppVersion()}\n'
         f'Platform: {platform.platform()}\n'
         f'Detected OS: {osSwitch.os}\n'
         f'Python: {sys.version}\n'

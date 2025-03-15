@@ -7,7 +7,7 @@ from src.Service.FilesystemHelper import FilesystemHelper
 
 class FilesystemHelperLinux(FilesystemHelper):
     def getUserDataDir(self) -> str:
-        path = os.path.expanduser(f'~/.config/{AppConstant.appName}')
+        path = os.path.expanduser(f'~/.config/{AppConstant.APP_NAME}')
         os.makedirs(path, exist_ok=True)
 
         return path

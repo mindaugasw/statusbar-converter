@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Final
 
 from src.Constant.ConfigId import ConfigId
 from src.DTO.ConvertResult import ConvertResult
@@ -13,9 +13,9 @@ class TemperatureUnit(AbstractUnit):
     pass
 
 class TemperatureConverter(AbstractSimpleConverter):
-    _primaryAliasCelsius = 'c'
-    _primaryAliasFahrenheit = 'f'
-    _maxValue = 999_999
+    _PRIMARY_ALIAS_CELSIUS: Final[str] = 'c'
+    _PRIMARY_ALIAS_FAHRENHEIT: Final[str] = 'f'
+    _MAX_VALUE: Final[int] = 999_999
 
     _unitsExpanded: dict[str, TemperatureUnit]
     _primaryUnit: TemperatureUnit
@@ -26,9 +26,9 @@ class TemperatureConverter(AbstractSimpleConverter):
 
         self._unitsExpanded = UnitPreprocessor.expandAliases(self._getUnitsDefinition())
 
-        primaryUnitId = self._primaryAliasCelsius\
+        primaryUnitId = self._PRIMARY_ALIAS_CELSIUS\
             if config.get(ConfigId.Converter_Temperature_PrimaryUnit_Celsius)\
-            else self._primaryAliasFahrenheit
+            else self._PRIMARY_ALIAS_FAHRENHEIT
         self._primaryUnit = self._unitsExpanded[primaryUnitId]
 
     def getName(self) -> str:
@@ -46,17 +46,17 @@ class TemperatureConverter(AbstractSimpleConverter):
         if unitFrom == self._primaryUnit:
             return False, None
 
-        if abs(number) > self._maxValue:
+        if abs(number) > self._MAX_VALUE:
             return False, None
 
-        if unitFrom.primaryAlias == self._primaryAliasCelsius:
+        if unitFrom.primaryAlias == self._PRIMARY_ALIAS_CELSIUS:
             # C to F
             numberTo = (number * 1.8) + 32
-            unitTo = self._unitsExpanded[self._primaryAliasFahrenheit]
-        elif unitFrom.primaryAlias == self._primaryAliasFahrenheit:
+            unitTo = self._unitsExpanded[self._PRIMARY_ALIAS_FAHRENHEIT]
+        elif unitFrom.primaryAlias == self._PRIMARY_ALIAS_FAHRENHEIT:
             # F to C
             numberTo = (number - 32) / 1.8
-            unitTo = self._unitsExpanded[self._primaryAliasCelsius]
+            unitTo = self._unitsExpanded[self._PRIMARY_ALIAS_CELSIUS]
         else:
             raise Exception(f'Unknown unitFrom.primaryAlias "{unitFrom.primaryAlias}" in TemperatureConverter')
 
@@ -74,7 +74,7 @@ class TemperatureConverter(AbstractSimpleConverter):
                     'Celcius',
                 ],
                 TemperatureUnit(
-                    self._primaryAliasCelsius,
+                    self._PRIMARY_ALIAS_CELSIUS,
                     '°C',
                 ),
             ),
@@ -85,7 +85,7 @@ class TemperatureConverter(AbstractSimpleConverter):
                     'Farenheit', 'Farenheight', 'Ferenheit', 'Ferenheight', 'Ferinheit', 'Ferinheight', 'Fahrinheight',
                 ],
                 TemperatureUnit(
-                    self._primaryAliasFahrenheit,
+                    self._PRIMARY_ALIAS_FAHRENHEIT,
                     '°F',
                 ),
             ),

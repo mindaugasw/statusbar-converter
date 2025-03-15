@@ -8,7 +8,7 @@ from src.Service.FilesystemHelper import FilesystemHelper
 
 class FilesystemHelperMacOs(FilesystemHelper):
     def getUserDataDir(self) -> str:
-        return rumps.application_support(AppConstant.appName)
+        return rumps.application_support(AppConstant.APP_NAME)
 
     @staticmethod
     def getAppExecutablePath() -> str | None:
