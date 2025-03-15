@@ -4,7 +4,7 @@ from typing_extensions import Final
 
 from src.DTO.ConvertResult import ConvertResult
 from src.DTO.Event import Event
-from src.Type.DialogButtonsDict import DialogButtonsDict
+from src.Type.Types import DialogButtonsDict
 
 
 class EventService:

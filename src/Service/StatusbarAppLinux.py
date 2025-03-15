@@ -9,6 +9,7 @@ import gi
 
 from src.Constant.AppConstant import AppConstant
 from src.Constant.Logs import Logs
+from src.Constant.ModalId import ModalId
 from src.DTO.ConvertResult import ConvertResult
 from src.DTO.MenuItem import MenuItem
 from src.DTO.Timestamp import Timestamp
@@ -26,7 +27,7 @@ from src.Service.ModalWindow.ModalWindowManager import ModalWindowManager
 from src.Service.OSSwitch import OSSwitch
 from src.Service.StatusbarApp import StatusbarApp
 from src.Service.UpdateManager import UpdateManager
-from src.Type.DialogButtonsDict import DialogButtonsDict
+from src.Type.Types import DialogButtonsDict
 
 gi.require_version('Gtk', '3.0')
 gi.require_version('AppIndicator3', '0.1')

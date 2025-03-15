@@ -25,7 +25,7 @@ from src.Service.ModalWindow.ModalWindowManager import ModalWindowManager
 from src.Service.OSSwitch import OSSwitch
 from src.Service.StatusbarApp import StatusbarApp
 from src.Service.UpdateManager import UpdateManager
-from src.Type.DialogButtonsDict import DialogButtonsDict
+from src.Type.Types import DialogButtonsDict
 
 
 class StatusbarAppMacOs(StatusbarApp):

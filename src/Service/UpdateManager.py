@@ -16,7 +16,7 @@ from src.Service.EventService import EventService
 from src.Service.ExceptionHandler import ExceptionHandler
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
-from src.Type.DialogButtonsDict import DialogButtonsDict
+from src.Type.Types import DialogButtonsDict
 
 
 class UpdateManager:

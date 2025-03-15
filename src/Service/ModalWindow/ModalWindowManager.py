@@ -11,7 +11,7 @@ from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
 from src.Service.ModalWindow.Modals.ModalWindowBuilderInterface import ModalWindowBuilderInterface
 from src.Service.OSSwitch import OSSwitch
-from src.Type.DialogButtonsDict import DialogButtonsDict
+from src.Type.Types import DialogButtonsDict
 
 
 class ModalWindowManager:
