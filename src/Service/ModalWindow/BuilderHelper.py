@@ -6,6 +6,8 @@ from typing_extensions import Final
 
 
 class BuilderHelper:
+    COLOR_TEXT_BLUE: Final = [29, 151, 236]
+
     _HYPERLINK_THEME_TAG: Final[str] = '_app_hyperlink_theme'
 
     @staticmethod
@@ -20,7 +22,7 @@ class BuilderHelper:
                 dpg.add_theme_color(dpg.mvThemeCol_Button, [0, 0, 0, 0])
                 dpg.add_theme_color(dpg.mvThemeCol_ButtonActive, [0, 0, 0, 0])
                 dpg.add_theme_color(dpg.mvThemeCol_ButtonHovered, [29, 151, 236, 50])
-                dpg.add_theme_color(dpg.mvThemeCol_Text, [29, 151, 236])
+                dpg.add_theme_color(dpg.mvThemeCol_Text, BuilderHelper.COLOR_TEXT_BLUE)
 
     @staticmethod
     def deleteHyperlinkTheme() -> None:

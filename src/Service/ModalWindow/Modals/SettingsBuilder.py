@@ -6,13 +6,15 @@ from src.Constant.ConfigId import ConfigId
 from src.Constant.Logs import Logs
 from src.DTO.ConfigParameter import ConfigParameter
 from src.DTO.ModalWindowParameters import ModalWindowParameters
-from src.DTO.SettingsControlProperties import SettingsControlProperties
+from src.DTO.SettingsModal.AbstractControlProperties import AbstractControlProperties
+from src.DTO.SettingsModal.RadioControlProperties import RadioControlProperties
+from src.DTO.SettingsModal.SimpleControlProperties import SimpleControlProperties
 from src.Service.Configuration import Configuration
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
 from src.Service.ModalWindow.BuilderHelper import BuilderHelper
 from src.Service.ModalWindow.Modals.ModalWindowBuilderInterface import ModalWindowBuilderInterface
-from src.Type.Types import DpgTag
+from src.Type.Types import DpgTag, SettingsRadioValues
 
 
 class SettingsBuilder(ModalWindowBuilderInterface):
@@ -21,11 +23,12 @@ class SettingsBuilder(ModalWindowBuilderInterface):
 
     _SPACER_LEFT_INDENT_WIDTH: Final[int] = 1
     _SPACER_SECTION_TOP_HEIGHT: Final[int] = 3
+    _SPACER_SECTION_BOTTOM_HEIGHT: Final[int] = 7
 
     _config: Configuration
     _logger: Logger
 
-    _controls: dict[DpgTag, SettingsControlProperties]
+    _controls: dict[DpgTag, AbstractControlProperties]
     _appRestartNoteDefaultTag: DpgTag
     _appRestartNoteEditedTag: DpgTag
     _appRestartNoteChanged: bool
@@ -52,8 +55,9 @@ class SettingsBuilder(ModalWindowBuilderInterface):
     def build(self, arguments: dict[str, Any]) -> None:
         with dpg.window(label='Window title', tag=self._PRIMARY_TAG):
             self._buildHeader()
-            self._buildGeneralSettings()
-            self._buildFooter()
+            self._buildSection('General settings', self._buildGeneralSettings)
+            self._buildSection('Distance converter settings', self._buildDistanceConverterSettings)
+            # self._buildFooter()
 
     def _buildHeader(self) -> None:
         with dpg.group(horizontal=True):
@@ -73,8 +77,8 @@ class SettingsBuilder(ModalWindowBuilderInterface):
 
                 dpg.add_spacer(height=25)
 
-    def _buildGeneralSettings(self) -> None:
-        dpg.add_separator(label='General settings')
+    def _buildSection(self, title: str, buildContentCallback: Callable[[], None]) -> None:
+        dpg.add_separator(label=title)
 
         with dpg.group(horizontal=True):
             with dpg.group():
@@ -83,33 +87,74 @@ class SettingsBuilder(ModalWindowBuilderInterface):
             with dpg.group():
                 dpg.add_spacer(height=self._SPACER_SECTION_TOP_HEIGHT)
 
-                self._registerControl(
-                    dpg.add_checkbox(label='Flash statusbar icon on successful conversion'),
-                    ConfigId.FlashIconOnChange,
-                    bool,
-                )
+                buildContentCallback()
 
-                self._registerControl(
-                    dpg.add_checkbox(label='Clear statusbar text on clipboard change'),
-                    ConfigId.ClearOnChange,
-                    bool,
-                )
+                dpg.add_spacer(height=self._SPACER_SECTION_BOTTOM_HEIGHT)
 
-                self._registerControl(
-                    dpg.add_input_int(
-                        label='Automatically clear statusbar text after this many seconds',
-                        width=50,
-                        min_value=0,
-                        max_value=3600,
-                        step=0,
-                        step_fast=0,
-                        min_clamped=True,
-                        max_clamped=True,
-                    ),
-                    ConfigId.ClearAfterTime,
-                    int,
-                )
-                BuilderHelper.addHelpText('Enter zero to disable automatic text clearing')
+    def _buildGeneralSettings(self) -> None:
+        self._registerSimpleControl(
+            dpg.add_checkbox(label='Flash statusbar icon on successful conversion'),
+            ConfigId.FlashIconOnChange,
+            bool,
+        )
+
+        self._registerSimpleControl(
+            dpg.add_checkbox(label='Clear statusbar text on clipboard change'),
+            ConfigId.ClearOnChange,
+            bool,
+        )
+
+        self._registerSimpleControl(
+            dpg.add_input_int(
+                label='Automatically clear statusbar text after this many seconds',
+                width=50,
+                min_value=0,
+                max_value=3600,
+                step=0,
+                step_fast=0,
+                min_clamped=True,
+                max_clamped=True,
+            ),
+            ConfigId.ClearAfterTime,
+            int,
+        )
+        BuilderHelper.addHelpText('Enter zero to disable automatic text clearing')
+
+    def _buildDistanceConverterSettings(self) -> None:
+        with dpg.group(horizontal=True):
+            indent = 0
+            dpg.add_text('Supports converting units like', indent=indent)
+            indent += 195
+            dpg.add_text('5 km', indent=indent, color=BuilderHelper.COLOR_TEXT_BLUE)
+            indent += 33
+            dpg.add_text(',', indent=indent)
+            indent += 11
+            dpg.add_text('9.7 miles', indent=indent, color=BuilderHelper.COLOR_TEXT_BLUE)
+            indent += 57
+            dpg.add_text(',', indent=indent)
+            indent += 11
+            dpg.add_text('6"', indent=indent, color=BuilderHelper.COLOR_TEXT_BLUE)
+
+        dpg.add_spacer(height=self._SPACER_SECTION_TOP_HEIGHT)
+
+        self._registerSimpleControl(
+            dpg.add_checkbox(label='Enabled'),
+            ConfigId.Converter_Distance_Enabled,
+            bool,
+        )
+
+        dpg.add_text('Convert to units:')
+        radioValues = {'Metric': True, 'Imperial': False}
+
+        self._registerRadioControl(
+            dpg.add_radio_button(
+                list(radioValues.keys()),
+                label='radio_distanceConverter_primaryUnit_isMetric',
+                horizontal=True,
+            ),
+            ConfigId.Converter_Distance_PrimaryUnit_Metric,
+            radioValues,
+        )
 
     def _buildFooter(self) -> None:
         with dpg.group(horizontal=True):
@@ -121,14 +166,29 @@ class SettingsBuilder(ModalWindowBuilderInterface):
 
                 dpg.add_button(label='Reset all to default')
 
-    def _registerControl(self, tag: DpgTag, configId: ConfigParameter, castToType: Type):
+    def _registerSimpleControl(self, tag: DpgTag, configId: ConfigParameter, castToType: Type):
         dpg.set_item_callback(tag, self._controlCallback)
         dpg.set_value(tag, self._config.get(configId))
-        self._controls[tag] = SettingsControlProperties(configId, castToType)
+        self._controls[tag] = SimpleControlProperties(configId, castToType)
 
-    def _controlCallback(self, sender: DpgTag, appData, userData, action: Callable) -> None:
-        controlProperties = self._controls[sender]
-        value = controlProperties.castToType(appData)
+    def _registerRadioControl(self, tag: DpgTag, configId: ConfigParameter, radioValues: SettingsRadioValues):
+        radioValuesInverted = {v: k for k, v in radioValues.items()}
+        selectedValue = radioValuesInverted[self._config.get(configId)]
+
+        dpg.set_item_callback(tag, self._controlCallback)
+        dpg.set_value(tag, selectedValue)
+        self._controls[tag] = RadioControlProperties(configId, radioValues)
+
+    def _controlCallback(self, sender: DpgTag, appData, userData) -> None:
+        controlProperties: AbstractControlProperties = self._controls[sender]
+        value: Any
+
+        if isinstance(controlProperties, SimpleControlProperties):
+            value = controlProperties.castToType(appData)
+        elif isinstance(controlProperties, RadioControlProperties):
+            value = controlProperties.radioValues[appData]
+        else:
+            raise Exception(f'Unknown control properties type: {type(controlProperties).__name__}')
 
         label = dpg.get_item_label(sender)
         self._logger.log(f'{Logs.catSettings}Callback #{sender} ({label}) with data: {value} ({type(value).__name__})')
