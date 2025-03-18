@@ -23,7 +23,8 @@ class SettingsBuilder(ModalWindowBuilderInterface):
 
     _SPACER_LEFT_INDENT_WIDTH: Final[int] = 1
     _SPACER_SECTION_TOP_HEIGHT: Final[int] = 3
-    _SPACER_SECTION_BOTTOM_HEIGHT: Final[int] = 7
+    _SPACER_SECTION_INNER_HEIGHT: Final[int] = 10
+    _SPACER_SECTION_BOTTOM_HEIGHT: Final[int] = 15
 
     _config: Configuration
     _logger: Logger
@@ -57,6 +58,7 @@ class SettingsBuilder(ModalWindowBuilderInterface):
             self._buildHeader()
             self._buildSection('General settings', self._buildGeneralSettings)
             self._buildSection('Distance converter settings', self._buildDistanceConverterSettings)
+            self._buildSection('Temperature converter settings', self._buildTemperatureConverterSettings)
             # self._buildFooter()
 
     def _buildHeader(self) -> None:
@@ -78,18 +80,17 @@ class SettingsBuilder(ModalWindowBuilderInterface):
                 dpg.add_spacer(height=25)
 
     def _buildSection(self, title: str, buildContentCallback: Callable[[], None]) -> None:
-        dpg.add_separator(label=title)
+        with dpg.collapsing_header(label=title):
+            with dpg.group(horizontal=True):
+                with dpg.group():
+                    dpg.add_spacer(width=self._SPACER_LEFT_INDENT_WIDTH)
 
-        with dpg.group(horizontal=True):
-            with dpg.group():
-                dpg.add_spacer(width=self._SPACER_LEFT_INDENT_WIDTH)
+                with dpg.group():
+                    dpg.add_spacer(height=self._SPACER_SECTION_TOP_HEIGHT)
 
-            with dpg.group():
-                dpg.add_spacer(height=self._SPACER_SECTION_TOP_HEIGHT)
+                    buildContentCallback()
 
-                buildContentCallback()
-
-                dpg.add_spacer(height=self._SPACER_SECTION_BOTTOM_HEIGHT)
+                    dpg.add_spacer(height=self._SPACER_SECTION_BOTTOM_HEIGHT)
 
     def _buildGeneralSettings(self) -> None:
         self._registerSimpleControl(
@@ -122,20 +123,15 @@ class SettingsBuilder(ModalWindowBuilderInterface):
 
     def _buildDistanceConverterSettings(self) -> None:
         with dpg.group(horizontal=True):
-            indent = 0
-            dpg.add_text('Supports converting units like', indent=indent)
-            indent += 195
-            dpg.add_text('5 km', indent=indent, color=BuilderHelper.COLOR_TEXT_BLUE)
-            indent += 33
-            dpg.add_text(',', indent=indent)
-            indent += 11
-            dpg.add_text('9.7 miles', indent=indent, color=BuilderHelper.COLOR_TEXT_BLUE)
-            indent += 57
-            dpg.add_text(',', indent=indent)
-            indent += 11
-            dpg.add_text('6"', indent=indent, color=BuilderHelper.COLOR_TEXT_BLUE)
+            dpg.add_text('Supports converting units like')
+            dpg.add_text('5 km', color=BuilderHelper.COLOR_TEXT_BLUE)
+            dpg.add_text(',')
+            dpg.add_text('9.7 miles', color=BuilderHelper.COLOR_TEXT_BLUE)
+            dpg.add_text(',')
+            dpg.add_text('6"', color=BuilderHelper.COLOR_TEXT_BLUE)
+            dpg.add_text('.')
 
-        dpg.add_spacer(height=self._SPACER_SECTION_TOP_HEIGHT)
+        dpg.add_spacer(height=self._SPACER_SECTION_INNER_HEIGHT)
 
         self._registerSimpleControl(
             dpg.add_checkbox(label='Enabled'),
@@ -143,18 +139,49 @@ class SettingsBuilder(ModalWindowBuilderInterface):
             bool,
         )
 
-        dpg.add_text('Convert to units:')
-        radioValues = {'Metric': True, 'Imperial': False}
+        with dpg.group(horizontal=True):
+            dpg.add_text('Convert to units:')
+            radioValues = {'Metric': True, 'Imperial': False}
 
-        self._registerRadioControl(
-            dpg.add_radio_button(
-                list(radioValues.keys()),
-                label='radio_distanceConverter_primaryUnit_isMetric',
-                horizontal=True,
-            ),
-            ConfigId.Converter_Distance_PrimaryUnit_Metric,
-            radioValues,
+            self._registerRadioControl(
+                dpg.add_radio_button(
+                    list(radioValues.keys()),
+                    label='radio_distanceConverter_primaryUnit_isMetric',
+                    horizontal=True,
+                ),
+                ConfigId.Converter_Distance_PrimaryUnit_Metric,
+                radioValues,
+            )
+
+    def _buildTemperatureConverterSettings(self) -> None:
+        with dpg.group(horizontal=True):
+            dpg.add_text('Supports converting units like')
+            dpg.add_text('22 °C', color=BuilderHelper.COLOR_TEXT_BLUE)
+            dpg.add_text('or')
+            dpg.add_text('60 Fahrenheit', color=BuilderHelper.COLOR_TEXT_BLUE)
+            dpg.add_text('.')
+
+        dpg.add_spacer(height=self._SPACER_SECTION_INNER_HEIGHT)
+
+        self._registerSimpleControl(
+            dpg.add_checkbox(label='Enabled'),
+            ConfigId.Converter_Temperature_Enabled,
+            bool,
         )
+
+        with dpg.group(horizontal=True):
+            dpg.add_text('Convert to units:')
+            radioValues = {'Celsius': True, 'Fahrenheit': False}
+
+            self._registerRadioControl(
+                dpg.add_radio_button(
+                    list(radioValues.keys()),
+                    label='radio_temperatureConverter_primaryUnit_isCelsius',
+                    horizontal=True,
+                ),
+                ConfigId.Converter_Temperature_PrimaryUnit_Celsius,
+                radioValues,
+            )
 
     def _buildFooter(self) -> None:
         with dpg.group(horizontal=True):
