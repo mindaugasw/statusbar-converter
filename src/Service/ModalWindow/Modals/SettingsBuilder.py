@@ -56,9 +56,10 @@ class SettingsBuilder(ModalWindowBuilderInterface):
     def build(self, arguments: dict[str, Any]) -> None:
         with dpg.window(label='Window title', tag=self._PRIMARY_TAG):
             self._buildHeader()
-            self._buildSection('General settings', self._buildGeneralSettings)
-            self._buildSection('Distance converter settings', self._buildDistanceConverterSettings)
-            self._buildSection('Temperature converter settings', self._buildTemperatureConverterSettings)
+            self._buildCollapsableSection('General settings', self._buildGeneralSettings)
+            self._buildCollapsableSection('Distance converter settings', self._buildDistanceConverterSettings)
+            self._buildCollapsableSection('Temperature converter settings', self._buildTemperatureConverterSettings)
+            self._buildCollapsableSection('Volume converter settings', self._buildVolumeConverterSettings)
             # self._buildFooter()
 
     def _buildHeader(self) -> None:
@@ -79,7 +80,7 @@ class SettingsBuilder(ModalWindowBuilderInterface):
 
                 dpg.add_spacer(height=25)
 
-    def _buildSection(self, title: str, buildContentCallback: Callable[[], None]) -> None:
+    def _buildCollapsableSection(self, title: str, buildContentCallback: Callable[[], None]) -> None:
         with dpg.collapsing_header(label=title):
             with dpg.group(horizontal=True):
                 with dpg.group():
@@ -121,8 +122,36 @@ class SettingsBuilder(ModalWindowBuilderInterface):
         )
         BuilderHelper.addHelpText('Enter zero to disable automatic text clearing')
 
-    def _buildDistanceConverterSettings(self) -> None:
+    def _buildMetricImperialConverterSettings(
+        self,
+        descriptionBuilder: Callable[[], None],
+        enabledConfigId: ConfigParameter,
+        primaryUnitConfigId: ConfigParameter,
+        primaryUnitRadioValues: SettingsRadioValues,
+        primaryUnitControlLabel: str,
+    ) -> None:
         with dpg.group(horizontal=True):
+            descriptionBuilder()
+
+        dpg.add_spacer(height=self._SPACER_SECTION_INNER_HEIGHT)
+
+        self._registerSimpleControl(dpg.add_checkbox(label='Enabled'), enabledConfigId, bool)
+
+        with dpg.group(horizontal=True):
+            dpg.add_text('Convert to units:')
+
+            self._registerRadioControl(
+                dpg.add_radio_button(
+                    list(primaryUnitRadioValues.keys()),
+                    label=primaryUnitControlLabel,
+                    horizontal=True,
+                ),
+                primaryUnitConfigId,
+                primaryUnitRadioValues,
+            )
+
+    def _buildDistanceConverterSettings(self) -> None:
+        def _distanceDescriptionBuilder() -> None:
             dpg.add_text('Supports converting units like')
             dpg.add_text('5 km', color=BuilderHelper.COLOR_TEXT_BLUE)
             dpg.add_text(',')
@@ -131,57 +160,51 @@ class SettingsBuilder(ModalWindowBuilderInterface):
             dpg.add_text('6"', color=BuilderHelper.COLOR_TEXT_BLUE)
             dpg.add_text('.')
 
-        dpg.add_spacer(height=self._SPACER_SECTION_INNER_HEIGHT)
-
-        self._registerSimpleControl(
-            dpg.add_checkbox(label='Enabled'),
+        self._buildMetricImperialConverterSettings(
+            _distanceDescriptionBuilder,
             ConfigId.Converter_Distance_Enabled,
-            bool,
+            ConfigId.Converter_Distance_PrimaryUnit_Metric,
+            {'Metric': True, 'Imperial': False},
+            'radio_distanceConverter_primaryUnit_isMetric',
         )
 
-        with dpg.group(horizontal=True):
-            dpg.add_text('Convert to units:')
-            radioValues = {'Metric': True, 'Imperial': False}
-
-            self._registerRadioControl(
-                dpg.add_radio_button(
-                    list(radioValues.keys()),
-                    label='radio_distanceConverter_primaryUnit_isMetric',
-                    horizontal=True,
-                ),
-                ConfigId.Converter_Distance_PrimaryUnit_Metric,
-                radioValues,
-            )
-
     def _buildTemperatureConverterSettings(self) -> None:
-        with dpg.group(horizontal=True):
+        def _temperatureDescriptionBuilder() -> None:
             dpg.add_text('Supports converting units like')
             dpg.add_text('22 °C', color=BuilderHelper.COLOR_TEXT_BLUE)
             dpg.add_text('or')
             dpg.add_text('60 Fahrenheit', color=BuilderHelper.COLOR_TEXT_BLUE)
             dpg.add_text('.')
 
-        dpg.add_spacer(height=self._SPACER_SECTION_INNER_HEIGHT)
-
-        self._registerSimpleControl(
-            dpg.add_checkbox(label='Enabled'),
+        self._buildMetricImperialConverterSettings(
+            _temperatureDescriptionBuilder,
             ConfigId.Converter_Temperature_Enabled,
-            bool,
+            ConfigId.Converter_Temperature_PrimaryUnit_Celsius,
+            {'Celsius': True, 'Fahrenheit': False},
+            'radio_temperatureConverter_primaryUnit_isCelsius',
         )
 
-        with dpg.group(horizontal=True):
-            dpg.add_text('Convert to units:')
-            radioValues = {'Celsius': True, 'Fahrenheit': False}
+    def _buildVolumeConverterSettings(self) -> None:
+        def _volumeDescriptionBuilder() -> None:
+            dpg.add_text('Supports converting units like')
+            dpg.add_text('500 ml', color=BuilderHelper.COLOR_TEXT_BLUE)
+            dpg.add_text(',')
+            dpg.add_text('60 mm3', color=BuilderHelper.COLOR_TEXT_BLUE)
+            dpg.add_text(',')
+            dpg.add_text('3 tbsp', color=BuilderHelper.COLOR_TEXT_BLUE)
+            dpg.add_text(',')
+            dpg.add_text('80 fl oz', color=BuilderHelper.COLOR_TEXT_BLUE)
+            dpg.add_text(',')
+            dpg.add_text('20 gal', color=BuilderHelper.COLOR_TEXT_BLUE)
+            dpg.add_text('.')
 
-            self._registerRadioControl(
-                dpg.add_radio_button(
-                    list(radioValues.keys()),
-                    label='radio_temperatureConverter_primaryUnit_isCelsius',
-                    horizontal=True,
-                ),
-                ConfigId.Converter_Temperature_PrimaryUnit_Celsius,
-                radioValues,
-            )
+        self._buildMetricImperialConverterSettings(
+            _volumeDescriptionBuilder,
+            ConfigId.Converter_Volume_Enabled,
+            ConfigId.Converter_Volume_PrimaryUnit_Metric,
+            {'Metric': True, 'Imperial': False},
+            'radio_volumeConverter_primaryUnit_isMetric',
+        )
 
     def _buildFooter(self) -> None:
         with dpg.group(horizontal=True):
