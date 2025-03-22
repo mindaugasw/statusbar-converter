@@ -16,7 +16,7 @@ class TestWeightConverter(AbstractConversionManagerTest):
         ('To pound', 'imperial', '30 kg', True, '30 kg', '66.1 lb'),
         ('To imperial ton', 'imperial', '12 tonne', True, '12 t', '26455.5 lb'),
 
-        ('Negative', 'metric', '4.5 lbs', True, '4.5 lb', '2 kg'),
+        ('Negative', 'metric', '-4.5 lbs', True, '-4.5 lb', '-2 kg'),
     ])
     def testWeightConverter(
         self, _: str,

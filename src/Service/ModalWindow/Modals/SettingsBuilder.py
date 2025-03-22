@@ -60,6 +60,7 @@ class SettingsBuilder(ModalWindowBuilderInterface):
             self._buildCollapsableSection('Distance converter settings', self._buildDistanceConverterSettings)
             self._buildCollapsableSection('Temperature converter settings', self._buildTemperatureConverterSettings)
             self._buildCollapsableSection('Volume converter settings', self._buildVolumeConverterSettings)
+            self._buildCollapsableSection('Weight converter settings', self._buildWeightConverterSettings)
             # self._buildFooter()
 
     def _buildHeader(self) -> None:
@@ -157,6 +158,8 @@ class SettingsBuilder(ModalWindowBuilderInterface):
             dpg.add_text(',')
             dpg.add_text('9.7 miles', color=BuilderHelper.COLOR_TEXT_BLUE)
             dpg.add_text(',')
+            dpg.add_text('3 ft', color=BuilderHelper.COLOR_TEXT_BLUE)
+            dpg.add_text(',')
             dpg.add_text('6"', color=BuilderHelper.COLOR_TEXT_BLUE)
             dpg.add_text('.')
 
@@ -204,6 +207,26 @@ class SettingsBuilder(ModalWindowBuilderInterface):
             ConfigId.Converter_Volume_PrimaryUnit_Metric,
             {'Metric': True, 'Imperial': False},
             'radio_volumeConverter_primaryUnit_isMetric',
+        )
+
+    def _buildWeightConverterSettings(self) -> None:
+        def _weightDescriptionBuilder() -> None:
+            dpg.add_text('Supports converting units like')
+            dpg.add_text('50 kg', color=BuilderHelper.COLOR_TEXT_BLUE)
+            dpg.add_text(',')
+            dpg.add_text('8 ton', color=BuilderHelper.COLOR_TEXT_BLUE)
+            dpg.add_text(',')
+            dpg.add_text('18 lbs', color=BuilderHelper.COLOR_TEXT_BLUE)
+            dpg.add_text(',')
+            dpg.add_text('4.5 st', color=BuilderHelper.COLOR_TEXT_BLUE)
+            dpg.add_text('.')
+
+        self._buildMetricImperialConverterSettings(
+            _weightDescriptionBuilder,
+            ConfigId.Converter_Weight_Enabled,
+            ConfigId.Converter_Weight_PrimaryUnit_Metric,
+            {'Metric': True, 'Imperial': False},
+            'radio_weightConverter_primaryUnit_isMetric',
         )
 
     def _buildFooter(self) -> None:
