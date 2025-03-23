@@ -1,5 +1,4 @@
 import signal
-import subprocess
 import sys
 import threading
 import time
@@ -9,7 +8,6 @@ import gi
 
 from src.Constant.AppConstant import AppConstant
 from src.Constant.Logs import Logs
-from src.Constant.ModalId import ModalId
 from src.DTO.ConvertResult import ConvertResult
 from src.DTO.MenuItem import MenuItem
 from src.DTO.Timestamp import Timestamp
@@ -174,22 +172,6 @@ class StatusbarAppLinux(StatusbarApp):
 
         self._clipboard.setClipboardContent(text)
 
-    def _onMenuClickEditConfiguration(self, menuItem: Gtk.MenuItem | None) -> None:
-        buttons = {
-            'Open in default editor': lambda: subprocess.call(['xdg-open', self._configFilePath]),
-            'Cancel': None,
-        }
-
-        self._showDialogLegacy(
-            f'Configuration can be edited in the file: \n'
-            f'<tt>{self._configFilePath}</tt>\n\n'
-            f'After editing, the application must be restarted.\n\n'
-            f'All supported configuration can be found at:\n'
-            f'<a href="{AppConstant.WEBSITE}">{AppConstant.WEBSITE}</a>\n\n'
-            f'Open configuration file in default text editor?',
-            buttons,
-        )
-
     def _onMenuClickRunAtLogin(self, menuItem: Gtk.MenuItem) -> None:
         checked = self._isMenuItemChecked(menuItem)
 
@@ -200,17 +182,6 @@ class StatusbarAppLinux(StatusbarApp):
 
         if success:
             menuItem.set_label(f'{"" if checked else self._CHECK}Run at login')
-
-    def _onMenuClickAboutLegacy(self, menuItem: Gtk.MenuItem) -> None:
-        """
-        Deprecated, to be removed
-        """
-        self._showDialogLegacy(
-            f'Version: {self._config.getAppVersion()}\n\n'
-            f'App website: <a href="{AppConstant.WEBSITE}">{AppConstant.WEBSITE}</a>\n\n'
-            f'App icon made by <a href="https://www.flaticon.com/free-icons/convert">iconsax at flaticon.com</a>',
-            {'Ok': None},
-        )
 
     def _onMenuClickRestart(self, menuItem) -> None:
         # On Linux restart throws error on 2nd restart, so we don't add this button on Linux
@@ -246,7 +217,8 @@ class StatusbarAppLinux(StatusbarApp):
 
     def _showDialogLegacy(self, message: str, buttons: DialogButtonsDict) -> None:
         """
-        Does not work very reliably, sometimes crashes. dpg should be used instead when possible.
+        Does not work very reliably, sometimes crashes (seems like it crashes if dpg is initialized
+        first and then attempting to show legacy dialog). dpg should be used instead when possible.
 
         Message can contain formatting (only on Linux). See supported formatting example:
         https://python-gtk-3-tutorial.readthedocs.io/en/latest/label.html#example

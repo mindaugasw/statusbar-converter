@@ -125,7 +125,7 @@ class StatusbarApp(ABC):
         # Other controls
         items.update({
             'clear_statusbar': MenuItem('Clear statusbar', callback=self._onMenuClickClearStatusbar),
-            'edit_config': MenuItem('Edit configuration', callback=self._onMenuClickEditConfiguration),
+            'settings': MenuItem('Settings', callback=self._onMenuClickSettings),
             'autostart': MenuItem(
                 'Run at login',
                 initialState=self._autostartManager.isAutostartEnabled(),
@@ -151,11 +151,8 @@ class StatusbarApp(ABC):
         if self._debug.isDebugEnabled():
             items.update({
                 'separator_debug': MenuItem(isSeparator=True),
-                'settings': MenuItem('Settings [WIP]', callback=self._onMenuClickSettings),
                 'label_debug': MenuItem('Debug tools', isDisabled=True),
                 'gui_demo': MenuItem('Open GUI demo', callback=self._onMenuClickOpenGUIDemo),
-                # TODO remove
-                'about_old': MenuItem('About [Old]', callback=self._onMenuClickAboutLegacy),
             })
 
         self._menuItems = items
@@ -182,10 +179,6 @@ class StatusbarApp(ABC):
         self._conversionManager.dispatchClear('manual, menu click')
 
     @abstractmethod
-    def _onMenuClickEditConfiguration(self, menuItem) -> None:
-        pass
-
-    @abstractmethod
     def _onMenuClickRunAtLogin(self, menuItem) -> None:
         pass
 
@@ -203,13 +196,6 @@ class StatusbarApp(ABC):
 
     def _onMenuClickAbout(self, menuItem) -> None:
         self._modalWindowManager.openModal(ModalId.ABOUT)
-
-    @abstractmethod
-    def _onMenuClickAboutLegacy(self, menuItem) -> None:
-        """
-        Deprecated, to be removed
-        """
-        pass
 
     @abstractmethod
     def _onMenuClickRestart(self, menuItem) -> None:

@@ -1,5 +1,4 @@
 import os
-import subprocess
 import sys
 import threading
 import time
@@ -116,22 +115,6 @@ class StatusbarAppMacOs(StatusbarApp):
 
         self._clipboard.setClipboardContent(text)
 
-    def _onMenuClickEditConfiguration(self, menuItem: rumps.MenuItem) -> None:
-        buttons = {
-            'Open in default editor': lambda: subprocess.Popen(['open', self._configFilePath]),
-            'Cancel': None,
-        }
-
-        self._showDialogLegacy(
-            f'Configuration can be edited in the file:\\n'
-            f'{self._configFilePath}\\n\\n'
-            f'After editing, the application must be restarted.\\n\\n'
-            f'All supported configuration can be found at:\\n'
-            f'{AppConstant.WEBSITE}/blob/master/config.app.yml\\n\\n'
-            f'Open configuration file in default text editor?',
-            buttons,
-        )
-
     def _onMenuClickRunAtLogin(self, menuItem: rumps.MenuItem) -> None:
         if menuItem.state:
             success = self._autostartManager.disableAutostart()
@@ -140,17 +123,6 @@ class StatusbarAppMacOs(StatusbarApp):
 
         if success:
             menuItem.state = not menuItem.state
-
-    def _onMenuClickAboutLegacy(self, menuItem: rumps.MenuItem) -> None:
-        """
-        Deprecated, to be removed
-        """
-        self._showDialogLegacy(
-            f'Version: {self._config.getAppVersion()}\\n\\n'
-            f'App website: {AppConstant.WEBSITE}\\n\\n'
-            f'App icon made by iconsax at flaticon.com',
-            {'Ok': None},
-        )
 
     def _onMenuClickRestart(self, menuItem) -> None:
         os.execl(sys.executable, '-m src.main', *sys.argv)
