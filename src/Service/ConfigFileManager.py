@@ -6,11 +6,11 @@ from src.Service.Logger import Logger
 
 
 class ConfigFileManager:
-    configUserPath: str
 
     _logger: Logger
 
     _configAppPath: str
+    _configUserPath: str
     _configUserExamplePath: str
     _stateDataPath: str
     _stateDataExamplePath: str
@@ -20,9 +20,12 @@ class ConfigFileManager:
 
         self._configAppPath = filesystemHelper.getConfigDir() + '/config.app.yml'
         self._configUserExamplePath = filesystemHelper.getConfigDir() + '/config.user.example.yml'
-        self.configUserPath = filesystemHelper.getUserDataDir() + '/config.user.yml'
+        self._configUserPath = filesystemHelper.getUserDataDir() + '/config.user.yml'
         self._stateDataPath = filesystemHelper.getUserDataDir() + '/state.app.yml'
         self._stateDataExamplePath = filesystemHelper.getConfigDir() + '/state.app.example.yml'
+
+    def getUserConfigPath(self) -> str:
+        return self._configUserPath
 
     def getAppConfigContent(self) -> str:
         # Debug service is not yet initialized, so we always print debug information
@@ -35,7 +38,7 @@ class ConfigFileManager:
             return appConfigContent
 
     def getUserConfigContent(self) -> str:
-        return self._getUserFile('user config', self._configUserExamplePath, self.configUserPath)
+        return self._getUserFile('user config', self._configUserExamplePath, self._configUserPath)
 
     def getStateDataContent(self) -> str:
         return self._getUserFile('state data', self._stateDataExamplePath, self._stateDataPath)

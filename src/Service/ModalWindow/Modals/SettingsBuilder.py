@@ -1,7 +1,9 @@
+import subprocess
 from typing import Callable, Any, Final, Type
 
 import dearpygui.dearpygui as dpg
 
+from src.Constant.AppConstant import AppConstant
 from src.Constant.ConfigId import ConfigId
 from src.Constant.Logs import Logs
 from src.DTO.ConfigParameter import ConfigParameter
@@ -9,6 +11,7 @@ from src.DTO.ModalWindowParameters import ModalWindowParameters
 from src.DTO.SettingsModal.AbstractControlProperties import AbstractControlProperties
 from src.DTO.SettingsModal.RadioControlProperties import RadioControlProperties
 from src.DTO.SettingsModal.SimpleControlProperties import SimpleControlProperties
+from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
@@ -27,6 +30,7 @@ class SettingsBuilder(ModalWindowBuilderInterface):
     _SPACER_SECTION_BOTTOM_HEIGHT: Final[int] = 15
 
     _config: Configuration
+    _configFileManager: ConfigFileManager
     _logger: Logger
 
     _controls: dict[DpgTag, AbstractControlProperties]
@@ -34,8 +38,9 @@ class SettingsBuilder(ModalWindowBuilderInterface):
     _appRestartNoteEditedTag: DpgTag
     _appRestartNoteChanged: bool
 
-    def __init__(self, config: Configuration, logger: Logger):
+    def __init__(self, config: Configuration, configFileManager: ConfigFileManager, logger: Logger):
         self._config = config
+        self._configFileManager = configFileManager
         self._logger = logger
 
     def getParameters(self) -> ModalWindowParameters:
@@ -54,14 +59,16 @@ class SettingsBuilder(ModalWindowBuilderInterface):
         self._appRestartNoteChanged = False
 
     def build(self, arguments: dict[str, Any]) -> None:
-        with dpg.window(label='Window title', tag=self._PRIMARY_TAG):
+        BuilderHelper.registerHyperlinkTheme()
+
+        with dpg.window(label='Window title', tag=self._PRIMARY_TAG, on_close=self._onClose):
             self._buildHeader()
             self._buildCollapsableSection('General settings', self._buildGeneralSettings)
             self._buildCollapsableSection('Distance converter settings', self._buildDistanceConverterSettings)
             self._buildCollapsableSection('Temperature converter settings', self._buildTemperatureConverterSettings)
             self._buildCollapsableSection('Volume converter settings', self._buildVolumeConverterSettings)
             self._buildCollapsableSection('Weight converter settings', self._buildWeightConverterSettings)
-            # self._buildFooter()
+            self._buildCollapsableSection('Unix timestamp converter settings', self._buildTimestampConverterSettings)
 
     def _buildHeader(self) -> None:
         with dpg.group(horizontal=True):
@@ -70,7 +77,7 @@ class SettingsBuilder(ModalWindowBuilderInterface):
 
             with dpg.group():
                 dpg.add_text('Settings')
-                dpg.add_text('v' + self._config.getAppVersion(), pos=[self._WINDOW_WIDTH - 50, 8])
+                dpg.add_text('v' + self._config.getAppVersion(), pos=[self._WINDOW_WIDTH - 55, 8])
 
                 dpg.add_spacer(height=5)
 
@@ -121,7 +128,10 @@ class SettingsBuilder(ModalWindowBuilderInterface):
             ConfigId.ClearAfterTime,
             int,
         )
-        BuilderHelper.addHelpText('Enter zero to disable automatic text clearing')
+        BuilderHelper.addHelpText(
+            'Enter zero to disable automatic text clearing.\n'
+            'Default is 300 seconds (5 minutes).',
+        )
 
     def _buildMetricImperialConverterSettings(
         self,
@@ -229,15 +239,41 @@ class SettingsBuilder(ModalWindowBuilderInterface):
             'radio_weightConverter_primaryUnit_isMetric',
         )
 
-    def _buildFooter(self) -> None:
+    def _buildTimestampConverterSettings(self) -> None:
         with dpg.group(horizontal=True):
-            with dpg.group():
-                dpg.add_spacer(width=self._SPACER_LEFT_INDENT_WIDTH)
+            dpg.add_text('Supports converting timestamps like')
+            dpg.add_text('1745129166', color=BuilderHelper.COLOR_TEXT_BLUE)
+            dpg.add_text(',')
+            dpg.add_text('1745129166000', color=BuilderHelper.COLOR_TEXT_BLUE)
+            dpg.add_text('.')
 
-            with dpg.group():
-                dpg.add_spacer(height=self._SPACER_SECTION_TOP_HEIGHT)
+        dpg.add_spacer(height=self._SPACER_SECTION_INNER_HEIGHT)
+        self._registerSimpleControl(dpg.add_checkbox(label='Enabled'), ConfigId.Converter_Timestamp_Enabled, bool)
+        dpg.add_spacer(height=self._SPACER_SECTION_INNER_HEIGHT)
 
-                dpg.add_button(label='Reset all to default')
+        with dpg.tree_node(label='Advanced unix timestamp settings'):
+            dpg.add_spacer(height=self._SPACER_SECTION_TOP_HEIGHT)
+            dpg.add_text(
+                'More timestamp settings (e.g. shown date formats) can be configured by manually editing '
+                'configuration files. '
+                'Note, that invalid configuration can break the app. '
+                'Also, user configuration will not be automatically updated and can break future app versions.'
+                '\n\n',
+                wrap=self._WINDOW_WIDTH - 70,
+            )
+
+            dpg.add_text('Configuration can be edited in the file:')
+            BuilderHelper.addHyperlink(
+                self._configFileManager.getUserConfigPath(),
+                lambda: subprocess.call(['xdg-open', self._configFileManager.getUserConfigPath()]),
+            )
+
+            url = AppConstant.WEBSITE + '/blob/master/config/config.app.yml'
+            dpg.add_text('\nAll supported configuration reference is available at:')
+            BuilderHelper.addHyperlink(
+                'github.com/mindaugasw/statusbar-converter/.../config/config.app.yml',
+                url,
+            )
 
     def _registerSimpleControl(self, tag: DpgTag, configId: ConfigParameter, castToType: Type):
         dpg.set_item_callback(tag, self._controlCallback)
@@ -272,3 +308,6 @@ class SettingsBuilder(ModalWindowBuilderInterface):
             dpg.hide_item(self._appRestartNoteDefaultTag)
             dpg.show_item(self._appRestartNoteEditedTag)
             self._appRestartNoteChanged = True
+
+    def _onClose(self) -> None:
+        BuilderHelper.deleteHyperlinkTheme()

@@ -1,5 +1,6 @@
 import math
 import webbrowser
+from typing import Callable, Any
 
 import dearpygui.dearpygui as dpg
 from typing_extensions import Final
@@ -29,8 +30,17 @@ class BuilderHelper:
         dpg.delete_item("__demo_hyperlinkTheme")
 
     @staticmethod
-    def addHyperlink(text: str, address: str) -> None:
-        button = dpg.add_button(label=text, callback=lambda: webbrowser.open(address))
+    def addHyperlink(text: str, onClick: str | Callable[[], Any]) -> None:
+        """
+        :param text:
+        :param onClick: URL to open (if string) or custom callback (if Callable)
+        """
+        if isinstance(onClick, str):
+            callback = lambda: webbrowser.open(onClick)
+        else:
+            callback = onClick
+
+        button = dpg.add_button(label=text, callback=callback)
         dpg.bind_item_theme(button, BuilderHelper._HYPERLINK_THEME_TAG)
 
     @staticmethod

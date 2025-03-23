@@ -76,7 +76,7 @@ class StatusbarApp(ABC):
         self._logger = logger
         self._debug = debug
 
-        self._configFilePath = configFileManager.configUserPath
+        self._configFilePath = configFileManager.getUserConfigPath()
 
         self._menuTemplateLastConversionOriginalText = config.get(ConfigId.Converter_Timestamp_Menu_LastConversion_OriginalText)
         self._menuTemplateLastConversionConvertedText = config.get(ConfigId.Converter_Timestamp_Menu_LastConversion_ConvertedText)
