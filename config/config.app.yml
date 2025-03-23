@@ -6,13 +6,15 @@ converters:
     timestamp:
         # Formatting template for text on the statusbar.
         #
-        # Used template will be the first one, where relative time difference in
-        # seconds is less than the key number
+        # Configuration format:
+        # - key: maximum number of seconds until which this template will be used.
+        #        Selected template will be the first one matching (where time
+        #        difference in seconds is less than key number), so templates must
+        #        be ordered ascending by key.
+        # - value: displayed format. See below for supported formatting.
         #
-        # Templates must be ordered ascending by time difference by their key.
-        #
-        # Templates support all standard strftime() codes:
-        # https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
+        # Supported formatting:
+        # All standard strftime() codes: https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
         # and these custom codes for relative time:
         # - {ts} - unix timestamp. Without milliseconds.
         # - {ts_ms} - unix timestamp. With milliseconds, if millisecond timestamp was copied.
@@ -29,16 +31,23 @@ converters:
             # Up to 10 min, e.g. "1619295908 - 5 min ago"
             600: "{ts_ms_sep} - {r_int}"
             # Up to 1 hour, e.g. "1619295908 - 29 min ago (15:10)"
-            3600: "{ts_ms_sep} - {r_float} (%H:%M)"
-            # TODO add more templates. E.g. Show float hours (5.5) only up to like 6 hours. Afterwards show int number
-            # Up to 1 day, e.g. "1619295908 - 5.5 h ago (12:00)"
-            86400: "{ts_ms_sep} - {r_float} (%H:%M)"
-            # Up to 1 month, e.g. "1619295908 - 5.5 days ago (08-05 12:00)"
-            2678400: "{ts_ms_sep} - {r_float} (%m-%d  %H:%M)"
-            # Up to 1 year, e.g. "1619295908 - 9.2 months ago"
-            31536000: "{ts_ms_sep} - {r_float} (%m-%d  %H:%M)"
-            # Up to 75 years, e.g. "1619295908 - 5.8 years ago ('15)"
-            2365200000: "{ts_ms_sep} - {r_float} ('%y)"
+            3600: "{ts_ms_sep} - {r_int} (%H:%M)"
+            # Up to 5 hours, e.g. "1619295908 - 4.5 h ago (12:00)"
+            18000: "{ts_ms_sep} - {r_float} (%H:%M)"
+            # Up to 1 day, e.g. "1619295908 - 8 h ago (12:00)"
+            86400: "{ts_ms_sep} - {r_int} (%H:%M)"
+            # Up to 3 days, e.g. "1619295908 - 2.5 days ago (08-05 12:00)"
+            259200: "{ts_ms_sep} - {r_float} (%m-%d  %H:%M)"
+            # Up to 1 month, e.g. "1619295908 - 7 days ago (08-05 12:00)"
+            2678400: "{ts_ms_sep} - {r_int} (%m-%d  %H:%M)"
+            # Up to 3 months, e.g. "1619295908 - 2.5 months ago"
+            7879680: "{ts_ms_sep} - {r_float} (%m-%d  %H:%M)"
+            # Up to 1 year, e.g. "1619295908 - 9 months ago"
+            31536000: "{ts_ms_sep} - {r_int} (%m-%d  %H:%M)"
+            # Up to 10 years, e.g. "1619295908 - 2.5 years ago ('15)"
+            315360000: "{ts_ms_sep} - {r_float} ('%y)"
+            # Up to 75 years, e.g. "1619295908 - 13 years ago ('15)"
+            2365200000: "{ts_ms_sep} - {r_int} ('%y)"
             # Default if no other format matches. Must be last element in the list
             default: "{ts_ms_sep} - {r_float}"
 
