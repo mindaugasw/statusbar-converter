@@ -3,7 +3,7 @@ from typing import Tuple, Final
 
 from src.DTO.ConvertResult import ConvertResult
 from src.Service.Conversion.Converter.ConverterInterface import ConverterInterface
-from src.Service.Conversion.Converter.SimpleUnit.AbstractSimpleConverter import AbstractSimpleConverter
+from src.Service.Conversion.Converter.SimpleUnit.SimpleConverterInterface import SimpleConverterInterface
 from src.Service.Conversion.ThousandsDetector import ThousandsDetector
 
 
@@ -16,10 +16,10 @@ class SimpleUnitConverter(ConverterInterface):
 
     _thousandsDetector: ThousandsDetector
 
-    _unitToConverter: dict[str, AbstractSimpleConverter]
     _enabled: bool
+    _unitToConverter: dict[str, SimpleConverterInterface]
 
-    def __init__(self, internalConverters: list[AbstractSimpleConverter], thousandsDetector: ThousandsDetector):
+    def __init__(self, internalConverters: list[SimpleConverterInterface], thousandsDetector: ThousandsDetector):
         self._thousandsDetector = thousandsDetector
         self._unitToConverter = {}
 

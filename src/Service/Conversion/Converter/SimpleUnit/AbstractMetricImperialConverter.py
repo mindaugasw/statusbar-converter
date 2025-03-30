@@ -4,11 +4,12 @@ from typing import Tuple
 from src.DTO.ConvertResult import ConvertResult
 from src.DTO.Converter.MetricImperialUnit import MetricImperialUnit
 from src.DTO.Converter.UnitDefinition import UnitDefinition
-from src.Service.Conversion.Converter.SimpleUnit.AbstractSimpleConverter import AbstractSimpleConverter
+from src.Service.Conversion.Converter.SimpleUnit.SimpleConverterInterface import SimpleConverterInterface
 from src.Service.Conversion.Converter.SimpleUnit.UnitPreprocessor import UnitPreprocessor
 
 
-class AbstractMetricImperialConverter(AbstractSimpleConverter, ABC):
+class AbstractMetricImperialConverter(SimpleConverterInterface, ABC):
+    _enabled: bool
     _maxValueBaseUnit: float
     _minValueBaseUnit: float
     _primaryUnitMetric: bool
@@ -22,13 +23,15 @@ class AbstractMetricImperialConverter(AbstractSimpleConverter, ABC):
         maxValueBaseUnit: float,
         minValueBaseUnit: float,
     ):
-        super().__init__(enabled)
-
+        self._enabled = enabled
         self._maxValueBaseUnit = maxValueBaseUnit
         self._minValueBaseUnit = minValueBaseUnit
         self._primaryUnitMetric = primaryUnitMetric
         self._unitsDefinition = self._getUnitsDefinition()
         self._unitsExpanded = UnitPreprocessor.expandAliases(self._unitsDefinition)
+
+    def isEnabled(self) -> bool:
+        return self._enabled
 
     def getUnitIds(self) -> list[str]:
         if not self._enabled:

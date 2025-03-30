@@ -4,14 +4,10 @@ from typing import Tuple
 from src.DTO.ConvertResult import ConvertResult
 
 
-class AbstractSimpleConverter(ABC):
-    _enabled: bool
-
-    def __init__(self, enabled: bool):
-        self._enabled = enabled
-
+class SimpleConverterInterface(ABC):
+    @abstractmethod
     def isEnabled(self) -> bool:
-        return self._enabled
+        pass
 
     @abstractmethod
     def getName(self) -> str:

@@ -5,31 +5,33 @@ from src.DTO.ConvertResult import ConvertResult
 from src.DTO.Converter.AbstractUnit import AbstractUnit
 from src.DTO.Converter.UnitDefinition import UnitDefinition
 from src.Service.Configuration import Configuration
-from src.Service.Conversion.Converter.SimpleUnit.AbstractSimpleConverter import AbstractSimpleConverter
+from src.Service.Conversion.Converter.SimpleUnit.SimpleConverterInterface import SimpleConverterInterface
 from src.Service.Conversion.Converter.SimpleUnit.UnitPreprocessor import UnitPreprocessor
 
 
 class TemperatureUnit(AbstractUnit):
     pass
 
-class TemperatureConverter(AbstractSimpleConverter):
+class TemperatureConverter(SimpleConverterInterface):
     _PRIMARY_ALIAS_CELSIUS: Final[str] = 'c'
     _PRIMARY_ALIAS_FAHRENHEIT: Final[str] = 'f'
     _MAX_VALUE: Final[int] = 999_999
 
+    _enabled: bool
     _unitsExpanded: dict[str, TemperatureUnit]
     _primaryUnit: TemperatureUnit
 
     def __init__(self, config: Configuration):
-        enabled = config.get(ConfigId.Converter_Temperature_Enabled)
-        super().__init__(enabled)
-
+        self._enabled = config.get(ConfigId.Converter_Temperature_Enabled)
         self._unitsExpanded = UnitPreprocessor.expandAliases(self._getUnitsDefinition())
 
         primaryUnitId = self._PRIMARY_ALIAS_CELSIUS\
             if config.get(ConfigId.Converter_Temperature_PrimaryUnit_Celsius)\
             else self._PRIMARY_ALIAS_FAHRENHEIT
         self._primaryUnit = self._unitsExpanded[primaryUnitId]
+
+    def isEnabled(self) -> bool:
+        return self._enabled
 
     def getName(self) -> str:
         return 'Temp'

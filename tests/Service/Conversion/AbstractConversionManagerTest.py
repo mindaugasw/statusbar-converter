@@ -6,8 +6,8 @@ from src.DTO.ConvertResult import ConvertResult
 from src.Service.ArgumentParser import ArgumentParser
 from src.Service.Conversion.ConversionManager import ConversionManager
 from src.Service.Conversion.Converter.ConverterInterface import ConverterInterface
-from src.Service.Conversion.Converter.SimpleUnit.AbstractSimpleConverter import AbstractSimpleConverter
 from src.Service.Conversion.Converter.SimpleUnit.DistanceConverter import DistanceConverter
+from src.Service.Conversion.Converter.SimpleUnit.SimpleConverterInterface import SimpleConverterInterface
 from src.Service.Conversion.Converter.SimpleUnit.SimpleUnitConverter import SimpleUnitConverter
 from src.Service.Conversion.Converter.SimpleUnit.TemperatureConverter import TemperatureConverter
 from src.Service.Conversion.Converter.SimpleUnit.VolumeConverter import VolumeConverter
@@ -89,7 +89,7 @@ class AbstractConversionManagerTest(TestCase):
         loggerMock = Mock(Logger)
         configMock = MockLibrary.getConfig(configDefault, configOverrides)
 
-        simpleConverters: list[AbstractSimpleConverter] = [
+        simpleConverters: list[SimpleConverterInterface] = [
             DistanceConverter(configMock),
             WeightConverter(configMock),
             TemperatureConverter(configMock),
