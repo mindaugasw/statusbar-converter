@@ -1,4 +1,3 @@
-import subprocess
 from typing import Callable, Any, Final, Type
 
 import dearpygui.dearpygui as dpg
@@ -31,6 +30,7 @@ class SettingsBuilder(ModalWindowBuilderInterface):
 
     _config: Configuration
     _configFileManager: ConfigFileManager
+    _filesystemHelper: FilesystemHelper
     _logger: Logger
 
     _controls: dict[DpgTag, AbstractControlProperties]
@@ -38,9 +38,16 @@ class SettingsBuilder(ModalWindowBuilderInterface):
     _appRestartNoteEditedTag: DpgTag
     _appRestartNoteChanged: bool
 
-    def __init__(self, config: Configuration, configFileManager: ConfigFileManager, logger: Logger):
+    def __init__(
+        self,
+        config: Configuration,
+        configFileManager: ConfigFileManager,
+        filesystemHelper: FilesystemHelper,
+        logger: Logger,
+    ):
         self._config = config
         self._configFileManager = configFileManager
+        self._filesystemHelper = filesystemHelper
         self._logger = logger
 
     def getParameters(self) -> ModalWindowParameters:
@@ -265,7 +272,7 @@ class SettingsBuilder(ModalWindowBuilderInterface):
             dpg.add_text('Configuration can be edited in the file:')
             BuilderHelper.addHyperlink(
                 self._configFileManager.getUserConfigPath(),
-                lambda: subprocess.call(['xdg-open', self._configFileManager.getUserConfigPath()]),
+                lambda: self._filesystemHelper.openFile(self._configFileManager.getUserConfigPath()),
             )
 
             url = AppConstant.WEBSITE + '/blob/master/config/config.app.yml'

@@ -64,3 +64,9 @@ class FilesystemHelper(ABC):
     def isPackagedApp():
         # Frozen attribute is added by PyInstaller to packaged app
         return getattr(sys, 'frozen', False)
+
+    @staticmethod
+    @abstractmethod
+    def openFile(filePath: str) -> None:
+        """Open file in system-default application"""
+        pass

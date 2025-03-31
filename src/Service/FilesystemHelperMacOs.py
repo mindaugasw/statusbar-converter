@@ -1,4 +1,5 @@
 import re
+import subprocess
 
 import rumps
 
@@ -24,3 +25,7 @@ class FilesystemHelperMacOs(FilesystemHelper):
     @staticmethod
     def getStartupScriptDir() -> str:
         raise Exception('Not implemented')
+
+    @staticmethod
+    def openFile(filePath: str) -> None:
+        subprocess.Popen(['open', filePath])

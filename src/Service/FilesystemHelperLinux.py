@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 
 from src.Constant.AppConstant import AppConstant
@@ -25,3 +26,7 @@ class FilesystemHelperLinux(FilesystemHelper):
         os.makedirs(path, exist_ok=True)
 
         return path
+
+    @staticmethod
+    def openFile(filePath: str) -> None:
+        subprocess.call(['xdg-open', filePath])
