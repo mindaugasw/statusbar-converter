@@ -1,4 +1,4 @@
-from AppKit import NSPasteboard, NSStringPboardType, NSArray
+from AppKit import NSPasteboard, NSStringPboardType, NSArray  # type: ignore[attr-defined]
 
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.EventService import EventService

@@ -79,7 +79,7 @@ class StatusbarAppMacOs(StatusbarApp):
         self._app.run()
 
     def _createOsNativeMenu(self, commonMenu: dict[str, MenuItem]) -> dict[str, rumps.MenuItem | None]:
-        menu: dict[str, MenuItem | None] = {}
+        menu: dict[str, rumps.MenuItem | None] = {}
 
         item: MenuItem
         for key, item in commonMenu.items():
