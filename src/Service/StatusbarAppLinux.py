@@ -183,10 +183,6 @@ class StatusbarAppLinux(StatusbarApp):
         if success:
             menuItem.set_label(f'{"" if checked else self._CHECK}Run at login')
 
-    def _onMenuClickRestart(self, menuItem) -> None:
-        # On Linux restart throws error on 2nd restart, so we don't add this button on Linux
-        raise Exception('Not implemented')
-
     def _onMenuClickQuit(self, menuItem) -> None:
         Gtk.main_quit()
         sys.exit()

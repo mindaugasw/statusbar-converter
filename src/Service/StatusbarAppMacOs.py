@@ -1,5 +1,4 @@
 import os
-import sys
 import threading
 import time
 
@@ -123,9 +122,6 @@ class StatusbarAppMacOs(StatusbarApp):
 
         if success:
             menuItem.state = not menuItem.state
-
-    def _onMenuClickRestart(self, menuItem) -> None:
-        os.execl(sys.executable, '-m src.main', *sys.argv)
 
     def _onMenuClickQuit(self, menuItem) -> None:
         # On macOS quit is handled automatically by rumps

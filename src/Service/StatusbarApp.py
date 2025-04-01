@@ -136,12 +136,6 @@ class StatusbarApp(ABC):
             'about': MenuItem('About', callback=self._onMenuClickAbout),
         })
 
-        if self._osSwitch.isMacOS():
-            # On Linux restart button throws error on 2nd restart, so we add the button only for macOS
-            items.update({
-                'restart': MenuItem('Restart application', callback=self._onMenuClickRestart),
-            })
-
         if self._osSwitch.isLinux():
             # On macOS Quit button is automatically created by rumps app, so we manually add only for Linux
             items.update({
@@ -196,10 +190,6 @@ class StatusbarApp(ABC):
 
     def _onMenuClickAbout(self, menuItem) -> None:
         self._modalWindowManager.openModal(ModalId.ABOUT)
-
-    @abstractmethod
-    def _onMenuClickRestart(self, menuItem) -> None:
-        pass
 
     @abstractmethod
     def _onMenuClickQuit(self, menuItem) -> None:
