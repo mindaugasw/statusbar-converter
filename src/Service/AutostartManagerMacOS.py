@@ -28,8 +28,9 @@ class AutostartManagerMacOS(AutostartManager):
         return output
 
     def _disableAutostartOsSpecific(self) -> str | None:
-        executableName = self._appExecutablePath.split('/')[-1]  # type: ignore[union-attr]
-        command = f'osascript -e \'tell application "System Events" to delete login item "{executableName}"\' 2>&1'
+        executableAppName = self._appExecutablePath.split('/')[-1]  # type: ignore[union-attr] # = 'Statusbar Converter.app'
+        executablePrettyName = executableAppName.replace('.app', '')  # = 'Statusbar Converter'
+        command = f'osascript -e \'tell application "System Events" to delete login item "{executablePrettyName}"\' 2>&1'
         output = os.popen(command).read().strip()
 
         return output
