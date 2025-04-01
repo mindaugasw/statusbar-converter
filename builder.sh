@@ -198,8 +198,8 @@ _createDmg() {(set -e
         --volname 'Statusbar Converter' \
         --icon-size 80 \
         --text-size 14 \
-        --icon 'Statusbar Converter.app' 190 0 \
-        --app-drop-link 0 0 \
+        --icon 'Statusbar Converter.app' 0 0 \
+        --app-drop-link 190 0 \
         --hide-extension 'Statusbar Converter.app' \
         $fileName \
         dmg/

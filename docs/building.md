@@ -6,8 +6,9 @@ Install `python3.10`
 > with `universal2` support from [python.org](https://www.python.org/downloads/release/python-31011/).
 > Python from Homebrew will support only your current architecture.
 
-On Linux, additional packages are needed to build the app:  
-`sudo apt-get install libx11-dev libxcomposite-dev`
+Additional packages are needed to build the app:  
+- macOS: `brew install create-dmg`
+- Linux: `sudo apt-get install libx11-dev libxcomposite-dev`
 
 Create virtualenv with:
 - `./builder.sh install arm64 python3.10` (`arm64` native on macOS)
