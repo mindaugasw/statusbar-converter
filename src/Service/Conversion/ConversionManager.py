@@ -4,7 +4,7 @@ import time
 from src.Constant.ConfigId import ConfigId
 from src.Constant.Logs import Logs
 from src.Service.Configuration import Configuration
-from src.Service.Conversion.Converter.ConverterInterface import ConverterInterface
+from src.Service.Conversion.ConverterInterface import ConverterInterface
 from src.Service.Debug import Debug
 from src.Service.EventService import EventService
 from src.Service.ExceptionHandler import ExceptionHandler

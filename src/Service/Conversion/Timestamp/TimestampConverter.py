@@ -6,8 +6,8 @@ from src.Constant.Logs import Logs
 from src.DTO.ConvertResult import ConvertResult
 from src.DTO.Timestamp import Timestamp
 from src.Service.Configuration import Configuration
-from src.Service.Conversion.Converter.ConverterInterface import ConverterInterface
-from src.Service.Conversion.Converter.Timestamp.TimestampTextFormatter import TimestampTextFormatter
+from src.Service.Conversion.ConverterInterface import ConverterInterface
+from src.Service.Conversion.Timestamp.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.Logger import Logger
 
 

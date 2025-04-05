@@ -4,11 +4,11 @@ from typing import Tuple
 from src.DTO.ConvertResult import ConvertResult
 from src.DTO.Converter.MetricImperialUnit import MetricImperialUnit
 from src.DTO.Converter.UnitDefinition import UnitDefinition
-from src.Service.Conversion.Converter.SimpleUnit.SimpleConverterInterface import SimpleConverterInterface
-from src.Service.Conversion.Converter.SimpleUnit.UnitPreprocessor import UnitPreprocessor
+from src.Service.Conversion.Unit.UnitConverterInterface import UnitConverterInterface
+from src.Service.Conversion.Unit.UnitPreprocessor import UnitPreprocessor
 
 
-class AbstractMetricImperialConverter(SimpleConverterInterface, ABC):
+class AbstractMetricImperialConverter(UnitConverterInterface, ABC):
     _enabled: bool
     _maxValueBaseUnit: float
     _minValueBaseUnit: float

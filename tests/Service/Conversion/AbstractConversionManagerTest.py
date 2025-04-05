@@ -5,7 +5,7 @@ from src.Constant.ConfigId import ConfigId
 from src.DTO.ConvertResult import ConvertResult
 from src.Service.ArgumentParser import ArgumentParser
 from src.Service.Conversion.ConversionManager import ConversionManager
-from src.Service.Conversion.Converter.Timestamp.TimestampTextFormatter import TimestampTextFormatter
+from src.Service.Conversion.Timestamp.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.Debug import Debug
 from src.Service.EventService import EventService
 from src.Service.Logger import Logger

@@ -1,12 +1,12 @@
 from typing import Tuple
 
 from src.DTO.ConvertResult import ConvertResult
-from src.Service.Conversion.Converter.ConverterInterface import ConverterInterface
-from src.Service.Conversion.Converter.UnitParser import UnitParser
-from src.Service.Conversion.ThousandsDetector import ThousandsDetector
+from src.Service.Conversion.ConverterInterface import ConverterInterface
+from src.Service.Conversion.Unit.ThousandsDetector import ThousandsDetector
+from src.Service.Conversion.Unit.UnitParser import UnitParser
 
 
-class SimpleUnitConverter(ConverterInterface):
+class UnitConverter(ConverterInterface):
     """
     Convert simple units, where a single number is followed by a single unit, e.g.: 50 km/h
     """

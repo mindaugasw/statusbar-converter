@@ -5,14 +5,14 @@ from src.DTO.ConvertResult import ConvertResult
 from src.DTO.Converter.AbstractUnit import AbstractUnit
 from src.DTO.Converter.UnitDefinition import UnitDefinition
 from src.Service.Configuration import Configuration
-from src.Service.Conversion.Converter.SimpleUnit.SimpleConverterInterface import SimpleConverterInterface
-from src.Service.Conversion.Converter.SimpleUnit.UnitPreprocessor import UnitPreprocessor
+from src.Service.Conversion.Unit.UnitConverterInterface import UnitConverterInterface
+from src.Service.Conversion.Unit.UnitPreprocessor import UnitPreprocessor
 
 
 class TemperatureUnit(AbstractUnit):
     pass
 
-class TemperatureConverter(SimpleConverterInterface):
+class TemperatureConverter(UnitConverterInterface):
     _PRIMARY_ALIAS_CELSIUS: Final[str] = 'c'
     _PRIMARY_ALIAS_FAHRENHEIT: Final[str] = 'f'
     _MAX_VALUE: Final[int] = 999_999

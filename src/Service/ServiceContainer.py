@@ -9,18 +9,17 @@ from src.Service.ClipboardManager import ClipboardManager
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
 from src.Service.Conversion.ConversionManager import ConversionManager
-from src.Service.Conversion.Converter.ConverterInterface import ConverterInterface
-from src.Service.Conversion.Converter.SimpleUnit.DistanceConverter import DistanceConverter
-from src.Service.Conversion.Converter.SimpleUnit.SimpleConverterInterface import SimpleConverterInterface
-from src.Service.Conversion.Converter.SimpleUnit.SimpleUnitConverter import SimpleUnitConverter
-from src.Service.Conversion.Converter.SimpleUnit.TemperatureConverter import TemperatureConverter
-from src.Service.Conversion.Converter.SimpleUnit.VolumeConverter import VolumeConverter
-from src.Service.Conversion.Converter.SimpleUnit.WeightConverter import WeightConverter
-from src.Service.Conversion.Converter.Timestamp.TimestampConverter import TimestampConverter
-from src.Service.Conversion.Converter.Timestamp.TimestampTextFormatter import TimestampTextFormatter
-from src.Service.Conversion.Converter.UnitBefore.UnitBeforeConverterInterface import UnitBeforeConverterInterface
-from src.Service.Conversion.Converter.UnitParser import UnitParser
-from src.Service.Conversion.ThousandsDetector import ThousandsDetector
+from src.Service.Conversion.ConverterInterface import ConverterInterface
+from src.Service.Conversion.Timestamp.TimestampConverter import TimestampConverter
+from src.Service.Conversion.Timestamp.TimestampTextFormatter import TimestampTextFormatter
+from src.Service.Conversion.Unit.MetricImperial.DistanceConverter import DistanceConverter
+from src.Service.Conversion.Unit.MetricImperial.TemperatureConverter import TemperatureConverter
+from src.Service.Conversion.Unit.MetricImperial.VolumeConverter import VolumeConverter
+from src.Service.Conversion.Unit.MetricImperial.WeightConverter import WeightConverter
+from src.Service.Conversion.Unit.ThousandsDetector import ThousandsDetector
+from src.Service.Conversion.Unit.UnitConverter import UnitConverter
+from src.Service.Conversion.Unit.UnitConverterInterface import UnitConverterInterface
+from src.Service.Conversion.Unit.UnitParser import UnitParser
 from src.Service.Debug import Debug
 from src.Service.EventService import EventService
 from src.Service.ExceptionHandler import ExceptionHandler
@@ -101,9 +100,9 @@ class ServiceContainer:
         events: EventService,
         debug: Debug,
     ) -> ConversionManager:
-        unitBeforeConverters: list[UnitBeforeConverterInterface] = []
+        unitBeforeConverters: list[UnitConverterInterface] = []
 
-        unitAfterConverters: list[SimpleConverterInterface] = [
+        unitAfterConverters: list[UnitConverterInterface] = [
             DistanceConverter(config),
             VolumeConverter(config),
             WeightConverter(config),
@@ -111,13 +110,13 @@ class ServiceContainer:
         ]
 
         thousandsDetector = ThousandsDetector()
-        unitBeforeToConverterMap = UnitToConverterMap([]) # TODO update after interfaces fix
+        unitBeforeToConverterMap = UnitToConverterMap(unitBeforeConverters)
         unitAfterToConverterMap = UnitToConverterMap(unitAfterConverters)
         unitParser = UnitParser(unitBeforeToConverterMap, unitAfterToConverterMap, thousandsDetector)
 
         converters: list[ConverterInterface] = [
             TimestampConverter(timestampTextFormatter, config, logger),
-            SimpleUnitConverter(unitParser)
+            UnitConverter(unitParser),
         ]
 
         return ConversionManager(converters, events, config, logger, debug)

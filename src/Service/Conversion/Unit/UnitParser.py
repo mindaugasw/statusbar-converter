@@ -3,8 +3,8 @@ from typing import Final
 
 from src.DTO.Converter.UnitParseResult import UnitParseResult
 from src.DTO.Converter.UnitToConverterMap import UnitToConverterMap
-from src.Service.Conversion.Converter.SimpleUnit.SimpleConverterInterface import SimpleConverterInterface
-from src.Service.Conversion.ThousandsDetector import ThousandsDetector
+from src.Service.Conversion.Unit.ThousandsDetector import ThousandsDetector
+from src.Service.Conversion.Unit.UnitConverterInterface import UnitConverterInterface
 
 
 class UnitParser:
@@ -46,10 +46,10 @@ class UnitParser:
         unitBefore: str | None = regexResult.group(self._REGEX_GROUP_UNIT_BEFORE)
         unitAfter: str | None = regexResult.group(self._REGEX_GROUP_UNIT_AFTER)
 
-        if unitBefore is not None and unitAfter is not None:
+        if (unitBefore is not None) and (unitAfter is not None):
             return None
 
-        converter: SimpleConverterInterface
+        converter: UnitConverterInterface
 
         # Decide if it's unit before/after
         if unitBefore is not None:
@@ -58,14 +58,14 @@ class UnitParser:
 
             unit = unitBefore
             converter = self._unitBeforeToConverter[unitBefore]
-        else:  # unitAfter is not None:
-            unitAfter: str
-
+        elif unitAfter is not None:
             if unitAfter not in self._unitAfterToConverter:
                 return None
 
             unit = unitAfter
             converter = self._unitAfterToConverter[unitAfter]
+        else:
+            return None
 
         # Parse number
         numberString = regexResult.group(self._REGEX_GROUP_NUMBER)

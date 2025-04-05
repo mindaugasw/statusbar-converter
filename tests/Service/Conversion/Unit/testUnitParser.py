@@ -4,13 +4,13 @@ from parameterized import parameterized
 
 from src.Constant.ConfigId import ConfigId
 from src.DTO.Converter.UnitToConverterMap import UnitToConverterMap
-from src.Service.Conversion.Converter.SimpleUnit.DistanceConverter import DistanceConverter
-from src.Service.Conversion.Converter.SimpleUnit.SimpleConverterInterface import SimpleConverterInterface
-from src.Service.Conversion.Converter.SimpleUnit.TemperatureConverter import TemperatureConverter
-from src.Service.Conversion.Converter.SimpleUnit.VolumeConverter import VolumeConverter
-from src.Service.Conversion.Converter.SimpleUnit.WeightConverter import WeightConverter
-from src.Service.Conversion.Converter.UnitParser import UnitParser
-from src.Service.Conversion.ThousandsDetector import ThousandsDetector
+from src.Service.Conversion.Unit.MetricImperial.DistanceConverter import DistanceConverter
+from src.Service.Conversion.Unit.MetricImperial.TemperatureConverter import TemperatureConverter
+from src.Service.Conversion.Unit.MetricImperial.VolumeConverter import VolumeConverter
+from src.Service.Conversion.Unit.MetricImperial.WeightConverter import WeightConverter
+from src.Service.Conversion.Unit.ThousandsDetector import ThousandsDetector
+from src.Service.Conversion.Unit.UnitConverterInterface import UnitConverterInterface
+from src.Service.Conversion.Unit.UnitParser import UnitParser
 from tests.TestUtil.MockLibrary import MockLibrary
 
 
@@ -55,8 +55,8 @@ class TestUnitParser(TestCase):
         if expectNumber is None:
             self.assertEqual(None, result)
         else:
-            self.assertEqual(expectNumber, result.number)
-            self.assertEqual(expectUnit, result.unit)
+            self.assertEqual(expectNumber, result.number)  # type: ignore[union-attr]
+            self.assertEqual(expectUnit, result.unit)  # type: ignore[union-attr]
 
     def _getParser(self) -> UnitParser:
         config = [
@@ -72,7 +72,7 @@ class TestUnitParser(TestCase):
 
         configMock = MockLibrary.getConfig(config)
 
-        simpleConverters: list[SimpleConverterInterface] = [
+        simpleConverters: list[UnitConverterInterface] = [
             DistanceConverter(configMock),
             WeightConverter(configMock),
             TemperatureConverter(configMock),

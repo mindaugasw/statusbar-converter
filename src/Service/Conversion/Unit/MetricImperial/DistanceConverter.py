@@ -4,8 +4,8 @@ from src.Constant.ConfigId import ConfigId
 from src.DTO.Converter.MetricImperialUnit import MetricImperialUnit
 from src.DTO.Converter.UnitDefinition import UnitDefinition
 from src.Service.Configuration import Configuration
-from src.Service.Conversion.Converter.SimpleUnit.AbstractMetricImperialConverter import AbstractMetricImperialConverter
-from src.Service.Conversion.Converter.SimpleUnit.UnitPreprocessor import UnitPreprocessor
+from src.Service.Conversion.Unit.MetricImperial.AbstractMetricImperialConverter import AbstractMetricImperialConverter
+from src.Service.Conversion.Unit.UnitPreprocessor import UnitPreprocessor
 
 
 class DistanceConverter(AbstractMetricImperialConverter):

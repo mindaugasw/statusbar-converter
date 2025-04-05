@@ -4,7 +4,7 @@ from typing import Tuple
 from src.DTO.ConvertResult import ConvertResult
 
 
-class SimpleConverterInterface(ABC):
+class UnitConverterInterface(ABC):
     @abstractmethod
     def isEnabled(self) -> bool:
         pass

@@ -1,13 +1,13 @@
-from src.Service.Conversion.Converter.SimpleUnit.SimpleConverterInterface import SimpleConverterInterface
+from src.Service.Conversion.Unit.UnitConverterInterface import UnitConverterInterface
 
 
 class UnitToConverterMap:
-    _map: dict[str, SimpleConverterInterface]
+    _map: dict[str, UnitConverterInterface]
 
-    def __init__(self, converters: list[SimpleConverterInterface]):
+    def __init__(self, converters: list[UnitConverterInterface]):
         self._map = self._generateMap(converters)
 
-    def __getitem__(self, unitId: str) -> SimpleConverterInterface:
+    def __getitem__(self, unitId: str) -> UnitConverterInterface:
         return self._map[unitId]
 
     def __contains__(self, item: str) -> bool:
@@ -16,7 +16,7 @@ class UnitToConverterMap:
     def __len__(self) -> int:
         return len(self._map)
 
-    def _generateMap(self, converters: list[SimpleConverterInterface]) -> dict[str, SimpleConverterInterface]:
+    def _generateMap(self, converters: list[UnitConverterInterface]) -> dict[str, UnitConverterInterface]:
         _map = {}
 
         for converter in converters:

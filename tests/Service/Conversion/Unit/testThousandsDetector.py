@@ -1,7 +1,7 @@
 from typing import Union, Tuple
 from unittest import TestCase
 
-from src.Service.Conversion.ThousandsDetector import ThousandsDetector
+from src.Service.Conversion.Unit.ThousandsDetector import ThousandsDetector
 
 
 class TestThousandsDetector(TestCase):

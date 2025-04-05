@@ -1,16 +1,16 @@
-from src.Service.Conversion.Converter.SimpleUnit.SimpleConverterInterface import SimpleConverterInterface
+from src.Service.Conversion.Unit.UnitConverterInterface import UnitConverterInterface
 
 
 class UnitParseResult:
     number: float
     unit: str
-    converter: SimpleConverterInterface
+    converter: UnitConverterInterface
 
     def __init__(
         self,
         number: float,
         unit: str,
-        converter: SimpleConverterInterface,
+        converter: UnitConverterInterface,
     ):
         self.number = number
         self.unit = unit
