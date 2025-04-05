@@ -10,7 +10,6 @@ from tests.TestUtil.MockLibrary import MockLibrary
 
 
 class TestTimestampTextFormatter(TestCase):
-
     @parameterized.expand([
         ('Generic datetime', 1733021011, None, '%Y-%m-%d %H:%M:%S', '2024-12-01 04:43:31'),
         ('Custom formats, without ms', 1733021011, None, '{ts}, {ts_ms}, {ts_ms_sep}', '1733021011, 1733021011, 1733021011'),

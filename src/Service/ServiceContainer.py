@@ -18,6 +18,8 @@ from src.Service.Conversion.Converter.SimpleUnit.WeightConverter import WeightCo
 from src.Service.Conversion.Converter.Timestamp.TimestampConverter import TimestampConverter
 from src.Service.Conversion.Converter.Timestamp.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.Conversion.ThousandsDetector import ThousandsDetector
+from src.Service.Conversion.UnitParser import UnitParser
+from src.Service.Conversion.UnitToConverterMap import UnitToConverterMap
 from src.Service.Debug import Debug
 from src.Service.EventService import EventService
 from src.Service.ExceptionHandler import ExceptionHandler
@@ -71,9 +73,13 @@ class ServiceContainer:
             weightConverter,
             temperatureConverter,
         ]
+
+        _[UnitToConverterMap] = unitToConverterMap = UnitToConverterMap(simpleConverters)
+        _[UnitParser] = unitParser = UnitParser(unitToConverterMap, thousandsDetector)
+
         _[list[ConverterInterface]] = converters = [
             TimestampConverter(timestampTextFormatter, config, logger),
-            SimpleUnitConverter(simpleConverters, thousandsDetector),
+            SimpleUnitConverter(unitParser, unitToConverterMap)
         ]
         _[ConversionManager] = conversionManager = ConversionManager(converters, events, config, logger, debug)
 

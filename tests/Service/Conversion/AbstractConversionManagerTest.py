@@ -15,6 +15,8 @@ from src.Service.Conversion.Converter.SimpleUnit.WeightConverter import WeightCo
 from src.Service.Conversion.Converter.Timestamp.TimestampConverter import TimestampConverter
 from src.Service.Conversion.Converter.Timestamp.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.Conversion.ThousandsDetector import ThousandsDetector
+from src.Service.Conversion.UnitParser import UnitParser
+from src.Service.Conversion.UnitToConverterMap import UnitToConverterMap
 from src.Service.Debug import Debug
 from src.Service.EventService import EventService
 from src.Service.Logger import Logger
@@ -96,6 +98,9 @@ class AbstractConversionManagerTest(TestCase):
             VolumeConverter(configMock),
         ]
 
+        unitToConverterMap = UnitToConverterMap(simpleConverters)
+        unitParser = UnitParser(unitToConverterMap, ThousandsDetector())
+
         converters: list[ConverterInterface] = [
             TimestampConverter(
                 TimestampTextFormatter(configMock),
@@ -103,8 +108,8 @@ class AbstractConversionManagerTest(TestCase):
                 loggerMock,
             ),
             SimpleUnitConverter(
-                simpleConverters,
-                ThousandsDetector(),
+                unitParser,
+                unitToConverterMap,
             ),
         ]
 

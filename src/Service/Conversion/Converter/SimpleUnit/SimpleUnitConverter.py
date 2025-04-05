@@ -1,10 +1,10 @@
-import re
-from typing import Tuple, Final
+from typing import Tuple
 
 from src.DTO.ConvertResult import ConvertResult
 from src.Service.Conversion.Converter.ConverterInterface import ConverterInterface
-from src.Service.Conversion.Converter.SimpleUnit.SimpleConverterInterface import SimpleConverterInterface
 from src.Service.Conversion.ThousandsDetector import ThousandsDetector
+from src.Service.Conversion.UnitParser import UnitParser
+from src.Service.Conversion.UnitToConverterMap import UnitToConverterMap
 
 
 class SimpleUnitConverter(ConverterInterface):
@@ -12,28 +12,19 @@ class SimpleUnitConverter(ConverterInterface):
     Convert simple units, where a single number is followed by a single unit, e.g.: 50 km/h
     """
 
-    _PATTERN_IS_NUMBER_AND_TEXT: Final = re.compile(r'^((\-)?([\d,.]*\d[\d,.]*))([a-z/*°\'"`′″.3]+)')
-
+    _unitParser: UnitParser
     _thousandsDetector: ThousandsDetector
+    _unitToConverter: UnitToConverterMap
 
     _enabled: bool
-    _unitToConverter: dict[str, SimpleConverterInterface]
 
-    def __init__(self, internalConverters: list[SimpleConverterInterface], thousandsDetector: ThousandsDetector):
-        self._thousandsDetector = thousandsDetector
-        self._unitToConverter = {}
-
-        for internalConverter in internalConverters:
-            if not internalConverter.isEnabled():
-                continue
-
-            unitsIds = internalConverter.getUnitIds()
-
-            for unitId in unitsIds:
-                if unitId in self._unitToConverter:
-                    raise Exception(f'SimpleUnitConverter unit alias collision: {unitId} alias already exists')
-
-                self._unitToConverter[unitId] = internalConverter
+    def __init__(
+        self,
+        unitParser: UnitParser,
+        unitToConverter: UnitToConverterMap,
+    ):
+        self._unitParser = unitParser
+        self._unitToConverter = unitToConverter
 
         self._enabled = len(self._unitToConverter) > 0
 
@@ -44,12 +35,12 @@ class SimpleUnitConverter(ConverterInterface):
         return 'Simple'
 
     def tryConvert(self, text: str) -> Tuple[bool, ConvertResult | None]:
-        number, unit = self._parseText(text)
+        parsed = self._unitParser.parseText(text)
 
-        if number is None or unit is None:
+        if parsed is None:
             return False, None
 
-        success, result = self._unitToConverter[unit].tryConvert(number, unit)
+        success, result = self._unitToConverter[parsed.unit].tryConvert(parsed.number, parsed.unit)
 
         if result is None:
             return False, None
@@ -57,30 +48,3 @@ class SimpleUnitConverter(ConverterInterface):
         result.converterName = f'{self.getName()}.{result.converterName}'
 
         return True, result
-
-    def _parseText(self, text: str) -> Tuple[float | None, str | None]:
-        # Remove all whitespace from anywhere in the string
-        textSplit = text.split()
-        text = ''.join(textSplit).lower()
-
-        # Test if it meets basic format of number followed by text
-        regexResult = re.match(self._PATTERN_IS_NUMBER_AND_TEXT, text)
-
-        if regexResult is None:
-            return None, None
-
-        # Split into number and unit by regex groups
-        unitIndexes = regexResult.regs[4]
-        unitString = text[unitIndexes[0]:unitIndexes[1]]
-
-        if unitString not in self._unitToConverter:
-            return None, None
-
-        numberIndexes = regexResult.regs[1]
-        numberString = text[numberIndexes[0]:numberIndexes[1]]
-        number = self._thousandsDetector.parseNumber(numberString)
-
-        if number is None:
-            return None, None
-
-        return number, unitString
