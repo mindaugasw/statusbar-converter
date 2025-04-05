@@ -18,7 +18,7 @@ from src.Service.StatusbarApp import StatusbarApp
 
 
 def main() -> None:
-    services = ServiceContainer(True)
+    services = ServiceContainer().initializeServices()
 
     logger = services[Logger]
     config = services[Configuration]

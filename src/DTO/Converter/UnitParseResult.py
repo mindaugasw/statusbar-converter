@@ -1,11 +1,17 @@
+from src.Service.Conversion.Converter.SimpleUnit.SimpleConverterInterface import SimpleConverterInterface
+
+
 class UnitParseResult:
-    isSuccess: bool
     number: float
     unit: str
-    unitGroup: int
+    converter: SimpleConverterInterface
 
-    def __init__(self, number: float, unit: str, unitGroup: int):
-        self.isSuccess = True
+    def __init__(
+        self,
+        number: float,
+        unit: str,
+        converter: SimpleConverterInterface,
+    ):
         self.number = number
         self.unit = unit
-        self.unitGroup = unitGroup
+        self.converter = converter

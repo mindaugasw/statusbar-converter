@@ -2,9 +2,8 @@ from typing import Tuple
 
 from src.DTO.ConvertResult import ConvertResult
 from src.Service.Conversion.Converter.ConverterInterface import ConverterInterface
+from src.Service.Conversion.Converter.UnitParser import UnitParser
 from src.Service.Conversion.ThousandsDetector import ThousandsDetector
-from src.Service.Conversion.UnitParser import UnitParser
-from src.Service.Conversion.UnitToConverterMap import UnitToConverterMap
 
 
 class SimpleUnitConverter(ConverterInterface):
@@ -14,22 +13,15 @@ class SimpleUnitConverter(ConverterInterface):
 
     _unitParser: UnitParser
     _thousandsDetector: ThousandsDetector
-    _unitToConverter: UnitToConverterMap
-
-    _enabled: bool
 
     def __init__(
         self,
         unitParser: UnitParser,
-        unitToConverter: UnitToConverterMap,
     ):
         self._unitParser = unitParser
-        self._unitToConverter = unitToConverter
-
-        self._enabled = len(self._unitToConverter) > 0
 
     def isEnabled(self) -> bool:
-        return self._enabled
+        return self._unitParser.isEnabled()
 
     def getName(self) -> str:
         return 'Simple'
@@ -40,7 +32,7 @@ class SimpleUnitConverter(ConverterInterface):
         if parsed is None:
             return False, None
 
-        success, result = self._unitToConverter[parsed.unit].tryConvert(parsed.number, parsed.unit)
+        success, result = parsed.converter.tryConvert(parsed.number, parsed.unit)
 
         if result is None:
             return False, None

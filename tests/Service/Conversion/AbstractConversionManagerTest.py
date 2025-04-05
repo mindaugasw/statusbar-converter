@@ -5,28 +5,18 @@ from src.Constant.ConfigId import ConfigId
 from src.DTO.ConvertResult import ConvertResult
 from src.Service.ArgumentParser import ArgumentParser
 from src.Service.Conversion.ConversionManager import ConversionManager
-from src.Service.Conversion.Converter.ConverterInterface import ConverterInterface
-from src.Service.Conversion.Converter.SimpleUnit.DistanceConverter import DistanceConverter
-from src.Service.Conversion.Converter.SimpleUnit.SimpleConverterInterface import SimpleConverterInterface
-from src.Service.Conversion.Converter.SimpleUnit.SimpleUnitConverter import SimpleUnitConverter
-from src.Service.Conversion.Converter.SimpleUnit.TemperatureConverter import TemperatureConverter
-from src.Service.Conversion.Converter.SimpleUnit.VolumeConverter import VolumeConverter
-from src.Service.Conversion.Converter.SimpleUnit.WeightConverter import WeightConverter
-from src.Service.Conversion.Converter.Timestamp.TimestampConverter import TimestampConverter
 from src.Service.Conversion.Converter.Timestamp.TimestampTextFormatter import TimestampTextFormatter
-from src.Service.Conversion.ThousandsDetector import ThousandsDetector
-from src.Service.Conversion.UnitParser import UnitParser
-from src.Service.Conversion.UnitToConverterMap import UnitToConverterMap
 from src.Service.Debug import Debug
 from src.Service.EventService import EventService
 from src.Service.Logger import Logger
+from src.Service.ServiceContainer import ServiceContainer
 from tests.TestUtil.MockLibrary import MockLibrary
 from tests.TestUtil.Types import ConfigurationsList
 
 
 class AbstractConversionManagerTest(TestCase):
     # All converters are tested with a single integration test to ensure proper service config.
-    # E.g. SimpleUnitConverter has correct regex, that multiple converters are not clashing, etc
+    # E.g. test that SimpleUnitConverter has correct regex, that multiple converters are not clashing, etc
 
     _events: EventService
 
@@ -88,44 +78,22 @@ class AbstractConversionManagerTest(TestCase):
             (ConfigId.Converter_Weight_PrimaryUnit_Metric, True),
         ]
 
-        loggerMock = Mock(Logger)
-        configMock = MockLibrary.getConfig(configDefault, configOverrides)
-
-        simpleConverters: list[SimpleConverterInterface] = [
-            DistanceConverter(configMock),
-            WeightConverter(configMock),
-            TemperatureConverter(configMock),
-            VolumeConverter(configMock),
-        ]
-
-        unitToConverterMap = UnitToConverterMap(simpleConverters)
-        unitParser = UnitParser(unitToConverterMap, ThousandsDetector())
-
-        converters: list[ConverterInterface] = [
-            TimestampConverter(
-                TimestampTextFormatter(configMock),
-                configMock,
-                loggerMock,
-            ),
-            SimpleUnitConverter(
-                unitParser,
-                unitToConverterMap,
-            ),
-        ]
-
         argParserMock = MagicMock(ArgumentParser)
         argParserMock.isDebugEnabled.return_value = False
         argParserMock.getMockUpdate.return_value = None
 
-        conversionManager = ConversionManager(
-            converters,
-            self._events,
+        configMock = MockLibrary.getConfig(configDefault, configOverrides)
+        loggerMock = Mock(Logger)
+        debugMock = Debug(configMock, argParserMock)
+
+        timestampTextFormatter = TimestampTextFormatter(configMock)
+
+        conversionManager = ServiceContainer().getConversionManager(
+            timestampTextFormatter,
             configMock,
             loggerMock,
-            Debug(
-                configMock,
-                argParserMock,
-            ),
+            self._events,
+            debugMock,
         )
 
         return conversionManager

@@ -1,6 +1,7 @@
 from typing import TypeVar
 
 from src.Constant.ModalId import ModalId
+from src.DTO.Converter.UnitToConverterMap import UnitToConverterMap
 from src.Service.AppLoop import AppLoop
 from src.Service.ArgumentParser import ArgumentParser
 from src.Service.AutostartManager import AutostartManager
@@ -17,9 +18,9 @@ from src.Service.Conversion.Converter.SimpleUnit.VolumeConverter import VolumeCo
 from src.Service.Conversion.Converter.SimpleUnit.WeightConverter import WeightConverter
 from src.Service.Conversion.Converter.Timestamp.TimestampConverter import TimestampConverter
 from src.Service.Conversion.Converter.Timestamp.TimestampTextFormatter import TimestampTextFormatter
+from src.Service.Conversion.Converter.UnitBefore.UnitBeforeConverterInterface import UnitBeforeConverterInterface
+from src.Service.Conversion.Converter.UnitParser import UnitParser
 from src.Service.Conversion.ThousandsDetector import ThousandsDetector
-from src.Service.Conversion.UnitParser import UnitParser
-from src.Service.Conversion.UnitToConverterMap import UnitToConverterMap
 from src.Service.Debug import Debug
 from src.Service.EventService import EventService
 from src.Service.ExceptionHandler import ExceptionHandler
@@ -42,7 +43,13 @@ class ServiceContainer:
 
     _services: dict[type, object]
 
-    def __init__(self, initialize: bool):
+    def __getitem__(self, item: type[T]) -> T:
+        if item not in self._services:
+            raise Exception(f'Service with id "{item}" not found in the container')
+
+        return self._services[item]  # type: ignore[return-value]
+
+    def initializeServices(self) -> 'ServiceContainer':
         _: dict[type, object] = {}
 
         # Core services
@@ -50,9 +57,8 @@ class ServiceContainer:
         _[FilesystemHelper] = filesystemHelper = self._getFilesystemHelper(osSwitch)
         _[Logger] = logger = Logger(filesystemHelper)
 
-        if initialize:
-            logger.logRaw(filesystemHelper.getInitializationLogs())
-            ExceptionHandler.initialize()
+        logger.logRaw(filesystemHelper.getInitializationLogs())
+        ExceptionHandler.initialize()
 
         _[ConfigFileManager] = configFileManager = ConfigFileManager(filesystemHelper, logger)
         _[Configuration] = config = Configuration(configFileManager, logger)
@@ -62,26 +68,7 @@ class ServiceContainer:
 
         # Conversion services
         _[TimestampTextFormatter] = timestampTextFormatter = TimestampTextFormatter(config)
-        _[ThousandsDetector] = thousandsDetector = ThousandsDetector()
-        _[DistanceConverter] = distanceConverter = DistanceConverter(config)
-        _[VolumeConverter] = volumeConverter = VolumeConverter(config)
-        _[WeightConverter] = weightConverter = WeightConverter(config)
-        _[TemperatureConverter] = temperatureConverter = TemperatureConverter(config)
-        _[list[SimpleConverterInterface]] = simpleConverters = [
-            distanceConverter,
-            volumeConverter,
-            weightConverter,
-            temperatureConverter,
-        ]
-
-        _[UnitToConverterMap] = unitToConverterMap = UnitToConverterMap(simpleConverters)
-        _[UnitParser] = unitParser = UnitParser(unitToConverterMap, thousandsDetector)
-
-        _[list[ConverterInterface]] = converters = [
-            TimestampConverter(timestampTextFormatter, config, logger),
-            SimpleUnitConverter(unitParser, unitToConverterMap)
-        ]
-        _[ConversionManager] = conversionManager = ConversionManager(converters, events, config, logger, debug)
+        _[ConversionManager] = conversionManager = self.getConversionManager(timestampTextFormatter, config, logger, events, debug)
 
         # GUI services
         _[list[ModalWindowBuilderInterface]] = modalWindowBuilders = self._getModalWindowBuilders(config, configFileManager, filesystemHelper, logger)
@@ -96,11 +83,7 @@ class ServiceContainer:
 
         self._services = _
 
-    def __getitem__(self, item: type[T]) -> T:
-        if item not in self._services:
-            raise Exception(f'Service with id "{item}" not found in the container')
-
-        return self._services[item]  # type: ignore[return-value]
+        return self
 
     def _getFilesystemHelper(self, osSwitch: OSSwitch) -> FilesystemHelper:
         if osSwitch.isMacOS():
@@ -109,6 +92,35 @@ class ServiceContainer:
         else:
             from src.Service.FilesystemHelperLinux import FilesystemHelperLinux
             return FilesystemHelperLinux()
+
+    def getConversionManager(
+        self,
+        timestampTextFormatter: TimestampTextFormatter,
+        config: Configuration,
+        logger: Logger,
+        events: EventService,
+        debug: Debug,
+    ) -> ConversionManager:
+        unitBeforeConverters: list[UnitBeforeConverterInterface] = []
+
+        unitAfterConverters: list[SimpleConverterInterface] = [
+            DistanceConverter(config),
+            VolumeConverter(config),
+            WeightConverter(config),
+            TemperatureConverter(config),
+        ]
+
+        thousandsDetector = ThousandsDetector()
+        unitBeforeToConverterMap = UnitToConverterMap([]) # TODO update after interfaces fix
+        unitAfterToConverterMap = UnitToConverterMap(unitAfterConverters)
+        unitParser = UnitParser(unitBeforeToConverterMap, unitAfterToConverterMap, thousandsDetector)
+
+        converters: list[ConverterInterface] = [
+            TimestampConverter(timestampTextFormatter, config, logger),
+            SimpleUnitConverter(unitParser)
+        ]
+
+        return ConversionManager(converters, events, config, logger, debug)
 
     def _getModalWindowBuilders(
         self,
