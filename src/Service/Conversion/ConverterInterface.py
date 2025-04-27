@@ -13,6 +13,7 @@ class ConverterInterface(ABC):
     def getName(self) -> str:
         pass
 
+    # TODO does return type really need 2 variables here? Maybe `ConvertResult | None` would be enough?
     @abstractmethod
     def tryConvert(self, text: str) -> Tuple[bool, ConvertResult | None]:
         """

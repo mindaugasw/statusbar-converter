@@ -1,34 +1,30 @@
 import re
 from typing import Final
 
+from src.Constant.UnitPosition import UnitPosition
 from src.DTO.Converter.UnitParseResult import UnitParseResult
-from src.DTO.Converter.UnitToConverterMap import UnitToConverterMap
 from src.Service.Conversion.Unit.ThousandsDetector import ThousandsDetector
 from src.Service.Conversion.Unit.UnitConverterInterface import UnitConverterInterface
+from src.Service.Conversion.Unit.UnitToConverterMapper import UnitToConverterMapper
 
 
 class UnitParser:
+    # For debugging pattern see https://regexr.com/8ds6v
     _PATTERN: Final = re.compile(r'^([a-z$]+)?(-?[\d,.]*\d[\d,.]*)([a-z/*°\'"`′″.3$]+)?')
     _REGEX_GROUP_UNIT_BEFORE: Final = 1
     _REGEX_GROUP_NUMBER: Final = 2
     _REGEX_GROUP_UNIT_AFTER: Final = 3
 
     _thousandsDetector: ThousandsDetector
-    _unitBeforeToConverter: UnitToConverterMap
-    _unitAfterToConverter: UnitToConverterMap
+    _unitToConverterMapper: UnitToConverterMapper
 
     def __init__(
         self,
-        unitBeforeToConverter: UnitToConverterMap,
-        unitAfterToConverter: UnitToConverterMap,
+        unitToConverterMapper: UnitToConverterMapper,
         thousandsDetector: ThousandsDetector,
     ):
         self._thousandsDetector = thousandsDetector
-        self._unitBeforeToConverter = unitBeforeToConverter
-        self._unitAfterToConverter = unitAfterToConverter
-
-    def isEnabled(self) -> bool:
-        return len(self._unitBeforeToConverter) > 0 or len(self._unitAfterToConverter) > 0
+        self._unitToConverterMapper = unitToConverterMapper
 
     def parseText(self, text: str) -> UnitParseResult | None:
         # Remove all whitespace from anywhere in the string
@@ -53,17 +49,19 @@ class UnitParser:
 
         # Decide if it's unit before/after
         if unitBefore is not None:
-            if unitBefore not in self._unitBeforeToConverter:
+            converter = self._unitToConverterMapper.getConverter(unitBefore, UnitPosition.BEFORE)
+
+            if converter is None:
                 return None
 
             unit = unitBefore
-            converter = self._unitBeforeToConverter[unitBefore]
         elif unitAfter is not None:
-            if unitAfter not in self._unitAfterToConverter:
+            converter = self._unitToConverterMapper.getConverter(unitAfter, UnitPosition.AFTER)
+
+            if converter is None:
                 return None
 
             unit = unitAfter
-            converter = self._unitAfterToConverter[unitAfter]
         else:
             return None
 

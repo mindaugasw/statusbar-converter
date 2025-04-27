@@ -1,6 +1,7 @@
 from src.Service.Conversion.Unit.UnitConverterInterface import UnitConverterInterface
 
 
+# TODO remove
 class UnitToConverterMap:
     _map: dict[str, UnitConverterInterface]
 

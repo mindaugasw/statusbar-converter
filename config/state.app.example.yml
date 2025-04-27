@@ -7,6 +7,8 @@ converters:
   distance:
     enabled: true
     primary_unit_metric: true
+  currency:
+    # TODO add this
   temperature:
     enabled: true
     primary_unit_celsius: true

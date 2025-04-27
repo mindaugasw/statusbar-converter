@@ -11,6 +11,7 @@ class Logs:
     catMenuApp: Final[str] = '[Menu app] '
     catModal: Final[str] = '[Modal] '
     catModalSub: Final[str] = '[Modal.'
+    catRateUpdater: Final[str] = '[Rate updater] '
     catUpdateCheck: Final[str] = '[Update check] '
     catStart: Final[str] = '[Start] '
     catSettings: Final[str] = catModalSub + 'Settings] '

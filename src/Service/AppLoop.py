@@ -19,6 +19,7 @@ class AppLoop:
         # On macOS AppLoop is used for clipboard polling, so we must keep interval
         # short. On Linux there's no critical tasks attached to AppLoop, so we can
         # make interval way longer
+        # TODO split this into appLoopFast and appLoopSlow
         self._loopInterval = 0.33 if self._osSwitch.isMacOS() else 5
 
         threading.Thread(target=self._processIteration, daemon=True).start()

@@ -33,6 +33,9 @@ class AbstractMetricImperialConverter(UnitConverterInterface, ABC):
     def isEnabled(self) -> bool:
         return self._enabled
 
+    def isDelayedInitialization(self) -> bool:
+        return False
+
     def getUnitIds(self) -> list[str]:
         if not self._enabled:
             raise Exception(f'Cannot getUnitIds for disabled {self.getName()} converter')

@@ -10,6 +10,7 @@ from src.Service.ArgumentParser import ArgumentParser
 from src.Service.AutostartManager import AutostartManager
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.Configuration import Configuration
+from src.Service.Conversion.Unit.Currency.ConversionRateUpdater import ConversionRateUpdater
 from src.Service.Debug import Debug
 from src.Service.Logger import Logger
 from src.Service.OSSwitch import OSSwitch
@@ -50,6 +51,7 @@ def main() -> None:
 
     services[AutostartManager].setupAutostart()
     clipboardManager.initializeClipboardWatch()
+    services[ConversionRateUpdater].initializeRatesAsync()
     services[AppLoop].startLoop()
     services[StatusbarApp].createApp()
 

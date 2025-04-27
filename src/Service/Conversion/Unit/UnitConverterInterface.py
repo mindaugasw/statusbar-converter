@@ -10,6 +10,10 @@ class UnitConverterInterface(ABC):
         pass
 
     @abstractmethod
+    def isDelayedInitialization(self) -> bool:
+        pass
+
+    @abstractmethod
     def getName(self) -> str:
         pass
 

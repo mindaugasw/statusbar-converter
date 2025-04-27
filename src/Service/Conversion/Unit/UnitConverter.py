@@ -21,7 +21,7 @@ class UnitConverter(ConverterInterface):
         self._unitParser = unitParser
 
     def isEnabled(self) -> bool:
-        return self._unitParser.isEnabled()
+        return True
 
     def getName(self) -> str:
         return 'Simple'
@@ -37,6 +37,7 @@ class UnitConverter(ConverterInterface):
         if result is None:
             return False, None
 
+        # TODO maybe remove self.getName()? or change to 'Unit'?
         result.converterName = f'{self.getName()}.{result.converterName}'
 
         return True, result

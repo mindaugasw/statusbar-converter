@@ -20,6 +20,16 @@ class ConfigId:
         300,
     )
 
+    Converter_Currency_Enabled: Final = ConfigParameter.newState(
+        ['converters', 'currency', 'enabled'],
+        True,
+    )
+
+    Converter_Currency_PrimaryCurrency: Final = ConfigParameter.newState(
+        ['converters', 'currency', 'primary_currency'],
+        'eur',
+    )
+
     Converter_Distance_Enabled: Final = ConfigParameter.newState(
         ['converters', 'distance', 'enabled'],
         True,

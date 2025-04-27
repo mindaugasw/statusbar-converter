@@ -1,7 +1,6 @@
 from typing import TypeVar
 
 from src.Constant.ModalId import ModalId
-from src.DTO.Converter.UnitToConverterMap import UnitToConverterMap
 from src.Service.AppLoop import AppLoop
 from src.Service.ArgumentParser import ArgumentParser
 from src.Service.AutostartManager import AutostartManager
@@ -12,6 +11,8 @@ from src.Service.Conversion.ConversionManager import ConversionManager
 from src.Service.Conversion.ConverterInterface import ConverterInterface
 from src.Service.Conversion.Timestamp.TimestampConverter import TimestampConverter
 from src.Service.Conversion.Timestamp.TimestampTextFormatter import TimestampTextFormatter
+from src.Service.Conversion.Unit.Currency.ConversionRateUpdater import ConversionRateUpdater
+from src.Service.Conversion.Unit.Currency.CurrencyConverter import CurrencyConverter
 from src.Service.Conversion.Unit.MetricImperial.DistanceConverter import DistanceConverter
 from src.Service.Conversion.Unit.MetricImperial.TemperatureConverter import TemperatureConverter
 from src.Service.Conversion.Unit.MetricImperial.VolumeConverter import VolumeConverter
@@ -20,6 +21,7 @@ from src.Service.Conversion.Unit.ThousandsDetector import ThousandsDetector
 from src.Service.Conversion.Unit.UnitConverter import UnitConverter
 from src.Service.Conversion.Unit.UnitConverterInterface import UnitConverterInterface
 from src.Service.Conversion.Unit.UnitParser import UnitParser
+from src.Service.Conversion.Unit.UnitToConverterMapper import UnitToConverterMapper
 from src.Service.Debug import Debug
 from src.Service.EventService import EventService
 from src.Service.ExceptionHandler import ExceptionHandler
@@ -67,7 +69,7 @@ class ServiceContainer:
 
         # Conversion services
         _[TimestampTextFormatter] = timestampTextFormatter = TimestampTextFormatter(config)
-        _[ConversionManager] = conversionManager = self.getConversionManager(timestampTextFormatter, config, logger, events, debug)
+        _[ConversionManager] = conversionManager = self.getConversionManager(_, filesystemHelper, timestampTextFormatter, config, logger, events, debug)
 
         # GUI services
         _[list[ModalWindowBuilderInterface]] = modalWindowBuilders = self._getModalWindowBuilders(config, configFileManager, filesystemHelper, logger)
@@ -94,25 +96,33 @@ class ServiceContainer:
 
     def getConversionManager(
         self,
+        _: dict[type, object],
+        filesystemHelper: FilesystemHelper,
         timestampTextFormatter: TimestampTextFormatter,
         config: Configuration,
         logger: Logger,
         events: EventService,
         debug: Debug,
     ) -> ConversionManager:
-        unitBeforeConverters: list[UnitConverterInterface] = []
+        currencyConverter = CurrencyConverter(events, config, logger)
+        _[ConversionRateUpdater] = conversionRateUpdater = ConversionRateUpdater(currencyConverter, filesystemHelper, config, events, logger)
+
+        unitBeforeConverters: list[UnitConverterInterface] = [
+            currencyConverter,
+        ]
 
         unitAfterConverters: list[UnitConverterInterface] = [
             DistanceConverter(config),
             VolumeConverter(config),
             WeightConverter(config),
             TemperatureConverter(config),
+            currencyConverter,
         ]
 
+        unitToConverterMapper = UnitToConverterMapper(unitBeforeConverters, unitAfterConverters, events)
+
         thousandsDetector = ThousandsDetector()
-        unitBeforeToConverterMap = UnitToConverterMap(unitBeforeConverters)
-        unitAfterToConverterMap = UnitToConverterMap(unitAfterConverters)
-        unitParser = UnitParser(unitBeforeToConverterMap, unitAfterToConverterMap, thousandsDetector)
+        unitParser = UnitParser(unitToConverterMapper, thousandsDetector)
 
         converters: list[ConverterInterface] = [
             TimestampConverter(timestampTextFormatter, config, logger),

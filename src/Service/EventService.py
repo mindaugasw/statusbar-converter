@@ -4,6 +4,7 @@ from typing_extensions import Final
 
 from src.DTO.ConvertResult import ConvertResult
 from src.DTO.Event import Event
+from src.Service.Conversion.Unit.UnitConverterInterface import UnitConverterInterface
 from src.Type.Types import DialogButtonsDict
 
 
@@ -13,6 +14,7 @@ class EventService:
     _ID_CONVERTED: Final[str] = 'converted'
     _ID_STATUSBAR_CLEAR: Final[str] = 'statusbar_clear'
     _ID_UPDATE_CHECK_COMPLETED: Final[str] = 'update_check_completed'
+    _ID_DELAYED_CONVERTER_INITIALIZED: Final[str] = 'delayed_converter_initialized'
 
     _events: dict[str, Event]
 
@@ -64,6 +66,12 @@ class EventService:
 
     def dispatchUpdateCheckCompleted(self, text: str, buttons: DialogButtonsDict) -> None:
         self._dispatch(self._ID_UPDATE_CHECK_COMPLETED, text, buttons)
+
+    def subscribeDelayedConverterInitialized(self, callback: Callable[[UnitConverterInterface], None]) -> None:
+        self._subscribe(self._ID_DELAYED_CONVERTER_INITIALIZED, callback)
+
+    def dispatchDelayedConverterInitialized(self, converter: UnitConverterInterface) -> None:
+        self._dispatch(self._ID_DELAYED_CONVERTER_INITIALIZED, converter)
 
     def _subscribe(self, _eventId: str, callback: Callable) -> None:
         if _eventId not in self._events:

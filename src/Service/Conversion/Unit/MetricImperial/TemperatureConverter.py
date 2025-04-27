@@ -33,6 +33,9 @@ class TemperatureConverter(UnitConverterInterface):
     def isEnabled(self) -> bool:
         return self._enabled
 
+    def isDelayedInitialization(self) -> bool:
+        return False
+
     def getName(self) -> str:
         return 'Temp'
 

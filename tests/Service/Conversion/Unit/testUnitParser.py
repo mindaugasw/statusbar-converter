@@ -27,6 +27,8 @@ class TestUnitParser(TestCase):
         ('Thousands separator 3', '1 2 3 4 m', 1234, 'm'),
         ('Thousands separator 4', '1 2 3 4 , 1m', 1234.1, 'm'),
 
+        # TODO add currency test cases
+
         # Compound units like 5'11" generally are not supported. But current parsers
         # already half-parse them, treating as 5ft (cutting off inches).
         # So we test to ensure this compatibility remains
