@@ -91,7 +91,7 @@ class ConversionRateUpdater:
         # TODO class property probably not needed
         if hasattr(self, '_data') and bool(self._data):
             self._isInitialized = True
-            self._currencyConverter.refreshUnits(self._data['currencies'], self._data['ratesFromCurrency'])
+            self._currencyConverter.refreshUnits(self._data['currencies'])
 
         # TODO subscribe to loop event
 

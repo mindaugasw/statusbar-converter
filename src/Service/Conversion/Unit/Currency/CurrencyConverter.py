@@ -20,7 +20,6 @@ class CurrencyConverter(UnitConverterInterface):
     _enabled: bool
     _initialized: bool
     _primaryCurrency: str
-    _ratesFromCurrency: str
     _unitsDefinition: dict[str, UnitDefinition[CurrencyUnit]]
     _unitsExpanded: dict[str, CurrencyUnit]
 
@@ -57,14 +56,24 @@ class CurrencyConverter(UnitConverterInterface):
         return list(self._unitsExpanded.keys())
 
     def tryConvert(self, number: float, unitId: str) -> Tuple[bool, ConvertResult | None]:
-        self._logger.log(f'{Logs.catConverter}Currency] Converting from {number} {unitId}')
+        fromCurrency = self._unitsExpanded[unitId]
+        targetCurrency = self._unitsExpanded[self._primaryCurrency]
 
-        return False, None
+        if fromCurrency is targetCurrency:
+            return False, None
 
-    def refreshUnits(self, data: dict, ratesFromCurrency: str) -> None:
+        targetCurrencyAmount = (number / fromCurrency.rate) * targetCurrency.rate
+
+        textFrom = f'{number:g} {fromCurrency.prettyFormat}'
+        textTo = f'{targetCurrencyAmount:g} {targetCurrency.prettyFormat}'
+
+        # TODO add special case if converter from number=1, then show more decimal numbers
+
+        return True, ConvertResult(f'{textFrom}  =  {textTo}', textFrom, textTo, self.getName())
+
+    def refreshUnits(self, data: dict) -> None:
         self._unitsDefinition = self._getUnitsDefinition(data)
         self._unitsExpanded = UnitPreprocessor.expandAliases(self._unitsDefinition)
-        self._ratesFromCurrency = ratesFromCurrency
 
         if not self._primaryCurrency in self._unitsDefinition:
             defaultPrimaryCurrency = ConfigId.Converter_Currency_PrimaryCurrency.defaultValue
