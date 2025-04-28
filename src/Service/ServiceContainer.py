@@ -80,7 +80,7 @@ class ServiceContainer:
         _[AutostartManager] = autostartManager = self._getAutostartManager(osSwitch, filesystemHelper, config, argumentParser, logger)
         _[ClipboardManager] = clipboardManager = self._getClipboardManager(osSwitch, events, logger, modalWindowManager)
         _[StatusbarApp] = statusbarApp = self._getStatusbarApp(osSwitch, timestampTextFormatter, clipboardManager, conversionManager, events, config, configFileManager, autostartManager, updateManager, modalWindowManager, logger, debug)
-        _[AppLoop] = appLoop = AppLoop(osSwitch, events)
+        _[AppLoop] = appLoop = self._getAppLoop(osSwitch, events, clipboardManager)
 
         self._services = _
 
@@ -224,3 +224,16 @@ class ServiceContainer:
                 logger,
                 debug,
             )
+
+    def _getAppLoop(self, osSwitch: OSSwitch, events: EventService, clipboardManager: ClipboardManager) -> AppLoop:
+        if osSwitch.isMacOS():
+            from src.Service.AppLoopMacOs import AppLoopMacOs
+            from src.Service.ClipboardManagerMacOs import ClipboardManagerMacOs
+
+            if not isinstance(clipboardManager, ClipboardManagerMacOs):
+                raise Exception('Invalid type: ClipboardManager must be macOS version')
+
+            return AppLoopMacOs(events, clipboardManager)
+        else:
+            from src.Service.AppLoopLinux import AppLoopLinux
+            return AppLoopLinux(events)
