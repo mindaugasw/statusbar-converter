@@ -8,6 +8,8 @@ from typing_extensions import Final
 
 from src.Constant.ConfigId import ConfigId
 from src.Constant.Logs import Logs
+from src.DTO.Converter.CurrenciesFileData import CurrenciesFileData
+from src.DTO.Converter.CurrenciesRefreshResult import CurrenciesRefreshResult
 from src.DTO.Exception.InvalidHTTPResponseException import InvalidHTTPResponseException
 from src.Service.ArgumentParser import ArgumentParser
 from src.Service.Configuration import Configuration
@@ -27,7 +29,7 @@ class ConversionRateUpdater:
     """
 
     _DEFAULT_URL: Final[str] = 'https://storage.googleapis.com/bucket-statusbar-converter-prod/currency_rates.json'
-    _CACHED_RATES_MAX_AGE: Final[int] = 3600 * 3  # 3 hours
+    _UPDATE_INTERVAL: Final[int] = 3600 * 3  # 3 hours
 
     _currencyConverter: CurrencyConverter
     _config: Configuration
@@ -35,11 +37,8 @@ class ConversionRateUpdater:
     _logger: Logger
 
     _url: str
-    _isInitialized: bool
-    # TODO create a DTO for data? Or maybe completely remove class property?
-    _data: dict
     _ratesFilePath: str
-    _lastOnlineRefreshAt: int
+    _lastOnlineRefreshAt: int | None
 
     def __init__(
         self,
@@ -55,7 +54,7 @@ class ConversionRateUpdater:
         self._events = events
         self._logger = logger
 
-        self._isInitialized = False
+        self._lastOnlineRefreshAt = None
         self._ratesFilePath = filesystemHelper.getUserDataDir() + '/currency_rates.json'
 
         urlOverride = argumentParser.getCurrencyRatesUrl()
@@ -68,93 +67,69 @@ class ConversionRateUpdater:
         threading.Thread(target=self._initializeRates, daemon=True).start()
 
     def _initializeRates(self) -> None:
-        self._logger.log(f'{Logs.catRateUpdater}Initialize - starting currency rates initialization')
-
         fileResult = self._refreshFromLocalFile()
 
         self._logger.log(
-            f'{Logs.catRateUpdater}Initialize - local refresh {"success" if fileResult["parsedSuccessfully"] else "FAIL"}, '
-            f'success: {fileResult["parsedSuccessfully"]}, doOnlineRefresh: {fileResult["shouldDoOnlineRefresh"]}, '
-            f'cachedAt: {fileResult["data"]["cachedAt"] if fileResult["parsedSuccessfully"] else "-"}, '
-            f'refreshedAt: {fileResult["data"]["refreshedAt"] if fileResult["parsedSuccessfully"] else "-"}',
+            f'{Logs.catRateUpdater}Initialize - local refresh {"success" if fileResult.success else "FAIL"}, '
+            f'isOutdated: {fileResult.isOutdated}, '
+            f'cachedAt: {fileResult.data.cachedAt if fileResult.success else "-"}, '
+            f'refreshedAt: {fileResult.data.refreshedAt if fileResult.success else "-"}',
         )
 
-        if fileResult['parsedSuccessfully']:
-            self._data = fileResult['data']
+        parsedData: CurrenciesFileData | None = None
+        onlineResult: CurrenciesRefreshResult | None = None
 
-        if fileResult['shouldDoOnlineRefresh']:
+        if fileResult.success:
+            parsedData = fileResult.data
+
+        if fileResult.isOutdated:
             onlineResult = self._refreshFromOnline()
 
-            self._logger.log(
-                f'{Logs.catRateUpdater}Initialize - online refresh {"success" if onlineResult["refreshedSuccessfully"] else "FAIL"}, '
-                f'success: {onlineResult["refreshedSuccessfully"]}, '
-                f'cachedAt: {onlineResult["data"]["cachedAt"] if onlineResult["refreshedSuccessfully"] else "-"}, '
-                f'refreshedAt: {onlineResult["data"]["refreshedAt"] if onlineResult["refreshedSuccessfully"] else "-"}',
-            )
+            if onlineResult.success:
+                parsedData = onlineResult.data
 
-            if onlineResult['refreshedSuccessfully']:
-                self._data = onlineResult['data']
+        if fileResult.success and onlineResult is not None and not onlineResult.success:
+            self._currencyConverter.refreshUnits(parsedData.currencies)
 
-        # TODO class property probably not needed
-        if hasattr(self, '_data') and bool(self._data):
-            self._isInitialized = True
-            self._currencyConverter.refreshUnits(self._data['currencies'])
+        self._events.subscribeAppLoopIteration(self._updateCheck)
 
-        # TODO subscribe to loop event
-
-    def _refreshFromLocalFile(self) -> dict:
-        result = {
-            'parsedSuccessfully': False,
-            'shouldDoOnlineRefresh': False,
-            'data': {},
-        }
-
+    def _refreshFromLocalFile(self) -> CurrenciesRefreshResult:
         try:
             if not os.path.isfile(self._ratesFilePath):
-                result['parsedSuccessfully'] = False
-                result['shouldDoOnlineRefresh'] = True
-                return result
+                return CurrenciesRefreshResult(False, True)
 
             with open(self._ratesFilePath, 'r') as file:
                 text = file.read()
                 parsedData = self._parseJsonText(text)
+                isOutdated: bool
 
-                if int(time.time()) - parsedData['cachedAt'] > self._CACHED_RATES_MAX_AGE:
-                    result['shouldDoOnlineRefresh'] = True
+                if int(time.time()) - parsedData.cachedAt > self._UPDATE_INTERVAL:
+                    isOutdated = True
                 else:
-                    result['shouldDoOnlineRefresh'] = False
-                    self._lastOnlineRefreshAt = parsedData['cachedAt']
+                    isOutdated = False
+                    self._lastOnlineRefreshAt = parsedData.cachedAt
 
-                result['parsedSuccessfully'] = True
-                result['data'] = parsedData
-
-                return result
+                return CurrenciesRefreshResult(True, isOutdated, parsedData)
         except Exception as e:
             self._logger.log(
                 f'{Logs.catRateUpdater}EXCEPTION in currency rates update - local file parsing:\n'
                 f'{ExceptionHandler.formatExceptionLog(e)}',
             )
 
-            result['parsedSuccessfully'] = False
-            result['shouldDoOnlineRefresh'] = True
-            result['data'] = {}
+            return CurrenciesRefreshResult(False, True)
 
-            return result
-
-    def _refreshFromOnline(self) -> dict:
+    def _refreshFromOnline(self) -> CurrenciesRefreshResult:
         self._lastOnlineRefreshAt = int(time.time())
-
-        result = {
-            'refreshedSuccessfully': False,
-            'data': {},
-        }
 
         try:
             response = requests.get(self._url, {'ts': int(time.time())})
             statusCode = response.status_code
 
             if statusCode < 200 or statusCode > 299:
-                raise InvalidHTTPResponseException('Received invalid response during currency rates online refresh', response)
+                raise InvalidHTTPResponseException(
+                    'Received invalid response during currency rates online refresh',
+                    response,
+                )
 
             responseText = response.text
             parsedData = self._parseJsonText(responseText)
@@ -162,23 +137,33 @@ class ConversionRateUpdater:
             with open(self._ratesFilePath, 'w') as file:
                 file.write(responseText)
 
-            result['refreshedSuccessfully'] = True
-            result['data'] = parsedData
+            self._currencyConverter.refreshUnits(parsedData.currencies)
 
-            return result
+            self._logger.log(
+                f'{Logs.catRateUpdater}Online refresh success, '
+                f'cachedAt: {parsedData.cachedAt}, refreshedAt: {parsedData.refreshedAt}',
+            )
+
+            return CurrenciesRefreshResult(True, False, parsedData)
         except Exception as e:
             self._logger.log(
                 f'{Logs.catRateUpdater}EXCEPTION in currency rates update - online refresh:\n'
                 f'{ExceptionHandler.formatExceptionLog(e)}',
             )
 
-            result['refreshedSuccessfully'] = False
+            return CurrenciesRefreshResult(False, True)
 
-            return result
-
-    def _parseJsonText(self, text: str) -> dict:
+    def _parseJsonText(self, text: str) -> CurrenciesFileData:
         data = json.loads(text)
 
-        # TODO is this method needed? Maybe convert dict to DTO here? Or else delete method
+        return CurrenciesFileData(
+            data['refreshedAt'],
+            data['cachedAt'],
+            data['currencies'],
+        )
 
-        return data
+    def _updateCheck(self) -> None:
+        if self._lastOnlineRefreshAt and (int(time.time()) - self._UPDATE_INTERVAL) < self._lastOnlineRefreshAt:
+            return
+
+        threading.Thread(target=self._refreshFromOnline, daemon=True).start()
