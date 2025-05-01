@@ -5,6 +5,7 @@ import sys
 import threading
 import traceback
 
+from src.DTO.Exception.FormatableExceptionInterface import FormatableExceptionInterface
 from src.Service.Logger import Logger
 
 
@@ -60,11 +61,16 @@ class ExceptionHandler:
         traceList = traceback.format_exception(exception)
         traceString = ''.join(traceList)
 
-        return 'Type: %s\nMessage: %s\nTrace: %s' % (
+        text = 'Type: %s\nMessage: %s\nTrace: %s' % (
             type(exception),
             exception,
             traceString,
         )
+
+        if isinstance(exception, FormatableExceptionInterface):
+            text += '\n' + exception.formatExceptionData()
+
+        return text
 
     @staticmethod
     def _handleException(threadName, exceptionType, message, trace) -> None:

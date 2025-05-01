@@ -8,6 +8,8 @@ from typing_extensions import Final
 
 from src.Constant.ConfigId import ConfigId
 from src.Constant.Logs import Logs
+from src.DTO.Exception.InvalidHTTPResponseException import InvalidHTTPResponseException
+from src.Service.ArgumentParser import ArgumentParser
 from src.Service.Configuration import Configuration
 from src.Service.Conversion.Unit.Currency.CurrencyConverter import CurrencyConverter
 from src.Service.EventService import EventService
@@ -24,7 +26,7 @@ class ConversionRateUpdater:
     parsed_at - when desktop application parsed data
     """
 
-    _URL: Final[str] = 'https://storage.googleapis.com/bucket-statusbar-converter-prod/currency_rates.json'
+    _DEFAULT_URL: Final[str] = 'https://storage.googleapis.com/bucket-statusbar-converter-prod/currency_rates.json'
     _CACHED_RATES_MAX_AGE: Final[int] = 3600 * 3  # 3 hours
 
     _currencyConverter: CurrencyConverter
@@ -32,6 +34,7 @@ class ConversionRateUpdater:
     _events: EventService
     _logger: Logger
 
+    _url: str
     _isInitialized: bool
     # TODO create a DTO for data? Or maybe completely remove class property?
     _data: dict
@@ -42,6 +45,7 @@ class ConversionRateUpdater:
         self,
         currencyConverter: CurrencyConverter,
         filesystemHelper: FilesystemHelper,
+        argumentParser: ArgumentParser,
         config: Configuration,
         events: EventService,
         logger: Logger,
@@ -54,6 +58,9 @@ class ConversionRateUpdater:
         self._isInitialized = False
         self._ratesFilePath = filesystemHelper.getUserDataDir() + '/currency_rates.json'
 
+        urlOverride = argumentParser.getCurrencyRatesUrl()
+        self._url = urlOverride if urlOverride is not None else self._DEFAULT_URL
+
     def initializeRatesAsync(self) -> None:
         if not self._config.get(ConfigId.Converter_Currency_Enabled):
             return
@@ -61,7 +68,7 @@ class ConversionRateUpdater:
         threading.Thread(target=self._initializeRates, daemon=True).start()
 
     def _initializeRates(self) -> None:
-        self._logger.log(f'{Logs.catRateUpdater}Starting currency rates initialization')
+        self._logger.log(f'{Logs.catRateUpdater}Initialize - starting currency rates initialization')
 
         fileResult = self._refreshFromLocalFile()
 
@@ -143,11 +150,15 @@ class ConversionRateUpdater:
         }
 
         try:
-            responseText = requests.get(self._URL, {'ts': int(time.time())}).text
-            # TODO handle 4xx/5xx responses
+            response = requests.get(self._url, {'ts': int(time.time())})
+            statusCode = response.status_code
 
+            if statusCode < 200 or statusCode > 299:
+                raise InvalidHTTPResponseException('Received invalid response during currency rates online refresh', response)
+
+            responseText = response.text
             parsedData = self._parseJsonText(responseText)
-            # Write to file only if response is 200
+
             with open(self._ratesFilePath, 'w') as file:
                 file.write(responseText)
 
@@ -157,7 +168,7 @@ class ConversionRateUpdater:
             return result
         except Exception as e:
             self._logger.log(
-                f'{Logs.catRateUpdater}EXCEPTION ins currency rates update - online refresh:\n'
+                f'{Logs.catRateUpdater}EXCEPTION in currency rates update - online refresh:\n'
                 f'{ExceptionHandler.formatExceptionLog(e)}',
             )
 

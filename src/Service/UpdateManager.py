@@ -10,6 +10,7 @@ from typing_extensions import Final
 from src.Constant.AppConstant import AppConstant
 from src.Constant.ConfigId import ConfigId
 from src.Constant.Logs import Logs
+from src.DTO.Exception.InvalidHTTPResponseException import InvalidHTTPResponseException
 from src.Service.Configuration import Configuration
 from src.Service.Debug import Debug
 from src.Service.EventService import EventService
@@ -153,7 +154,13 @@ class UpdateManager:
             with open(f'{self._filesystemHelper.getAssetsDevDir()}/releases_response_mock_{mockUpdate}.json') as file:
                 return json.load(file)
 
-        return requests.get(self._RELEASES_URL).json()
+        response = requests.get(self._RELEASES_URL)
+        statusCode = response.status_code
+
+        if statusCode < 200 or statusCode > 299:
+            raise InvalidHTTPResponseException('Received invalid response when checking for app updates', response)
+
+        return response.json()
 
     def _dispatchUpdateResultEvent(self, version: str | None) -> None:
         def _handleClickGoToDownloadPage(foundVersion: str) -> None:
