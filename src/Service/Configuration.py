@@ -123,7 +123,7 @@ class Configuration:
         return valuePartial
 
     def _setState(self, key: list[str], value: Any) -> None:
-        self._logger.log(f'{Logs.catConfig}Persisting state: {key}: {value}')
+        self._logger.log(f'{Logs.catConfig}Persisting state: [{".".join(key)}]: {value}')
         self._setValue(key, value, self._state)
 
         stateContent = yaml.dump(self._state)

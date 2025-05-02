@@ -89,6 +89,8 @@ class CurrencyConverter(UnitConverterInterface):
         self._initialized = True
         self._events.dispatchDelayedConverterInitialized(self)
 
+        self._logger.log(f'{Logs.catConverter}Currency] Successfully refreshed units data')
+
     def _getUnitsDefinition(self, data: dict) -> dict[str, UnitDefinition[CurrencyUnit]]:
         unitsDefinition = {}
 

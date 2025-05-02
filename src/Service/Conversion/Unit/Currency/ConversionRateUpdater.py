@@ -88,7 +88,7 @@ class ConversionRateUpdater:
             if onlineResult.success:
                 parsedData = onlineResult.data
 
-        if fileResult.success and onlineResult is not None and not onlineResult.success:
+        if fileResult.success and (onlineResult is None or not onlineResult.success):
             self._currencyConverter.refreshUnits(parsedData.currencies)
 
         self._events.subscribeAppLoopIteration(self._updateCheck)
@@ -137,12 +137,12 @@ class ConversionRateUpdater:
             with open(self._ratesFilePath, 'w') as file:
                 file.write(responseText)
 
-            self._currencyConverter.refreshUnits(parsedData.currencies)
-
             self._logger.log(
                 f'{Logs.catRateUpdater}Online refresh success, '
                 f'cachedAt: {parsedData.cachedAt}, refreshedAt: {parsedData.refreshedAt}',
             )
+
+            self._currencyConverter.refreshUnits(parsedData.currencies)
 
             return CurrenciesRefreshResult(True, False, parsedData)
         except Exception as e:

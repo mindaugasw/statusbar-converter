@@ -8,7 +8,8 @@ converters:
     enabled: true
     primary_unit_metric: true
   currency:
-    # TODO add this
+    enabled: true
+    primary_currency: eur
   temperature:
     enabled: true
     primary_unit_celsius: true
