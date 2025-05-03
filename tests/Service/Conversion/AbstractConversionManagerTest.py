@@ -64,6 +64,8 @@ class AbstractConversionManagerTest(TestCase):
             (ConfigId.ClearOnChange, False),
             (ConfigId.ClearAfterTime, 0),
             (ConfigId.Debug, False),
+            (ConfigId.Converter_Currency_Enabled, False),
+            (ConfigId.Converter_Currency_PrimaryCurrency, 'eur'),
             (ConfigId.Converter_Distance_Enabled, True),
             (ConfigId.Converter_Distance_PrimaryUnit_Metric, True),
             (ConfigId.Converter_Temperature_Enabled, True),
@@ -81,15 +83,21 @@ class AbstractConversionManagerTest(TestCase):
         argParserMock = MagicMock(ArgumentParser)
         argParserMock.isDebugEnabled.return_value = False
         argParserMock.getMockUpdate.return_value = None
+        argParserMock.getCurrencyRatesUrl.return_value = None
 
         configMock = MockLibrary.getConfig(configDefault, configOverrides)
         loggerMock = Mock(Logger)
         debugMock = Debug(configMock, argParserMock)
+        filesystemHelperMock = MockLibrary.getFilesystemHelper()
 
         timestampTextFormatter = TimestampTextFormatter(configMock)
+        container: dict[type, object] = {}
 
         conversionManager = ServiceContainer().getConversionManager(
+            container,
+            filesystemHelperMock,
             timestampTextFormatter,
+            argParserMock,
             configMock,
             loggerMock,
             self._events,

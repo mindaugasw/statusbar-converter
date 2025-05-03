@@ -3,6 +3,7 @@ from unittest.mock import Mock
 
 from src.DTO.ConfigParameter import ConfigParameter
 from src.Service.Configuration import Configuration
+from src.Service.FilesystemHelper import FilesystemHelper
 from tests.TestUtil.Types import ConfigurationsList
 
 
@@ -35,4 +36,11 @@ class MockLibrary:
             if configParam.key == configId.key:
                 return configValue
 
-        raise Exception(f'configId "{configId.key}" not found in Configuration mock')
+        raise Exception(f'configId {configId.getKeyString()} not found in Configuration mock')
+
+    @staticmethod
+    def getFilesystemHelper() -> FilesystemHelper:
+        mock = Mock(FilesystemHelper)
+        mock.getUserDataDir.return_value = '/home/username/.config/Statusbar Converter'
+        # TODO would be nice to mock all methods, to avoid misusing later on. For that need to convert class to non-static
+        return mock

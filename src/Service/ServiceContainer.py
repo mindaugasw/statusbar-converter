@@ -96,7 +96,7 @@ class ServiceContainer:
 
     def getConversionManager(
         self,
-        _: dict[type, object],
+        container: dict[type, object],
         filesystemHelper: FilesystemHelper,
         timestampTextFormatter: TimestampTextFormatter,
         argumentParser: ArgumentParser,
@@ -106,7 +106,7 @@ class ServiceContainer:
         debug: Debug,
     ) -> ConversionManager:
         currencyConverter = CurrencyConverter(events, config, logger)
-        _[ConversionRateUpdater] = conversionRateUpdater = ConversionRateUpdater(currencyConverter, filesystemHelper, argumentParser, config, events, logger)
+        container[ConversionRateUpdater] = conversionRateUpdater = ConversionRateUpdater(currencyConverter, filesystemHelper, argumentParser, config, events, logger)
 
         unitBeforeConverters: list[UnitConverterInterface] = [
             currencyConverter,

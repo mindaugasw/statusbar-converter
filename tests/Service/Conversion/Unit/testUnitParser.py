@@ -3,7 +3,6 @@ from unittest import TestCase
 from parameterized import parameterized
 
 from src.Constant.ConfigId import ConfigId
-from src.DTO.Converter.UnitToConverterMap import UnitToConverterMap
 from src.Service.Conversion.Unit.MetricImperial.DistanceConverter import DistanceConverter
 from src.Service.Conversion.Unit.MetricImperial.TemperatureConverter import TemperatureConverter
 from src.Service.Conversion.Unit.MetricImperial.VolumeConverter import VolumeConverter
@@ -11,6 +10,8 @@ from src.Service.Conversion.Unit.MetricImperial.WeightConverter import WeightCon
 from src.Service.Conversion.Unit.ThousandsDetector import ThousandsDetector
 from src.Service.Conversion.Unit.UnitConverterInterface import UnitConverterInterface
 from src.Service.Conversion.Unit.UnitParser import UnitParser
+from src.Service.Conversion.Unit.UnitToConverterMapper import UnitToConverterMapper
+from src.Service.EventService import EventService
 from tests.TestUtil.MockLibrary import MockLibrary
 
 
@@ -62,6 +63,8 @@ class TestUnitParser(TestCase):
 
     def _getParser(self) -> UnitParser:
         config = [
+            (ConfigId.Converter_Currency_Enabled, False),
+            (ConfigId.Converter_Currency_PrimaryCurrency, 'eur'),
             (ConfigId.Converter_Distance_Enabled, True),
             (ConfigId.Converter_Distance_PrimaryUnit_Metric, True),
             (ConfigId.Converter_Temperature_Enabled, True),
@@ -73,15 +76,18 @@ class TestUnitParser(TestCase):
         ]
 
         configMock = MockLibrary.getConfig(config)
+        events = EventService()
 
-        simpleConverters: list[UnitConverterInterface] = [
+        unitBeforeConverters: list[UnitConverterInterface] = [
+
+        ]
+        unitAfterConverters: list[UnitConverterInterface] = [
             DistanceConverter(configMock),
             WeightConverter(configMock),
             TemperatureConverter(configMock),
             VolumeConverter(configMock),
         ]
 
-        unitBeforeToConverterMap = UnitToConverterMap([]) # TODO
-        unitAfterToConverterMap = UnitToConverterMap(simpleConverters)
+        unitToConverterMapper = UnitToConverterMapper(unitBeforeConverters, unitAfterConverters, events)
 
-        return UnitParser(unitBeforeToConverterMap, unitAfterToConverterMap, ThousandsDetector())
+        return UnitParser(unitToConverterMapper, ThousandsDetector())

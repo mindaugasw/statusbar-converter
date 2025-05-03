@@ -57,7 +57,9 @@ class Configuration:
         self._initializeConfig()
 
         if not parameter.isState:
-            raise Exception('Cannot persist ConfigParameter that is not "state" stype')
+            raise Exception(
+                f'Cannot persist ConfigParameter that is not "state" stype {parameter.getKeyString()}',
+            )
 
         self._setState(parameter.key, value)
 
@@ -100,7 +102,8 @@ class Configuration:
             # If we return default value, that means for whatever reason it does
             # not exist in the file. So we write that value even on "get" action.
             self._logger.log(
-                f'{Logs.catConfig}Missing state value {key} in file. Will persist given default value: {defaultValue}',
+                f'{Logs.catConfig}Missing state value {self._keyString(key)} in file. '
+                f'Will persist given default value: {defaultValue}',
             )
 
             self._setState(key, defaultValue)
@@ -123,7 +126,7 @@ class Configuration:
         return valuePartial
 
     def _setState(self, key: list[str], value: Any) -> None:
-        self._logger.log(f'{Logs.catConfig}Persisting state: [{".".join(key)}]: {value}')
+        self._logger.log(f'{Logs.catConfig}Persisting state: {self._keyString(key)}: {value}')
         self._setValue(key, value, self._state)
 
         stateContent = yaml.dump(self._state)
@@ -147,3 +150,6 @@ class Configuration:
                 newConfigPath = configPath[keyPartial]
 
             configPath = newConfigPath
+
+    def _keyString(self, key: list[str]) -> str:
+        return '[' + '.'.join(key) + ']'

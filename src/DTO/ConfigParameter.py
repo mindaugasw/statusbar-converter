@@ -24,3 +24,6 @@ class ConfigParameter:
         configParameter.defaultValue = defaultValue
 
         return configParameter
+
+    def getKeyString(self) -> str:
+        return '[' + '.'.join(self.key) + ']'
