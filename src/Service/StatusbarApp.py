@@ -15,6 +15,7 @@ from src.Service.Conversion.ConversionManager import ConversionManager
 from src.Service.Conversion.Timestamp.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.Debug import Debug
 from src.Service.EventService import EventService
+from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
 from src.Service.ModalWindow.ModalWindowManager import ModalWindowManager
 from src.Service.OSSwitch import OSSwitch
@@ -37,6 +38,7 @@ class StatusbarApp(ABC):
     _autostartManager: AutostartManager
     _updateManager: UpdateManager
     _modalWindowManager: ModalWindowManager
+    _filesystemHelper: FilesystemHelper
     _logger: Logger
     _debug: Debug
 
@@ -61,6 +63,7 @@ class StatusbarApp(ABC):
         autostartManager: AutostartManager,
         updateManager: UpdateManager,
         modalWindowManager: ModalWindowManager,
+        filesystemHelper: FilesystemHelper,
         logger: Logger,
         debug: Debug,
     ):
@@ -73,6 +76,7 @@ class StatusbarApp(ABC):
         self._autostartManager = autostartManager
         self._updateManager = updateManager
         self._modalWindowManager = modalWindowManager
+        self._filesystemHelper = filesystemHelper
         self._logger = logger
         self._debug = debug
 

@@ -42,5 +42,15 @@ class MockLibrary:
     def getFilesystemHelper() -> FilesystemHelper:
         mock = Mock(FilesystemHelper)
         mock.getUserDataDir.return_value = '/home/username/.config/Statusbar Converter'
-        # TODO would be nice to mock all methods, to avoid misusing later on. For that need to convert class to non-static
+        mock.getProjectDir.return_value = '/home/username/Projects/statusbar-converter'
+        mock.getInitializationLogs.return_value = '[Init logs]'
+        mock.getAssetsDir.return_value = mock.getProjectDir() + '/assets'
+        mock.getAssetsDevDir.return_value = mock.getProjectDir() + '/assets_dev'
+        mock.getConfigDir.return_value = mock.getProjectDir() + '/config'
+        mock.getBinariesDir.return_value = mock.getProjectDir() + '/binaries'
+        mock.getAppExecutablePath.return_value = '/home/username/Apps/Statusbar Converter'
+        mock.getStartupScriptDir.return_value = '/home/username/.config/autostart'
+        mock.isPackagedApp.return_value = True
+        mock.openFile.return_value = None
+
         return mock

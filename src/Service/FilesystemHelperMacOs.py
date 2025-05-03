@@ -11,9 +11,8 @@ class FilesystemHelperMacOs(FilesystemHelper):
     def getUserDataDir(self) -> str:
         return rumps.application_support(AppConstant.APP_NAME)
 
-    @staticmethod
-    def getAppExecutablePath() -> str | None:
-        projectDir = FilesystemHelper.getProjectDir()
+    def getAppExecutablePath(self) -> str | None:
+        projectDir = self.getProjectDir()
 
         result = re.search('^.+\\.app', projectDir, re.IGNORECASE)
 
@@ -22,10 +21,8 @@ class FilesystemHelperMacOs(FilesystemHelper):
 
         return result.group()
 
-    @staticmethod
-    def getStartupScriptDir() -> str:
+    def getStartupScriptDir(self) -> str:
         raise Exception('Not implemented')
 
-    @staticmethod
-    def openFile(filePath: str) -> None:
+    def openFile(self, filePath: str) -> None:
         subprocess.Popen(['open', filePath])

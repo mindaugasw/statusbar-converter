@@ -6,7 +6,7 @@ import threading
 from src.Constant.ModalId import ModalId
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.EventService import EventService
-from src.Service.FilesystemHelperLinux import FilesystemHelperLinux
+from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
 from src.Service.ModalWindow.ModalWindowManager import ModalWindowManager
 
@@ -16,12 +16,18 @@ class ClipboardManagerLinux(ClipboardManager):
 
     _clipnotifyPath: str
 
-    def __init__(self, events: EventService, logger: Logger, modalWindowManager: ModalWindowManager):
+    def __init__(
+        self,
+        events: EventService,
+        logger: Logger,
+        modalWindowManager: ModalWindowManager,
+        filesystemHelper: FilesystemHelper,
+    ):
         super().__init__(events, logger)
 
         self._modalWindowManager = modalWindowManager
 
-        self._clipnotifyPath = FilesystemHelperLinux.getBinariesDir() + '/clipnotify/clipnotify'
+        self._clipnotifyPath = filesystemHelper.getBinariesDir() + '/clipnotify/clipnotify'
 
         if not os.path.isfile(self._clipnotifyPath):
             raise Exception('Clipnotify binary not found in: ' + self._clipnotifyPath)

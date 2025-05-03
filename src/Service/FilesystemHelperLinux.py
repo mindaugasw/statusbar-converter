@@ -13,20 +13,17 @@ class FilesystemHelperLinux(FilesystemHelper):
 
         return path
 
-    @staticmethod
-    def getAppExecutablePath() -> str | None:
-        if not FilesystemHelper.isPackagedApp():
+    def getAppExecutablePath(self) -> str | None:
+        if not self.isPackagedApp():
             return None
 
         return sys.executable
 
-    @staticmethod
-    def getStartupScriptDir() -> str:
+    def getStartupScriptDir(self) -> str:
         path = os.path.expanduser('~/.config/autostart')
         os.makedirs(path, exist_ok=True)
 
         return path
 
-    @staticmethod
-    def openFile(filePath: str) -> None:
+    def openFile(self, filePath: str) -> None:
         subprocess.call(['xdg-open', filePath])

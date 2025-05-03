@@ -21,7 +21,7 @@ class Logger:
 
     def __init__(self, filesystemHelper: FilesystemHelper):
         self._isDebugEnabled = False
-        logFileName = 'log.txt' if FilesystemHelper.isPackagedApp() else 'log.dev.txt'
+        logFileName = 'log.txt' if filesystemHelper.isPackagedApp() else 'log.dev.txt'
         self._logPath = f'{filesystemHelper.getUserDataDir()}/{logFileName}'
         self._initializeLogFile()
         self._instanceId = ''.join(random.choices(string.ascii_lowercase + string.digits, k=3))

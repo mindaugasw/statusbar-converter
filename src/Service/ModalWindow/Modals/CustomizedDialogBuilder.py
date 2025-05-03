@@ -14,10 +14,14 @@ class CustomizedDialogBuilder(ModalWindowBuilderInterface):
     _PRIMARY_TAG: Final[str] = 'primary'
     _MINIMUM_NEW_LINES: Final[int] = 8
 
+    _filesystemHelper: FilesystemHelper
+
     _callbacks: dict[DpgTag, Callable | None]
 
-    def __init__(self):
+    def __init__(self, filesystemHelper: FilesystemHelper):
         super().__init__()
+
+        self._filesystemHelper = filesystemHelper
 
     def getParameters(self) -> ModalWindowParameters:
         return ModalWindowParameters(
@@ -44,7 +48,7 @@ class CustomizedDialogBuilder(ModalWindowBuilderInterface):
         with dpg.window(tag=self._PRIMARY_TAG, autosize=True):
             with dpg.group(horizontal=True):
                 with dpg.group():
-                    BuilderHelper.addImage(FilesystemHelper.getAssetsDir() + '/icon_colored_small.png')
+                    BuilderHelper.addImage(self._filesystemHelper.getAssetsDir() + '/icon_colored_small.png')
 
                 with dpg.group():
                     if buildCallback is not None:

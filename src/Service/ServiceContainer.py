@@ -62,7 +62,7 @@ class ServiceContainer:
         ExceptionHandler.initialize()
 
         _[ConfigFileManager] = configFileManager = ConfigFileManager(filesystemHelper, logger)
-        _[Configuration] = config = Configuration(configFileManager, logger)
+        _[Configuration] = config = Configuration(filesystemHelper, configFileManager, logger)
         _[ArgumentParser] = argumentParser = ArgumentParser()
         _[Debug] = debug = Debug(config, argumentParser)
         _[EventService] = events = EventService()
@@ -73,13 +73,13 @@ class ServiceContainer:
 
         # GUI services
         _[list[ModalWindowBuilderInterface]] = modalWindowBuilders = self._getModalWindowBuilders(config, configFileManager, filesystemHelper, logger)
-        _[ModalWindowManager] = modalWindowManager = ModalWindowManager(modalWindowBuilders, osSwitch, logger)
+        _[ModalWindowManager] = modalWindowManager = ModalWindowManager(modalWindowBuilders, filesystemHelper, osSwitch, logger)
 
         # App services
         _[UpdateManager] = updateManager = UpdateManager(filesystemHelper, events, config, logger, debug)
         _[AutostartManager] = autostartManager = self._getAutostartManager(osSwitch, filesystemHelper, config, argumentParser, logger)
-        _[ClipboardManager] = clipboardManager = self._getClipboardManager(osSwitch, events, logger, modalWindowManager)
-        _[StatusbarApp] = statusbarApp = self._getStatusbarApp(osSwitch, timestampTextFormatter, clipboardManager, conversionManager, events, config, configFileManager, autostartManager, updateManager, modalWindowManager, logger, debug)
+        _[ClipboardManager] = clipboardManager = self._getClipboardManager(osSwitch, events, logger, modalWindowManager, filesystemHelper)
+        _[StatusbarApp] = statusbarApp = self._getStatusbarApp(osSwitch, timestampTextFormatter, clipboardManager, conversionManager, events, config, configFileManager, autostartManager, updateManager, modalWindowManager, filesystemHelper, logger, debug)
         _[AppLoop] = appLoop = self._getAppLoop(osSwitch, events, clipboardManager)
 
         self._services = _
@@ -139,12 +139,12 @@ class ServiceContainer:
         filesystemHelper: FilesystemHelper,
         logger: Logger,
     ) -> dict[str, ModalWindowBuilderInterface]:
-        customizedDialogBuilder = CustomizedDialogBuilder()
+        customizedDialogBuilder = CustomizedDialogBuilder(filesystemHelper)
 
         return {
             ModalId.DEMO: DemoBuilder(),
             ModalId.SETTINGS: SettingsBuilder(config, configFileManager, filesystemHelper, logger),
-            ModalId.ABOUT: AboutBuilder(config),
+            ModalId.ABOUT: AboutBuilder(filesystemHelper, config),
             ModalId.CUSTOMIZED_DIALOG: customizedDialogBuilder,
             ModalId.MISSING_XSEL: DialogMissingXselBuilder(customizedDialogBuilder),
         }
@@ -170,13 +170,14 @@ class ServiceContainer:
         eventService: EventService,
         logger: Logger,
         modalWindowManager: ModalWindowManager,
+        filesystemHelper: FilesystemHelper,
     ) -> ClipboardManager:
         if osSwitch.isMacOS():
             from src.Service.ClipboardManagerMacOs import ClipboardManagerMacOs
             return ClipboardManagerMacOs(eventService, logger)
         else:
             from src.Service.ClipboardManagerLinux import ClipboardManagerLinux
-            return ClipboardManagerLinux(eventService, logger, modalWindowManager)
+            return ClipboardManagerLinux(eventService, logger, modalWindowManager, filesystemHelper)
 
     def _getStatusbarApp(
         self,
@@ -190,6 +191,7 @@ class ServiceContainer:
         autostartManager: AutostartManager,
         updateManager: UpdateManager,
         modalWindowManager: ModalWindowManager,
+        filesystemHelper: FilesystemHelper,
         logger: Logger,
         debug: Debug,
     ) -> StatusbarApp:
@@ -206,6 +208,7 @@ class ServiceContainer:
                 autostartManager,
                 updateManager,
                 modalWindowManager,
+                filesystemHelper,
                 logger,
                 debug,
             )
@@ -222,6 +225,7 @@ class ServiceContainer:
                 autostartManager,
                 updateManager,
                 modalWindowManager,
+                filesystemHelper,
                 logger,
                 debug,
             )

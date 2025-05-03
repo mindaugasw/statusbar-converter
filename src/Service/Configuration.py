@@ -10,6 +10,7 @@ from src.Service.Logger import Logger
 
 
 class Configuration:
+    _filesystemHelper: FilesystemHelper
     _configFileManager: ConfigFileManager
     _logger: Logger
 
@@ -34,7 +35,13 @@ class Configuration:
 
     _configInitialized: bool
 
-    def __init__(self, configFileManager: ConfigFileManager, logger: Logger):
+    def __init__(
+        self,
+        filesystemHelper: FilesystemHelper,
+        configFileManager: ConfigFileManager,
+        logger: Logger,
+    ):
+        self._filesystemHelper = filesystemHelper
         self._configFileManager = configFileManager
         self._logger = logger
 
@@ -82,7 +89,7 @@ class Configuration:
             yaml.Loader,
         )
 
-        with open(FilesystemHelper.getProjectDir() + '/version', 'r') as versionFile:
+        with open(self._filesystemHelper.getProjectDir() + '/version', 'r') as versionFile:
             self._appVersion = versionFile.read().strip()
 
         self._configInitialized = True

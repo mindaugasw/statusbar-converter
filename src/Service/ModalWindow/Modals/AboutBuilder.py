@@ -13,9 +13,11 @@ from src.Service.ModalWindow.Modals.ModalWindowBuilderInterface import ModalWind
 class AboutBuilder(ModalWindowBuilderInterface):
     _PRIMARY_TAG: Final[str] = 'primary'
 
+    _filesystemHelper: FilesystemHelper
     _config: Configuration
 
-    def __init__(self, config: Configuration):
+    def __init__(self, filesystemHelper: FilesystemHelper, config: Configuration):
+        self._filesystemHelper = filesystemHelper
         self._config = config
 
     def getParameters(self) -> ModalWindowParameters:
@@ -38,7 +40,7 @@ class AboutBuilder(ModalWindowBuilderInterface):
             # group with `horizontal` to make 2 "columns" for image and text
             with dpg.group(horizontal=True):
                 with dpg.group():
-                    BuilderHelper.addImage(FilesystemHelper.getAssetsDir() + '/icon_linux.png')
+                    BuilderHelper.addImage(self._filesystemHelper.getAssetsDir() + '/icon_linux.png')
 
                 with dpg.group():
                     dpg.add_text(AppConstant.APP_NAME)

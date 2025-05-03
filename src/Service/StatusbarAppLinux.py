@@ -79,6 +79,7 @@ class StatusbarAppLinux(StatusbarApp):
         autostartManager: AutostartManager,
         updateManager: UpdateManager,
         modalWindowManager: ModalWindowManager,
+        filesystemHelper: FilesystemHelper,
         logger: Logger,
         debug: Debug,
     ):
@@ -93,12 +94,13 @@ class StatusbarAppLinux(StatusbarApp):
             autostartManager,
             updateManager,
             modalWindowManager,
+            filesystemHelper,
             logger,
             debug,
         )
 
-        self._iconPathDefault = FilesystemHelper.getAssetsDir() + '/icon_linux.png'
-        self._iconPathFlash = FilesystemHelper.getAssetsDir() + '/icon_linux_flash.png'
+        self._iconPathDefault = self._filesystemHelper.getAssetsDir() + '/icon_linux.png'
+        self._iconPathFlash = self._filesystemHelper.getAssetsDir() + '/icon_linux_flash.png'
 
     def createApp(self) -> None:
         self._events.subscribeConverted(self._onConverted)
@@ -108,7 +110,7 @@ class StatusbarAppLinux(StatusbarApp):
         self._app = AppIndicator3.Indicator.new(
             AppConstant.APP_NAME,
             # Icons can be also used from `/usr/share/icons`, e.g. 'clock-app'
-            FilesystemHelper.getAssetsDir() + '/icon_linux.png',
+            self._filesystemHelper.getAssetsDir() + '/icon_linux.png',
             AppIndicator3.IndicatorCategory.APPLICATION_STATUS,
         )
 
@@ -204,9 +206,9 @@ class StatusbarAppLinux(StatusbarApp):
         self._menuItems[self._MENU_ID_LAST_CONVERSION_CONVERTED_TEXT].nativeItem.set_label(result.convertedText)
 
     def _flashIcon(self) -> None:
-        self._app.set_icon(FilesystemHelper.getAssetsDir() + '/icon_linux_flash.png')
+        self._app.set_icon(self._iconPathFlash)
         time.sleep(StatusbarAppLinux._ICON_FLASH_DURATION)
-        self._app.set_icon(FilesystemHelper.getAssetsDir() + '/icon_linux.png')
+        self._app.set_icon(self._iconPathDefault)
 
     def _onStatusbarClear(self) -> None:
         self._app.set_label('', '')

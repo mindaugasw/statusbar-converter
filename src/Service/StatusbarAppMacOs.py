@@ -41,6 +41,7 @@ class StatusbarAppMacOs(StatusbarApp):
         autostartManager: AutostartManager,
         updateManager: UpdateManager,
         modalWindowManager: ModalWindowManager,
+        filesystemHelper: FilesystemHelper,
         logger: Logger,
         debug: Debug,
     ):
@@ -55,12 +56,13 @@ class StatusbarAppMacOs(StatusbarApp):
             autostartManager,
             updateManager,
             modalWindowManager,
+            filesystemHelper,
             logger,
             debug,
         )
 
-        self._iconPathDefault = FilesystemHelper.getAssetsDir() + '/icon_macos.png'
-        self._iconPathFlash = FilesystemHelper.getAssetsDir() + '/icon_macos_flash.png'
+        self._iconPathDefault = self._filesystemHelper.getAssetsDir() + '/icon_macos.png'
+        self._iconPathFlash = self._filesystemHelper.getAssetsDir() + '/icon_macos_flash.png'
 
     def createApp(self) -> None:
         self._events.subscribeConverted(self._onConverted)

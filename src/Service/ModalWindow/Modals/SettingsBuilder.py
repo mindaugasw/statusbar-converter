@@ -80,7 +80,7 @@ class SettingsBuilder(ModalWindowBuilderInterface):
     def _buildHeader(self) -> None:
         with dpg.group(horizontal=True):
             with dpg.group():
-                BuilderHelper.addImage(FilesystemHelper.getAssetsDir() + '/icon_colored_small.png')
+                BuilderHelper.addImage(self._filesystemHelper.getAssetsDir() + '/icon_colored_small.png')
 
             with dpg.group():
                 dpg.add_text('Settings')

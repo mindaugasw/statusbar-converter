@@ -22,6 +22,7 @@ class ModalWindowManager:
     """
 
     _builders: dict[str, ModalWindowBuilderInterface]
+    _filesystemHelper: FilesystemHelper
     _osSwitch: OSSwitch
     _logger: Logger
 
@@ -30,10 +31,12 @@ class ModalWindowManager:
     def __init__(
         self,
         builders: dict[str, ModalWindowBuilderInterface],
+        filesystemHelper: FilesystemHelper,
         osSwitch: OSSwitch,
         logger: Logger,
     ):
         self._builders = builders
+        self._filesystemHelper = filesystemHelper
         self._osSwitch = osSwitch
         self._logger = logger
 
@@ -105,7 +108,7 @@ class ModalWindowManager:
         )
 
         with dpg.font_registry():
-            defaultFont = dpg.add_font(FilesystemHelper.getAssetsDir() + '/font_supreme_regular.otf', 18)
+            defaultFont = dpg.add_font(self._filesystemHelper.getAssetsDir() + '/font_supreme_regular.otf', 18)
             dpg.bind_font(defaultFont)
 
         builder.reinitializeState()
