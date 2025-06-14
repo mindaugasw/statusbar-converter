@@ -69,7 +69,7 @@ class ServiceContainer:
 
         # Conversion services
         _[TimestampTextFormatter] = timestampTextFormatter = TimestampTextFormatter(config)
-        _[ConversionManager] = conversionManager = self.getConversionManager(_, filesystemHelper, timestampTextFormatter, argumentParser, config, logger, events, debug)
+        _[ConversionManager] = conversionManager = self.getConversionManager(_, filesystemHelper, timestampTextFormatter, argumentParser, config, logger, osSwitch, events, debug)
 
         # GUI services
         _[list[ModalWindowBuilderInterface]] = modalWindowBuilders = self._getModalWindowBuilders(config, configFileManager, filesystemHelper, logger)
@@ -102,11 +102,12 @@ class ServiceContainer:
         argumentParser: ArgumentParser,
         config: Configuration,
         logger: Logger,
+        osSwitch: OSSwitch,
         events: EventService,
         debug: Debug,
     ) -> ConversionManager:
         currencyConverter = CurrencyConverter(events, config, logger)
-        container[ConversionRateUpdater] = conversionRateUpdater = ConversionRateUpdater(currencyConverter, filesystemHelper, argumentParser, config, events, logger)
+        container[ConversionRateUpdater] = conversionRateUpdater = ConversionRateUpdater(currencyConverter, filesystemHelper, argumentParser, config, events, osSwitch, logger)
 
         unitBeforeConverters: list[UnitConverterInterface] = [
             currencyConverter,

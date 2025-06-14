@@ -3,6 +3,9 @@
 debug: false
 
 converters:
+    currency:
+        rates_url: https://sc-server-prod-478391167792.us-east1.run.app/rates
+
     timestamp:
         # Formatting template for text on the statusbar.
         #

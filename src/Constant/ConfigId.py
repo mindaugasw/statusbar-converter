@@ -96,6 +96,10 @@ class ConfigId:
     # Config keys - configurable in user config file
     Debug: Final = ConfigParameter.newConfig(['debug'])
 
+    Converter_Currency_RatesUrl: Final = ConfigParameter.newConfig(
+        ['converters', 'currency', 'rates_url'],
+    )
+
     Converter_Timestamp_IconFormat: Final = ConfigParameter.newConfig(
         ['converters', 'timestamp', 'icon_text_format'],
     )

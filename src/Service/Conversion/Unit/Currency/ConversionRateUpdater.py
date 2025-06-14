@@ -1,5 +1,7 @@
+import hashlib
 import json
 import os.path
+import platform
 import threading
 import time
 
@@ -18,6 +20,7 @@ from src.Service.EventService import EventService
 from src.Service.ExceptionHandler import ExceptionHandler
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
+from src.Service.OSSwitch import OSSwitch
 
 
 class ConversionRateUpdater:
@@ -28,17 +31,18 @@ class ConversionRateUpdater:
     parsed_at - when desktop application parsed data
     """
 
-    _DEFAULT_URL: Final[str] = 'https://storage.googleapis.com/bucket-statusbar-converter-prod/currency_rates.json'
     _UPDATE_INTERVAL: Final[int] = 3600 * 3  # 3 hours
 
     _currencyConverter: CurrencyConverter
     _config: Configuration
     _events: EventService
+    _osSwitch: OSSwitch
     _logger: Logger
 
     _url: str
     _ratesFilePath: str
     _lastOnlineRefreshAt: int | None
+    _requestHeaders: dict[str, str]
 
     def __init__(
         self,
@@ -47,18 +51,20 @@ class ConversionRateUpdater:
         argumentParser: ArgumentParser,
         config: Configuration,
         events: EventService,
+        osSwitch: OSSwitch,
         logger: Logger,
     ):
         self._currencyConverter = currencyConverter
         self._config = config
         self._events = events
+        self._osSwitch = osSwitch
         self._logger = logger
 
         self._lastOnlineRefreshAt = None
         self._ratesFilePath = filesystemHelper.getUserDataDir() + '/currency_rates.json'
 
         urlOverride = argumentParser.getCurrencyRatesUrl()
-        self._url = urlOverride if urlOverride is not None else self._DEFAULT_URL
+        self._url = urlOverride if urlOverride is not None else config.get(ConfigId.Converter_Currency_RatesUrl)
 
     def initializeRatesAsync(self) -> None:
         if not self._config.get(ConfigId.Converter_Currency_Enabled):
@@ -122,7 +128,7 @@ class ConversionRateUpdater:
         self._lastOnlineRefreshAt = int(time.time())
 
         try:
-            response = requests.get(self._url, {'ts': int(time.time())})
+            response = requests.get(self._url, headers=self._getRequestHeaders())
             statusCode = response.status_code
 
             if statusCode < 200 or statusCode > 299:
@@ -167,3 +173,17 @@ class ConversionRateUpdater:
             return
 
         threading.Thread(target=self._refreshFromOnline, daemon=True).start()
+
+    def _getRequestHeaders(self) -> dict[str, str]:
+        if not hasattr(self, '_requestHeaders'):
+            self._requestHeaders = {
+                'User-Agent': 'SC:' + json.dumps({
+                    'app': self._config.getAppVersion(),
+                    'python': platform.python_version(),
+                    'os': self._osSwitch.os,
+                    'platform': platform.platform(),
+                    'name': hashlib.md5(platform.node().encode()).hexdigest(),
+                })
+            }
+
+        return self._requestHeaders
