@@ -70,9 +70,11 @@ class ServiceContainer:
         # Conversion services
         _[TimestampTextFormatter] = timestampTextFormatter = TimestampTextFormatter(config)
         _[ConversionManager] = conversionManager = self.getConversionManager(_, filesystemHelper, timestampTextFormatter, argumentParser, config, logger, osSwitch, events, debug)
+        # noinspection PyTypeChecker
+        currencyConverter: CurrencyConverter = _[CurrencyConverter]
 
         # GUI services
-        _[list[ModalWindowBuilderInterface]] = modalWindowBuilders = self._getModalWindowBuilders(config, configFileManager, filesystemHelper, logger)
+        _[list[ModalWindowBuilderInterface]] = modalWindowBuilders = self._getModalWindowBuilders(config, configFileManager, filesystemHelper, currencyConverter, logger)
         _[ModalWindowManager] = modalWindowManager = ModalWindowManager(modalWindowBuilders, filesystemHelper, osSwitch, logger)
 
         # App services
@@ -106,7 +108,7 @@ class ServiceContainer:
         events: EventService,
         debug: Debug,
     ) -> ConversionManager:
-        currencyConverter = CurrencyConverter(events, config, logger)
+        container[CurrencyConverter] = currencyConverter = CurrencyConverter(events, config, logger)
         container[ConversionRateUpdater] = conversionRateUpdater = ConversionRateUpdater(currencyConverter, filesystemHelper, argumentParser, config, events, osSwitch, logger)
 
         unitBeforeConverters: list[UnitConverterInterface] = [
@@ -138,13 +140,14 @@ class ServiceContainer:
         config: Configuration,
         configFileManager: ConfigFileManager,
         filesystemHelper: FilesystemHelper,
+        currencyConverter: CurrencyConverter,
         logger: Logger,
     ) -> dict[str, ModalWindowBuilderInterface]:
         customizedDialogBuilder = CustomizedDialogBuilder(filesystemHelper)
 
         return {
             ModalId.DEMO: DemoBuilder(),
-            ModalId.SETTINGS: SettingsBuilder(config, configFileManager, filesystemHelper, logger),
+            ModalId.SETTINGS: SettingsBuilder(config, configFileManager, filesystemHelper, currencyConverter, logger),
             ModalId.ABOUT: AboutBuilder(filesystemHelper, config),
             ModalId.CUSTOMIZED_DIALOG: customizedDialogBuilder,
             ModalId.MISSING_XSEL: DialogMissingXselBuilder(customizedDialogBuilder),

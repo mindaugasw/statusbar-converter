@@ -1,17 +1,23 @@
-from typing import Callable, Any, Final, Type
+from typing import Callable, Any, Final, Type, Tuple
 
 import dearpygui.dearpygui as dpg
 
 from src.Constant.AppConstant import AppConstant
 from src.Constant.ConfigId import ConfigId
+from src.Constant.CurrencyCategory import CurrencyCategory
 from src.Constant.Logs import Logs
 from src.DTO.ConfigParameter import ConfigParameter
+from src.DTO.Converter.CurrencyUnit import CurrencyUnit
+from src.DTO.Converter.UnitDefinition import UnitDefinition
 from src.DTO.ModalWindowParameters import ModalWindowParameters
 from src.DTO.SettingsModal.AbstractControlProperties import AbstractControlProperties
+from src.DTO.SettingsModal.CheckboxControlProperties import CheckboxControlProperties
+from src.DTO.SettingsModal.DropdownControlProperties import DropdownControlProperties
 from src.DTO.SettingsModal.RadioControlProperties import RadioControlProperties
-from src.DTO.SettingsModal.SimpleControlProperties import SimpleControlProperties
+from src.DTO.SettingsModal.TextControlProperties import TextControlProperties
 from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
+from src.Service.Conversion.Unit.Currency.CurrencyConverter import CurrencyConverter
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
 from src.Service.ModalWindow.BuilderHelper import BuilderHelper
@@ -20,17 +26,19 @@ from src.Type.Types import DpgTag, SettingsRadioValues
 
 
 class SettingsBuilder(ModalWindowBuilderInterface):
-    _WINDOW_WIDTH: Final[int] = 600
-    _PRIMARY_TAG: Final[str] = 'primary'
+    _WINDOW_WIDTH: Final = 600
+    _PRIMARY_TAG: Final = 'primary'
+    _PRIORITY_SORT_CURRENCIES: Final = ['eur', 'usd', 'gbp']
 
-    _SPACER_LEFT_INDENT_WIDTH: Final[int] = 1
-    _SPACER_SECTION_TOP_HEIGHT: Final[int] = 3
-    _SPACER_SECTION_INNER_HEIGHT: Final[int] = 10
-    _SPACER_SECTION_BOTTOM_HEIGHT: Final[int] = 15
+    _SPACER_LEFT_INDENT_WIDTH: Final = 1
+    _SPACER_SECTION_TOP_HEIGHT: Final = 3
+    _SPACER_SECTION_INNER_HEIGHT: Final = 10
+    _SPACER_SECTION_BOTTOM_HEIGHT: Final = 15
 
     _config: Configuration
     _configFileManager: ConfigFileManager
     _filesystemHelper: FilesystemHelper
+    _currencyConverter: CurrencyConverter
     _logger: Logger
 
     _controls: dict[DpgTag, AbstractControlProperties]
@@ -43,11 +51,13 @@ class SettingsBuilder(ModalWindowBuilderInterface):
         config: Configuration,
         configFileManager: ConfigFileManager,
         filesystemHelper: FilesystemHelper,
+        currencyConverter: CurrencyConverter,
         logger: Logger,
     ):
         self._config = config
         self._configFileManager = configFileManager
         self._filesystemHelper = filesystemHelper
+        self._currencyConverter = currencyConverter
         self._logger = logger
 
     def getParameters(self) -> ModalWindowParameters:
@@ -71,6 +81,7 @@ class SettingsBuilder(ModalWindowBuilderInterface):
         with dpg.window(label='Window title', tag=self._PRIMARY_TAG, on_close=self._onClose):
             self._buildHeader()
             self._buildCollapsableSection('General settings', self._buildGeneralSettings)
+            self._buildCollapsableSection('Currency converter settings', self._buildCurrencyConverterSettings)
             self._buildCollapsableSection('Distance converter settings', self._buildDistanceConverterSettings)
             self._buildCollapsableSection('Temperature converter settings', self._buildTemperatureConverterSettings)
             self._buildCollapsableSection('Volume converter settings', self._buildVolumeConverterSettings)
@@ -91,7 +102,7 @@ class SettingsBuilder(ModalWindowBuilderInterface):
                 # Seems like it's impossible to change text color. So we create 2 labels, 1 hidden, and then switch them
                 noteText = 'App needs to be restarted for changes to take effect.'
                 self._appRestartNoteDefaultTag = dpg.add_text(noteText)
-                self._appRestartNoteEditedTag = dpg.add_text(noteText, show=False, color=(255, 0, 0, 255))
+                self._appRestartNoteEditedTag = dpg.add_text(noteText, show=False, color=BuilderHelper.COLOR_TEXT_RED)
 
                 dpg.add_spacer(height=25)
 
@@ -109,19 +120,17 @@ class SettingsBuilder(ModalWindowBuilderInterface):
                     dpg.add_spacer(height=self._SPACER_SECTION_BOTTOM_HEIGHT)
 
     def _buildGeneralSettings(self) -> None:
-        self._registerSimpleControl(
+        self._registerCheckboxControl(
             dpg.add_checkbox(label='Flash statusbar icon on successful conversion'),
             ConfigId.FlashIconOnChange,
-            bool,
         )
 
-        self._registerSimpleControl(
+        self._registerCheckboxControl(
             dpg.add_checkbox(label='Clear statusbar text on clipboard change'),
             ConfigId.ClearOnChange,
-            bool,
         )
 
-        self._registerSimpleControl(
+        self._registerTextControl(
             dpg.add_input_int(
                 label='Automatically clear statusbar text after this many seconds',
                 width=50,
@@ -140,6 +149,44 @@ class SettingsBuilder(ModalWindowBuilderInterface):
             'Default is 300 seconds (5 minutes).',
         )
 
+    def _buildCurrencyConverterSettings(self) -> None:
+        with dpg.group(horizontal=True):
+            dpg.add_text('Supports converting currencies like')
+            dpg.add_text('5 $', color=BuilderHelper.COLOR_TEXT_BLUE)
+            dpg.add_text(',')
+            dpg.add_text('89 CAD', color=BuilderHelper.COLOR_TEXT_BLUE)
+            dpg.add_text(', some cryptocurrencies like')
+            dpg.add_text('0.08 BTC', color=BuilderHelper.COLOR_TEXT_BLUE)
+
+        dpg.add_spacer(height=self._SPACER_SECTION_INNER_HEIGHT)
+
+        self._registerCheckboxControl(dpg.add_checkbox(label='Enabled'), ConfigId.Converter_Currency_Enabled)
+
+        currencies = self._currencyConverter.getUnitsDefinition()
+
+        with dpg.group(horizontal=True):
+            dpg.add_text('Convert to currency:')
+
+            if len(currencies) == 0:
+                dpg.add_combo([], enabled=False, height_mode=dpg.mvComboHeight_Large),
+            else:
+                currenciesSorted = dict(sorted(currencies.items(), key=self._currenciesSorter))
+                dropdownItems = {code: f'{code.upper()} - {definition.unit.name}' for code, definition in currenciesSorted.items()}
+                dropdownNames = list(dropdownItems.values())
+
+                self._registerDropdownControl(
+                    dpg.add_combo(dropdownNames, height_mode=dpg.mvComboHeight_Large),
+                    ConfigId.Converter_Currency_PrimaryCurrency,
+                    dropdownItems,
+                )
+
+        if len(currencies) == 0:
+            dpg.add_text(
+                'Currency converter is not yet initialized, cannot choose primary currency.\n'
+                'Try restarting the app.',
+                color=BuilderHelper.COLOR_TEXT_RED,
+            )
+
     def _buildMetricImperialConverterSettings(
         self,
         descriptionBuilder: Callable[[], None],
@@ -153,7 +200,7 @@ class SettingsBuilder(ModalWindowBuilderInterface):
 
         dpg.add_spacer(height=self._SPACER_SECTION_INNER_HEIGHT)
 
-        self._registerSimpleControl(dpg.add_checkbox(label='Enabled'), enabledConfigId, bool)
+        self._registerCheckboxControl(dpg.add_checkbox(label='Enabled'), enabledConfigId)
 
         with dpg.group(horizontal=True):
             dpg.add_text('Convert to units:')
@@ -255,7 +302,7 @@ class SettingsBuilder(ModalWindowBuilderInterface):
             dpg.add_text('.')
 
         dpg.add_spacer(height=self._SPACER_SECTION_INNER_HEIGHT)
-        self._registerSimpleControl(dpg.add_checkbox(label='Enabled'), ConfigId.Converter_Timestamp_Enabled, bool)
+        self._registerCheckboxControl(dpg.add_checkbox(label='Enabled'), ConfigId.Converter_Timestamp_Enabled)
         dpg.add_spacer(height=self._SPACER_SECTION_INNER_HEIGHT)
 
         with dpg.tree_node(label='Advanced unix timestamp settings'):
@@ -282,12 +329,17 @@ class SettingsBuilder(ModalWindowBuilderInterface):
                 url,
             )
 
-    def _registerSimpleControl(self, tag: DpgTag, configId: ConfigParameter, castToType: Type):
+    def _registerTextControl(self, tag: DpgTag, configId: ConfigParameter, castToType: Type) -> None:
         dpg.set_item_callback(tag, self._controlCallback)
         dpg.set_value(tag, self._config.get(configId))
-        self._controls[tag] = SimpleControlProperties(configId, castToType)
+        self._controls[tag] = TextControlProperties(configId, castToType)
 
-    def _registerRadioControl(self, tag: DpgTag, configId: ConfigParameter, radioValues: SettingsRadioValues):
+    def _registerCheckboxControl(self, tag: DpgTag, configId: ConfigParameter) -> None:
+        dpg.set_item_callback(tag, self._controlCallback)
+        dpg.set_value(tag, self._config.get(configId))
+        self._controls[tag] = CheckboxControlProperties(configId)
+
+    def _registerRadioControl(self, tag: DpgTag, configId: ConfigParameter, radioValues: SettingsRadioValues) -> None:
         radioValuesInverted = {v: k for k, v in radioValues.items()}
         selectedValue = radioValuesInverted[self._config.get(configId)]
 
@@ -295,14 +347,26 @@ class SettingsBuilder(ModalWindowBuilderInterface):
         dpg.set_value(tag, selectedValue)
         self._controls[tag] = RadioControlProperties(configId, radioValues)
 
+    def _registerDropdownControl(self, tag: DpgTag, configId: ConfigParameter, valueToNameMap: dict[str, str]) -> None:
+        dpg.set_item_callback(tag, self._controlCallback)
+        initialValue = valueToNameMap[self._config.get(configId)]
+        dpg.set_value(tag, initialValue)
+
+        nameToValueMap = {value: key for key, value in valueToNameMap.items()}
+        self._controls[tag] = DropdownControlProperties(configId, nameToValueMap)
+
     def _controlCallback(self, sender: DpgTag, appData, userData) -> None:
         controlProperties: AbstractControlProperties = self._controls[sender]
         value: Any
 
-        if isinstance(controlProperties, SimpleControlProperties):
+        if isinstance(controlProperties, CheckboxControlProperties):
+            value = bool(appData)
+        elif isinstance(controlProperties, TextControlProperties):
             value = controlProperties.castToType(appData)
         elif isinstance(controlProperties, RadioControlProperties):
             value = controlProperties.radioValues[appData]
+        elif isinstance(controlProperties, DropdownControlProperties):
+            value = controlProperties.nameToValueMap[appData]
         else:
             raise Exception(f'Unknown control properties type: {type(controlProperties).__name__}')
 
@@ -318,3 +382,10 @@ class SettingsBuilder(ModalWindowBuilderInterface):
 
     def _onClose(self) -> None:
         BuilderHelper.deleteHyperlinkTheme()
+
+    def _currenciesSorter(self, item: Tuple[str, UnitDefinition[CurrencyUnit]]) -> str:
+        currency = item[1].unit
+        categoryPrefix = '0' if currency.category == CurrencyCategory.FIAT else '1'
+        priorityPrefix = '0' if currency.primaryAlias in self._PRIORITY_SORT_CURRENCIES else '1'
+
+        return categoryPrefix + priorityPrefix + currency.primaryAlias

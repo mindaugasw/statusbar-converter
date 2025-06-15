@@ -8,6 +8,7 @@ from typing_extensions import Final
 
 class BuilderHelper:
     COLOR_TEXT_BLUE: Final = [29, 151, 236]
+    COLOR_TEXT_RED: Final = [255, 0, 0]
 
     _HYPERLINK_THEME_TAG: Final[str] = '_app_hyperlink_theme'
 

@@ -72,7 +72,7 @@ class CurrencyConverter(UnitConverterInterface):
         return True, ConvertResult(f'{textFrom}  =  {textTo}', textFrom, textTo, self.getName())
 
     def refreshUnits(self, data: dict) -> None:
-        self._unitsDefinition = self._getUnitsDefinition(data)
+        self._unitsDefinition = self._buildUnitsDefinition(data)
         self._unitsExpanded = UnitPreprocessor.expandAliases(self._unitsDefinition)
 
         if not self._primaryCurrency in self._unitsDefinition:
@@ -87,11 +87,20 @@ class CurrencyConverter(UnitConverterInterface):
             self._config.set(ConfigId.Converter_Currency_PrimaryCurrency, defaultPrimaryCurrency)
 
         self._initialized = True
-        self._events.dispatchDelayedConverterInitialized(self)
 
-        self._logger.log(f'{Logs.catConverter}Currency] Successfully refreshed units data')
+        if self._enabled:
+            self._events.dispatchDelayedConverterInitialized(self)
+            self._logger.log(f'{Logs.catConverter}Currency] Successfully refreshed units data, in converter and mapper')
+        else:
+            self._logger.log(f'{Logs.catConverter}Currency] Successfully refreshed units data, skipping mapper')
 
-    def _getUnitsDefinition(self, data: dict) -> dict[str, UnitDefinition[CurrencyUnit]]:
+    def getUnitsDefinition(self) -> dict[str, UnitDefinition[CurrencyUnit]]:
+        if not hasattr(self, '_unitsDefinition'):
+            return {}
+
+        return self._unitsDefinition
+
+    def _buildUnitsDefinition(self, data: dict) -> dict[str, UnitDefinition[CurrencyUnit]]:
         unitsDefinition = {}
 
         for key, currency in data.items():
@@ -101,6 +110,11 @@ class CurrencyConverter(UnitConverterInterface):
                     currency['primaryAlias'],
                     currency['prettyFormat'],
                     currency['rate'],
+                    currency['name'],
+                    # TODO implement support for these new fields
+                    # currency['priority'],
+                    currency['category'],
+                    # currency['convertTo'],
                 ),
             )
 

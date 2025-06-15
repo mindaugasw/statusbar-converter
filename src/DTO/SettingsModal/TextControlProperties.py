@@ -4,8 +4,7 @@ from src.DTO.ConfigParameter import ConfigParameter
 from src.DTO.SettingsModal.AbstractControlProperties import AbstractControlProperties
 
 
-class SimpleControlProperties(AbstractControlProperties):
-    """Suitable for Checkbox and Text input types"""
+class TextControlProperties(AbstractControlProperties):
 
     castToType: Type
 

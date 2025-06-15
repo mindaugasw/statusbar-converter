@@ -129,12 +129,12 @@ class StatusbarApp(ABC):
         # Other controls
         items.update({
             'clear_statusbar': MenuItem('Clear statusbar', callback=self._onMenuClickClearStatusbar),
-            'settings': MenuItem('Settings', callback=self._onMenuClickSettings),
             'autostart': MenuItem(
                 'Run at login',
                 initialState=self._autostartManager.isAutostartEnabled(),
                 callback=self._onMenuClickRunAtLogin,
             ),
+            'settings': MenuItem('Settings', callback=self._onMenuClickSettings),
             'check_updates': MenuItem('Check for updates', callback=self._onMenuClickCheckUpdates),
             'open_website': MenuItem('Open website', callback=self._onMenuClickOpenWebsite),
             'about': MenuItem('About', callback=self._onMenuClickAbout),

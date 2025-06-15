@@ -67,8 +67,9 @@ class ConversionRateUpdater:
         self._url = urlOverride if urlOverride is not None else config.get(ConfigId.Converter_Currency_RatesUrl)
 
     def initializeRatesAsync(self) -> None:
-        if not self._config.get(ConfigId.Converter_Currency_Enabled):
-            return
+        # Here we don't skip rates update, even if currency converter is disabled.
+        # That is needed to have currency list, to allow enabling converter in settings
+        # and immediately select primary currency, instead of having to restart the app
 
         threading.Thread(target=self._initializeRates, daemon=True).start()
 
@@ -78,8 +79,8 @@ class ConversionRateUpdater:
         self._logger.log(
             f'{Logs.catRateUpdater}Initialize - local refresh {"success" if fileResult.success else "FAIL"}, '
             f'isOutdated: {fileResult.isOutdated}, '
-            f'cachedAt: {fileResult.data.cachedAt if fileResult.success else "-"}, '
-            f'refreshedAt: {fileResult.data.refreshedAt if fileResult.success else "-"}',
+            f'cachedAt: {fileResult.data.cachedAt if fileResult.success else "-"}, '  # type: ignore[union-attr]
+            f'refreshedAt: {fileResult.data.refreshedAt if fileResult.success else "-"}',  # type: ignore[union-attr]
         )
 
         parsedData: CurrenciesFileData | None = None
@@ -95,9 +96,10 @@ class ConversionRateUpdater:
                 parsedData = onlineResult.data
 
         if fileResult.success and (onlineResult is None or not onlineResult.success):
-            self._currencyConverter.refreshUnits(parsedData.currencies)
+            self._currencyConverter.refreshUnits(parsedData.currencies)  # type: ignore[union-attr]
 
-        self._events.subscribeAppLoopIteration(self._updateCheck)
+        if self._config.get(ConfigId.Converter_Currency_Enabled):
+            self._events.subscribeAppLoopIteration(self._updateCheck)
 
     def _refreshFromLocalFile(self) -> CurrenciesRefreshResult:
         try:

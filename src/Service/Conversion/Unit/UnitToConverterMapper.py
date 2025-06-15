@@ -23,7 +23,7 @@ class UnitToConverterMapper:
         return self._map[unitPosition].get(unit)
 
     def _generateMap(self, converters: list[UnitConverterInterface]) -> dict[str, UnitConverterInterface]:
-        _map = {}
+        _map: dict[str, UnitConverterInterface] = {}
 
         for converter in converters:
             if not converter.isEnabled():
