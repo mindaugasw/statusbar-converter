@@ -183,7 +183,7 @@ class SettingsBuilder(ModalWindowBuilderInterface):
         if len(currencies) == 0:
             dpg.add_text(
                 'Currency converter is not yet initialized, cannot choose primary currency.\n'
-                'Try restarting the app.',
+                'Try closing & reopening settings window or restarting the app.',
                 color=BuilderHelper.COLOR_TEXT_RED,
             )
 

@@ -11,7 +11,7 @@ from src.Service.Conversion.Unit.UnitToConverterMapper import UnitToConverterMap
 class UnitParser:
     # For debugging pattern see https://regexr.com/8ds6v
     # TODO this needs adding all symbols for conversions like '1 €' to work?
-    _PATTERN: Final = re.compile(r'^([a-z$]+)?(-?[\d,.]*\d[\d,.]*)([a-z/*°\'"`′″.3$]+)?')
+    _PATTERN: Final = re.compile(r'^([^\d\s-]+)?(-?[\d,.]*\d[\d,.]*)([^\d\s]+3?)?')
     _REGEX_GROUP_UNIT_BEFORE: Final = 1
     _REGEX_GROUP_NUMBER: Final = 2
     _REGEX_GROUP_UNIT_AFTER: Final = 3

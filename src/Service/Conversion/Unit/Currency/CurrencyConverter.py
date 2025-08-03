@@ -64,7 +64,7 @@ class CurrencyConverter(UnitConverterInterface):
 
         targetCurrencyAmount = (number / fromCurrency.rate) * targetCurrency.rate
 
-        textFrom = f'{number:g} {fromCurrency.prettyFormat}'
+        textFrom = f'{number:g} {fromCurrency.primaryAlias.upper()}'
         textTo = f'{targetCurrencyAmount:g} {targetCurrency.prettyFormat}'
 
         # TODO add special case if converter from number=1, then show more decimal numbers
