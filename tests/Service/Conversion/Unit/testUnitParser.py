@@ -3,6 +3,7 @@ from unittest import TestCase
 from parameterized import parameterized
 
 from src.Constant.ConfigId import ConfigId
+from src.Service.Conversion.Rounder import Rounder
 from src.Service.Conversion.Unit.MetricImperial.DistanceConverter import DistanceConverter
 from src.Service.Conversion.Unit.MetricImperial.TemperatureConverter import TemperatureConverter
 from src.Service.Conversion.Unit.MetricImperial.VolumeConverter import VolumeConverter
@@ -77,15 +78,16 @@ class TestUnitParser(TestCase):
 
         configMock = MockLibrary.getConfig(config)
         events = EventService()
+        rounder = Rounder()
 
         unitBeforeConverters: list[UnitConverterInterface] = [
 
         ]
         unitAfterConverters: list[UnitConverterInterface] = [
-            DistanceConverter(configMock),
-            WeightConverter(configMock),
+            DistanceConverter(rounder, configMock),
+            WeightConverter(rounder, configMock),
             TemperatureConverter(configMock),
-            VolumeConverter(configMock),
+            VolumeConverter(rounder, configMock),
         ]
 
         unitToConverterMapper = UnitToConverterMapper(unitBeforeConverters, unitAfterConverters, events)

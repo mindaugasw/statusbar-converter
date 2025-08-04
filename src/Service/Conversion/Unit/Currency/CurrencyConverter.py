@@ -6,6 +6,7 @@ from src.DTO.ConvertResult import ConvertResult
 from src.DTO.Converter.CurrencyUnit import CurrencyUnit
 from src.DTO.Converter.UnitDefinition import UnitDefinition
 from src.Service.Configuration import Configuration
+from src.Service.Conversion.Rounder import Rounder
 from src.Service.Conversion.Unit.UnitConverterInterface import UnitConverterInterface
 from src.Service.Conversion.Unit.UnitPreprocessor import UnitPreprocessor
 from src.Service.EventService import EventService
@@ -13,6 +14,7 @@ from src.Service.Logger import Logger
 
 
 class CurrencyConverter(UnitConverterInterface):
+    _rounder: Rounder
     _events: EventService
     _config: Configuration
     _logger: Logger
@@ -25,10 +27,12 @@ class CurrencyConverter(UnitConverterInterface):
 
     def __init__(
         self,
+        rounder: Rounder,
         events: EventService,
         config: Configuration,
         logger: Logger,
     ):
+        self._rounder = rounder
         self._events = events
         self._config = config
         self._logger = logger
@@ -64,10 +68,8 @@ class CurrencyConverter(UnitConverterInterface):
 
         targetCurrencyAmount = (number / fromCurrency.rate) * targetCurrency.rate
 
-        textFrom = f'{number:g} {fromCurrency.primaryAlias.upper()}'
-        textTo = f'{targetCurrencyAmount:g} {targetCurrency.prettyFormat}'
-
-        # TODO add special case if converter from number=1, then show more decimal numbers
+        textFrom = f'{self._rounder.roundCurrency(number)} {fromCurrency.primaryAlias.upper()}'
+        textTo = f'{self._rounder.roundCurrency(targetCurrencyAmount)} {targetCurrency.prettyFormat}'
 
         return True, ConvertResult(f'{textFrom}  =  {textTo}', textFrom, textTo, self.getName())
 

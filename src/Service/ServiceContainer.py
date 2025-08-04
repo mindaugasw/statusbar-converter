@@ -9,6 +9,7 @@ from src.Service.ConfigFileManager import ConfigFileManager
 from src.Service.Configuration import Configuration
 from src.Service.Conversion.ConversionManager import ConversionManager
 from src.Service.Conversion.ConverterInterface import ConverterInterface
+from src.Service.Conversion.Rounder import Rounder
 from src.Service.Conversion.Timestamp.TimestampConverter import TimestampConverter
 from src.Service.Conversion.Timestamp.TimestampTextFormatter import TimestampTextFormatter
 from src.Service.Conversion.Unit.Currency.ConversionRateUpdater import ConversionRateUpdater
@@ -108,7 +109,8 @@ class ServiceContainer:
         events: EventService,
         debug: Debug,
     ) -> ConversionManager:
-        container[CurrencyConverter] = currencyConverter = CurrencyConverter(events, config, logger)
+        rounder = Rounder()
+        container[CurrencyConverter] = currencyConverter = CurrencyConverter(rounder, events, config, logger)
         container[ConversionRateUpdater] = conversionRateUpdater = ConversionRateUpdater(currencyConverter, filesystemHelper, argumentParser, config, events, osSwitch, logger)
 
         unitBeforeConverters: list[UnitConverterInterface] = [
@@ -116,9 +118,9 @@ class ServiceContainer:
         ]
 
         unitAfterConverters: list[UnitConverterInterface] = [
-            DistanceConverter(config),
-            VolumeConverter(config),
-            WeightConverter(config),
+            DistanceConverter(rounder, config),
+            VolumeConverter(rounder, config),
+            WeightConverter(rounder, config),
             TemperatureConverter(config),
             currencyConverter,
         ]

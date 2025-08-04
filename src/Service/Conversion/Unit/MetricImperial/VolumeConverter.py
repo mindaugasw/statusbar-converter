@@ -4,16 +4,22 @@ from src.Constant.ConfigId import ConfigId
 from src.DTO.Converter.MetricImperialUnit import MetricImperialUnit
 from src.DTO.Converter.UnitDefinition import UnitDefinition
 from src.Service.Configuration import Configuration
+from src.Service.Conversion.Rounder import Rounder
 from src.Service.Conversion.Unit.MetricImperial.AbstractMetricImperialConverter import AbstractMetricImperialConverter
 from src.Service.Conversion.Unit.UnitPreprocessor import UnitPreprocessor
 
 
 class VolumeConverter(AbstractMetricImperialConverter):
-    def __init__(self, config: Configuration):
+    def __init__(
+        self,
+        rounder: Rounder,
+        config: Configuration,
+    ):
         enabled = config.get(ConfigId.Converter_Volume_Enabled)
         primaryUnitMetric = config.get(ConfigId.Converter_Volume_PrimaryUnit_Metric)
 
         super().__init__(
+            rounder,
             enabled,
             primaryUnitMetric,
             999_999,  # 1M L
@@ -37,8 +43,8 @@ class VolumeConverter(AbstractMetricImperialConverter):
                     'mm3',
                     'mm3',
                     True,
-                    True,
-                    1000,
+                    False,
+                    -1,
                     0.000001,
                 ),
             ),

@@ -4,11 +4,14 @@ from typing import Tuple
 from src.DTO.ConvertResult import ConvertResult
 from src.DTO.Converter.MetricImperialUnit import MetricImperialUnit
 from src.DTO.Converter.UnitDefinition import UnitDefinition
+from src.Service.Conversion.Rounder import Rounder
 from src.Service.Conversion.Unit.UnitConverterInterface import UnitConverterInterface
 from src.Service.Conversion.Unit.UnitPreprocessor import UnitPreprocessor
 
 
 class AbstractMetricImperialConverter(UnitConverterInterface, ABC):
+    _rounder: Rounder
+
     _enabled: bool
     _maxValueBaseUnit: float
     _minValueBaseUnit: float
@@ -18,11 +21,13 @@ class AbstractMetricImperialConverter(UnitConverterInterface, ABC):
 
     def __init__(
         self,
+        rounder: Rounder,
         enabled: bool,
         primaryUnitMetric: bool,
         maxValueBaseUnit: float,
         minValueBaseUnit: float,
     ):
+        self._rounder = rounder
         self._enabled = enabled
         self._maxValueBaseUnit = maxValueBaseUnit
         self._minValueBaseUnit = minValueBaseUnit
@@ -72,11 +77,11 @@ class AbstractMetricImperialConverter(UnitConverterInterface, ABC):
 
             break
 
-        numberFromRounded = round(number, 1)
-        numberToRounded = round(numberTo, 1)
+        numberFromRounded = self._rounder.round(number)
+        numberToRounded = self._rounder.round(numberTo)
 
-        textFrom = f'{numberFromRounded:g} {unitFrom.prettyFormat}'
-        textTo = f'{numberToRounded:g} {unitTo.prettyFormat}'  # type: ignore[union-attr]
+        textFrom = f'{numberFromRounded} {unitFrom.prettyFormat}'
+        textTo = f'{numberToRounded} {unitTo.prettyFormat}'  # type: ignore[union-attr]
 
         return True, ConvertResult(f'{textFrom}  =  {textTo}', textFrom, textTo, self.getName())
 

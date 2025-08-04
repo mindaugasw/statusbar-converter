@@ -6,17 +6,17 @@ from tests.Service.Conversion.AbstractConversionManagerTest import AbstractConve
 
 class TestWeightConverter(AbstractConversionManagerTest):
     @parameterized.expand([
-        ('To mg', 'metric', '0.003 oz', True, '0 oz', '85 mg'),
+        ('To mg', 'metric', '0.003 oz', True, '0.003 oz', '85 mg'),
         ('To g', 'metric', '3 oz.', True, '3 oz', '85 g'),
-        ('To kg', 'metric', '4.5 lbs', True, '4.5 lb', '2 kg'),
+        ('To kg', 'metric', '4.5 lbs', True, '4.5 lb', '2.04 kg'),
         ('From stone', 'metric', '4.5 st', True, '4.5 st', '28.6 kg'),
-        ('To metric tonne', 'metric', '12 ton', True, '12 t', '12192.6 kg'),
+        ('To metric tonne', 'metric', '12 ton', True, '12 t', '12193 kg'),
 
-        ('To ounce', 'imperial', '30 g', True, '30 g', '1.1 oz'),
+        ('To ounce', 'imperial', '30 g', True, '30 g', '1.06 oz'),
         ('To pound', 'imperial', '30 kg', True, '30 kg', '66.1 lb'),
-        ('To imperial ton', 'imperial', '12 tonne', True, '12 t', '26455.5 lb'),
+        ('To imperial ton', 'imperial', '12 tonne', True, '12 t', '26455 lb'),
 
-        ('Negative', 'metric', '-4.5 lbs', True, '-4.5 lb', '-2 kg'),
+        ('Negative', 'metric', '-4.5 lbs', True, '-4.5 lb', '-2.04 kg'),
     ])
     def testWeightConverter(
         self, _: str,
