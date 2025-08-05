@@ -1,0 +1,859 @@
+{
+  "refreshedAt": 1754168823,
+  "cachedAt": 1754168833,
+  "ratesFromCurrency": "eur",
+  "currencies": {
+    "eur": {
+      "primaryAlias": "eur",
+      "rate": 1.0,
+      "name": "Euro",
+      "aliases": [
+        "€"
+      ],
+      "aliasesToPluralize": [
+        "euro"
+      ],
+      "prettyFormat": "€",
+      "priority": true,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "all": {
+      "primaryAlias": "all",
+      "rate": 97.5,
+      "name": "Albanian lek",
+      "aliases": [
+        "lek",
+        "lekë",
+        "leke",
+        "leku",
+        "lekët",
+        "leket"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "L",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "amd": {
+      "primaryAlias": "amd",
+      "rate": 436.8,
+      "name": "Armenian dram",
+      "aliases": [
+        "֏",
+        "դր",
+        "dram"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "֏",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "byn": {
+      "primaryAlias": "byn",
+      "rate": 3.7347,
+      "name": "Belarusian ruble",
+      "aliases": [
+        "rbl",
+        "br"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "Rbl",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "bam": {
+      "primaryAlias": "bam",
+      "rate": 1.9558,
+      "name": "Bosnia and Herzegovina mark",
+      "aliases": [],
+      "aliasesToPluralize": [],
+      "prettyFormat": "KM",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "bgn": {
+      "primaryAlias": "bgn",
+      "rate": 1.9558,
+      "name": "Bulgarian lev",
+      "aliases": [
+        "лв.",
+        "лв",
+        "лев",
+        "лева",
+        "левове",
+        "lv",
+        "leva",
+        "levove",
+        "kint"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "лв.",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "czk": {
+      "primaryAlias": "czk",
+      "rate": 24.5605,
+      "name": "Czech koruna",
+      "aliases": [
+        "kč",
+        "kc"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "Kč",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "dkk": {
+      "primaryAlias": "dkk",
+      "rate": 7.46215,
+      "name": "Danish krone",
+      "aliases": [],
+      "aliasesToPluralize": [],
+      "prettyFormat": "kr.",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "gel": {
+      "primaryAlias": "gel",
+      "rate": 3.116415,
+      "name": "Georgian lari",
+      "aliases": [
+        "₾",
+        "ლ",
+        "lari"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "₾",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "huf": {
+      "primaryAlias": "huf",
+      "rate": 398.4495,
+      "name": "Hungarian forint",
+      "aliases": [
+        "forint",
+        "forintok"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "Ft‎",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "isk": {
+      "primaryAlias": "isk",
+      "rate": 142.6,
+      "name": "Icelandic króna",
+      "aliases": [],
+      "aliasesToPluralize": [],
+      "prettyFormat": "kr.",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "mdl": {
+      "primaryAlias": "mdl",
+      "rate": 19.652,
+      "name": "Moldovan leu",
+      "aliases": [],
+      "aliasesToPluralize": [],
+      "prettyFormat": "L",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "mkd": {
+      "primaryAlias": "mkd",
+      "rate": 61.56,
+      "name": "Macedonian denar",
+      "aliases": [
+        "den",
+        "ден"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "ден",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "nok": {
+      "primaryAlias": "nok",
+      "rate": 11.86153,
+      "name": "Norwegian krone",
+      "aliases": [
+        "nkr"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "kr‎",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "pln": {
+      "primaryAlias": "pln",
+      "rate": 4.2727,
+      "name": "Polish złoty",
+      "aliases": [
+        "zł",
+        "zl",
+        "złoty",
+        "zloty",
+        "złote",
+        "zlote",
+        "złotych",
+        "zlotych",
+        "zlotego"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "zł",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "ron": {
+      "primaryAlias": "ron",
+      "rate": 5.0715,
+      "name": "Romanian leu",
+      "aliases": [
+        "leu",
+        "lei"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "lei",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "rub": {
+      "primaryAlias": "rub",
+      "rate": 91.7,
+      "name": "Russian ruble",
+      "aliases": [
+        "rubl",
+        "руб"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "₽‎",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "rsd": {
+      "primaryAlias": "rsd",
+      "rate": 117.14,
+      "name": "Serbian dinar",
+      "aliases": [
+        "дин",
+        "din",
+        "дин.",
+        "din."
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "din.",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "sek": {
+      "primaryAlias": "sek",
+      "rate": 11.18259,
+      "name": "Swedish krona",
+      "aliases": [],
+      "aliasesToPluralize": [],
+      "prettyFormat": "kr",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "chf": {
+      "primaryAlias": "chf",
+      "rate": 0.93215,
+      "name": "Swiss franc",
+      "aliases": [
+        "fr",
+        "fr."
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "CHF",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "try": {
+      "primaryAlias": "try",
+      "rate": 46.7609,
+      "name": "Turkish lira",
+      "aliases": [
+        "tl",
+        "₺‎"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "₺‎",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "uah": {
+      "primaryAlias": "uah",
+      "rate": 47.7059,
+      "name": "Ukrainian hryvnia",
+      "aliases": [
+        "грн",
+        "hrn",
+        "₴"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "₴",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "gbp": {
+      "primaryAlias": "gbp",
+      "rate": 0.87325,
+      "name": "Pound sterling",
+      "aliases": [
+        "£"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "£",
+      "priority": true,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "cny": {
+      "primaryAlias": "cny",
+      "rate": 8.359569,
+      "name": "Chinese yuan",
+      "aliases": [
+        "¥‎",
+        "块",
+        "元",
+        "yuán",
+        "yuan",
+        "rmb"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "¥‎",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "aud": {
+      "primaryAlias": "aud",
+      "rate": 1.7917,
+      "name": "Australian dollar",
+      "aliases": [
+        "a$",
+        "au$"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "A$",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "hkd": {
+      "primaryAlias": "hkd",
+      "rate": 9.0974,
+      "name": "Hong Kong dollar",
+      "aliases": [
+        "hk$"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "HK$",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "inr": {
+      "primaryAlias": "inr",
+      "rate": 101.013,
+      "name": "Indian rupee",
+      "aliases": [
+        "₹"
+      ],
+      "aliasesToPluralize": [
+        "rupee"
+      ],
+      "prettyFormat": "₹",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "idr": {
+      "primaryAlias": "idr",
+      "rate": 18851.0,
+      "name": "Indonesian rupiah",
+      "aliases": [
+        "rp"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "Rp",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "ils": {
+      "primaryAlias": "ils",
+      "rate": 3.9447,
+      "name": "Israeli new shekel",
+      "aliases": [
+        "₪‎",
+        "nis"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "₪‎",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "jpy": {
+      "primaryAlias": "jpy",
+      "rate": 170.8415,
+      "name": "Japanese yen",
+      "aliases": [],
+      "aliasesToPluralize": [
+        "yen"
+      ],
+      "prettyFormat": "¥‎",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "sgd": {
+      "primaryAlias": "sgd",
+      "rate": 1.4909,
+      "name": "Singapore dollar",
+      "aliases": [
+        "s$"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "S$",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "krw": {
+      "primaryAlias": "krw",
+      "rate": 1607.4,
+      "name": "South Korean won",
+      "aliases": [
+        "₩",
+        "won"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "₩",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "twd": {
+      "primaryAlias": "twd",
+      "rate": 34.172,
+      "name": "New Taiwan dollar",
+      "aliases": [
+        "nt$"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "NT$",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "ars": {
+      "primaryAlias": "ars",
+      "rate": 1565.173,
+      "name": "Argentine peso",
+      "aliases": [],
+      "aliasesToPluralize": [],
+      "prettyFormat": "ARS",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "brl": {
+      "primaryAlias": "brl",
+      "rate": 6.422618,
+      "name": "Brazilian real",
+      "aliases": [
+        "r$",
+        "reais"
+      ],
+      "aliasesToPluralize": [
+        "real"
+      ],
+      "prettyFormat": "R$",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "cad": {
+      "primaryAlias": "cad",
+      "rate": 1.5982,
+      "name": "Canadian dollar",
+      "aliases": [
+        "can$",
+        "ca$",
+        "c$"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "CAD",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "clp": {
+      "primaryAlias": "clp",
+      "rate": 1111.52,
+      "name": "Chilean peso",
+      "aliases": [
+        "clp$"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "CLP",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "cop": {
+      "primaryAlias": "cop",
+      "rate": 4779.2,
+      "name": "Colombian peso",
+      "aliases": [
+        "col$"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "COP",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "crc": {
+      "primaryAlias": "crc",
+      "rate": 576.6,
+      "name": "Costa Rican colón",
+      "aliases": [
+        "₡"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "₡",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "cup": {
+      "primaryAlias": "cup",
+      "rate": 27.389,
+      "name": "Cuban peso",
+      "aliases": [],
+      "aliasesToPluralize": [],
+      "prettyFormat": "₱",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "mxn": {
+      "primaryAlias": "mxn",
+      "rate": 21.8445,
+      "name": "Mexican peso",
+      "aliases": [
+        "mex$"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "MXN",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "pyg": {
+      "primaryAlias": "pyg",
+      "rate": 8548.0,
+      "name": "Paraguayan guaraní",
+      "aliases": [
+        "₲",
+        "gs",
+        "gs."
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "₲",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "pen": {
+      "primaryAlias": "pen",
+      "rate": 4.0998,
+      "name": "Peruvian sol",
+      "aliases": [
+        "s/‎",
+        "sol"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "S/‎",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "usd": {
+      "primaryAlias": "usd",
+      "rate": 1.15935308,
+      "name": "United States dollar",
+      "aliases": [
+        "$",
+        "us$",
+        "u$"
+      ],
+      "aliasesToPluralize": [
+        "dollar",
+        "buck"
+      ],
+      "prettyFormat": "$",
+      "priority": true,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "uyu": {
+      "primaryAlias": "uyu",
+      "rate": 45.85,
+      "name": "Uruguayan peso",
+      "aliases": [
+        "$u"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "$U",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "egp": {
+      "primaryAlias": "egp",
+      "rate": 56.027,
+      "name": "Egyptian pound",
+      "aliases": [
+        "e£",
+        "£e",
+        "le"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "E£",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "zar": {
+      "primaryAlias": "zar",
+      "rate": 21.05948,
+      "name": "South African rand",
+      "aliases": [
+        "rand"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "R",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "nzd": {
+      "primaryAlias": "nzd",
+      "rate": 1.9599,
+      "name": "New Zealand dollar",
+      "aliases": [
+        "$nz",
+        "nz$"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "NZ$",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "thb": {
+      "primaryAlias": "thb",
+      "rate": 37.513,
+      "name": "Thai baht",
+      "aliases": [
+        "baht",
+        "฿",
+        "บ",
+        "บ."
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "฿",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "php": {
+      "primaryAlias": "php",
+      "rate": 66.41,
+      "name": "Philippine peso",
+      "aliases": [
+        "₱"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "₱",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "myr": {
+      "primaryAlias": "myr",
+      "rate": 4.8841,
+      "name": "Malaysian ringgit",
+      "aliases": [
+        "rm"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "RM",
+      "priority": false,
+      "category": "fiat",
+      "convertTo": true
+    },
+    "btc": {
+      "primaryAlias": "btc",
+      "rate": 1.022165663e-05,
+      "name": "Bitcoin",
+      "aliases": [
+        "xbt",
+        "₿",
+        "btcs"
+      ],
+      "aliasesToPluralize": [
+        "bitcoin"
+      ],
+      "prettyFormat": "₿",
+      "priority": true,
+      "category": "crypto",
+      "convertTo": true
+    },
+    "ltc": {
+      "primaryAlias": "ltc",
+      "rate": 0.01083415276,
+      "name": "Litecoin",
+      "aliases": [],
+      "aliasesToPluralize": [
+        "litecoin"
+      ],
+      "prettyFormat": "Ł",
+      "priority": false,
+      "category": "crypto",
+      "convertTo": true
+    },
+    "eth": {
+      "primaryAlias": "eth",
+      "rate": 0.0003372214098,
+      "name": "Ethereum",
+      "aliases": [],
+      "aliasesToPluralize": [
+        "ether"
+      ],
+      "prettyFormat": "ETH",
+      "priority": false,
+      "category": "crypto",
+      "convertTo": true
+    },
+    "xrp": {
+      "primaryAlias": "xrp",
+      "rate": 0.4118382085,
+      "name": "Ripple",
+      "aliases": [
+        "ripple"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "XRP",
+      "priority": false,
+      "category": "crypto",
+      "convertTo": true
+    },
+    "bnb": {
+      "primaryAlias": "bnb",
+      "rate": 0.001555974364,
+      "name": "Binance Coin",
+      "aliases": [],
+      "aliasesToPluralize": [],
+      "prettyFormat": "BNB",
+      "priority": false,
+      "category": "crypto",
+      "convertTo": true
+    },
+    "ada": {
+      "primaryAlias": "ada",
+      "rate": 1.646824243,
+      "name": "Cardano",
+      "aliases": [
+        "₳"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "ADA",
+      "priority": false,
+      "category": "crypto",
+      "convertTo": true
+    },
+    "trx": {
+      "primaryAlias": "trx",
+      "rate": 3.584027759,
+      "name": "Tron",
+      "aliases": [
+        "tron"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "TRX",
+      "priority": false,
+      "category": "crypto",
+      "convertTo": true
+    },
+    "xlm": {
+      "primaryAlias": "xlm",
+      "rate": 3.124704872,
+      "name": "Stellar",
+      "aliases": [
+        "stellar"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "XLM",
+      "priority": false,
+      "category": "crypto",
+      "convertTo": true
+    },
+    "bch": {
+      "primaryAlias": "bch",
+      "rate": 0.002189693204,
+      "name": "Bitcoin Cash",
+      "aliases": [],
+      "aliasesToPluralize": [],
+      "prettyFormat": "BCH",
+      "priority": false,
+      "category": "crypto",
+      "convertTo": true
+    },
+    "xmr": {
+      "primaryAlias": "xmr",
+      "rate": 0.003943761008,
+      "name": "Monero",
+      "aliases": [
+        "monero"
+      ],
+      "aliasesToPluralize": [],
+      "prettyFormat": "XMR",
+      "priority": false,
+      "category": "crypto",
+      "convertTo": true
+    }
+  },
+  "metadata": {
+    "updaterVersion": "1.0.1 (2fe79ca)",
+    "serverVersion": "1.0.1 (2fe79ca)"
+  }
+}

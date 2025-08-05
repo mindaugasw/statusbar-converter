@@ -1,14 +1,18 @@
+import json
 from unittest import TestCase
 from unittest.mock import Mock, MagicMock
 
+from TestUtil.TestsFilesystemHelper import TestsFilesystemHelper
 from src.Constant.ConfigId import ConfigId
 from src.DTO.ConvertResult import ConvertResult
 from src.Service.ArgumentParser import ArgumentParser
 from src.Service.Conversion.ConversionManager import ConversionManager
 from src.Service.Conversion.Timestamp.TimestampTextFormatter import TimestampTextFormatter
+from src.Service.Conversion.Unit.Currency.CurrencyConverter import CurrencyConverter
 from src.Service.Debug import Debug
 from src.Service.EventService import EventService
 from src.Service.Logger import Logger
+from src.Service.OSSwitch import OSSwitch
 from src.Service.ServiceContainer import ServiceContainer
 from tests.TestUtil.MockLibrary import MockLibrary
 from tests.TestUtil.Types import ConfigurationsList
@@ -64,8 +68,9 @@ class AbstractConversionManagerTest(TestCase):
             (ConfigId.ClearOnChange, False),
             (ConfigId.ClearAfterTime, 0),
             (ConfigId.Debug, False),
-            (ConfigId.Converter_Currency_Enabled, False),
+            (ConfigId.Converter_Currency_Enabled, True),
             (ConfigId.Converter_Currency_PrimaryCurrency, 'eur'),
+            (ConfigId.Converter_Currency_RatesUrl, ''),
             (ConfigId.Converter_Distance_Enabled, True),
             (ConfigId.Converter_Distance_PrimaryUnit_Metric, True),
             (ConfigId.Converter_Temperature_Enabled, True),
@@ -89,7 +94,7 @@ class AbstractConversionManagerTest(TestCase):
         loggerMock = Mock(Logger)
         debugMock = Debug(configMock, argParserMock)
         filesystemHelperMock = MockLibrary.getFilesystemHelper()
-
+        osSwitch = OSSwitch()
         timestampTextFormatter = TimestampTextFormatter(configMock)
         container: dict[type, object] = {}
 
@@ -100,8 +105,18 @@ class AbstractConversionManagerTest(TestCase):
             argParserMock,
             configMock,
             loggerMock,
+            osSwitch,
             self._events,
             debugMock,
         )
+
+        currencyConverter: CurrencyConverter = container[CurrencyConverter]  # type: ignore[assignment]
+        testsFilesystemHelper = TestsFilesystemHelper()
+
+        with open(testsFilesystemHelper.getProjectDir() + '/assets_dev/rates_response_mock.json', 'r') as ratesFile:
+            ratesText = ratesFile.read()
+
+        ratesData = json.loads(ratesText)
+        currencyConverter.refreshUnits(ratesData['currencies'])
 
         return conversionManager
