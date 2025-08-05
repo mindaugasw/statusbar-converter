@@ -1,6 +1,5 @@
-from typing import TypeVar
-
 from src.Constant.ModalId import ModalId
+from src.DTO.ServiceContainer import ServiceContainer
 from src.Service.AppLoop import AppLoop
 from src.Service.ArgumentParser import ArgumentParser
 from src.Service.AutostartManager import AutostartManager
@@ -40,19 +39,19 @@ from src.Service.StatusbarApp import StatusbarApp
 from src.Service.UpdateManager import UpdateManager
 
 
-class ServiceContainer:
-    T = TypeVar('T')
+class ServiceBuilder:
+    _initialized: bool
 
-    _services: dict[type, object]
+    def __init__(self):
+        self._initialized = False
 
-    def __getitem__(self, item: type[T]) -> T:
-        if item not in self._services:
-            raise Exception(f'Service with id "{item}" not found in the container')
+    def initializeServices(self) -> ServiceContainer:
+        if self._initialized:
+            raise Exception('Services are already initialize, cannot initialize again')
 
-        return self._services[item]  # type: ignore[return-value]
+        self._initialized = True
 
-    def initializeServices(self) -> 'ServiceContainer':
-        _: dict[type, object] = {}
+        _ = ServiceContainer()
 
         # Core services
         _[OSSwitch] = osSwitch = OSSwitch()
@@ -71,7 +70,6 @@ class ServiceContainer:
         # Conversion services
         _[TimestampTextFormatter] = timestampTextFormatter = TimestampTextFormatter(config)
         _[ConversionManager] = conversionManager = self.getConversionManager(_, filesystemHelper, timestampTextFormatter, argumentParser, config, logger, osSwitch, events, debug)
-        # noinspection PyTypeChecker
         currencyConverter: CurrencyConverter = _[CurrencyConverter]
 
         # GUI services
@@ -85,9 +83,7 @@ class ServiceContainer:
         _[StatusbarApp] = statusbarApp = self._getStatusbarApp(osSwitch, timestampTextFormatter, clipboardManager, conversionManager, events, config, configFileManager, autostartManager, updateManager, modalWindowManager, filesystemHelper, logger, debug)
         _[AppLoop] = appLoop = self._getAppLoop(osSwitch, events, clipboardManager)
 
-        self._services = _
-
-        return self
+        return _
 
     def _getFilesystemHelper(self, osSwitch: OSSwitch) -> FilesystemHelper:
         if osSwitch.isMacOS():
@@ -99,7 +95,7 @@ class ServiceContainer:
 
     def getConversionManager(
         self,
-        container: dict[type, object],
+        _: ServiceContainer,
         filesystemHelper: FilesystemHelper,
         timestampTextFormatter: TimestampTextFormatter,
         argumentParser: ArgumentParser,
@@ -110,8 +106,8 @@ class ServiceContainer:
         debug: Debug,
     ) -> ConversionManager:
         rounder = Rounder()
-        container[CurrencyConverter] = currencyConverter = CurrencyConverter(rounder, events, config, logger)
-        container[ConversionRateUpdater] = conversionRateUpdater = ConversionRateUpdater(currencyConverter, filesystemHelper, argumentParser, config, events, osSwitch, logger)
+        _[CurrencyConverter] = currencyConverter = CurrencyConverter(rounder, events, config, logger)
+        _[ConversionRateUpdater] = conversionRateUpdater = ConversionRateUpdater(currencyConverter, filesystemHelper, argumentParser, config, events, osSwitch, logger)
 
         unitBeforeConverters: list[UnitConverterInterface] = [
             currencyConverter,
@@ -128,7 +124,7 @@ class ServiceContainer:
         unitToConverterMapper = UnitToConverterMapper(unitBeforeConverters, unitAfterConverters, events)
 
         thousandsDetector = ThousandsDetector()
-        unitParser = UnitParser(unitToConverterMapper, thousandsDetector)
+        _[UnitParser] = unitParser = UnitParser(unitToConverterMapper, thousandsDetector)
 
         converters: list[ConverterInterface] = [
             TimestampConverter(timestampTextFormatter, config, logger),

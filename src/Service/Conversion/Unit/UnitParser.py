@@ -45,7 +45,7 @@ class UnitParser:
         if (unitBefore is not None) and (unitAfter is not None):
             return None
 
-        converter: UnitConverterInterface
+        converter: UnitConverterInterface | None
 
         # Decide if it's unit before/after
         if unitBefore is not None:

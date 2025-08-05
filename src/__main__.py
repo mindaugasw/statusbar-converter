@@ -14,12 +14,12 @@ from src.Service.Conversion.Unit.Currency.ConversionRateUpdater import Conversio
 from src.Service.Debug import Debug
 from src.Service.Logger import Logger
 from src.Service.OSSwitch import OSSwitch
-from src.Service.ServiceContainer import ServiceContainer
+from src.Service.ServiceBuilder import ServiceBuilder
 from src.Service.StatusbarApp import StatusbarApp
 
 
 def main() -> None:
-    services = ServiceContainer().initializeServices()
+    services = ServiceBuilder().initializeServices()
 
     logger = services[Logger]
     config = services[Configuration]

@@ -1,35 +1,22 @@
-from unittest import TestCase
-
 from parameterized import parameterized
 
-from src.Constant.ConfigId import ConfigId
-from src.Service.Conversion.Rounder import Rounder
-from src.Service.Conversion.Unit.MetricImperial.DistanceConverter import DistanceConverter
-from src.Service.Conversion.Unit.MetricImperial.TemperatureConverter import TemperatureConverter
-from src.Service.Conversion.Unit.MetricImperial.VolumeConverter import VolumeConverter
-from src.Service.Conversion.Unit.MetricImperial.WeightConverter import WeightConverter
-from src.Service.Conversion.Unit.ThousandsDetector import ThousandsDetector
-from src.Service.Conversion.Unit.UnitConverterInterface import UnitConverterInterface
+from Service.Conversion.AbstractConversionManagerTest import AbstractConversionManagerTest
 from src.Service.Conversion.Unit.UnitParser import UnitParser
-from src.Service.Conversion.Unit.UnitToConverterMapper import UnitToConverterMapper
-from src.Service.EventService import EventService
-from tests.TestUtil.MockLibrary import MockLibrary
 
 
-class TestUnitParser(TestCase):
+class TestUnitParser(AbstractConversionManagerTest):
     @parameterized.expand([
         ('Simple', '5ft', 5, 'ft'),
         ('With whitespace, uppercase', ' 5 FT ', 5, 'ft'),
         ('Fractional', '5.5kg', 5.5, 'kg'),
         ('Special symbols ft', '18\'', 18, '\''),
         ('Special symbols in', '18"', 18, '"'),
+        ('Special symbols BTC', '₿0.155', 0.155, '₿'),
         ('Unit with number', '3m3', 3, 'm3'),
         ('Thousands separator 1', '1,234,567m', 1234567, 'm'),
         ('Thousands separator 2', '1.234.567m', 1234567, 'm'),
         ('Thousands separator 3', '1 2 3 4 m', 1234, 'm'),
         ('Thousands separator 4', '1 2 3 4 , 1m', 1234.1, 'm'),
-
-        # TODO add currency test cases
 
         # Compound units like 5'11" generally are not supported. But current parsers
         # already half-parse them, treating as 5ft (cutting off inches).
@@ -52,7 +39,8 @@ class TestUnitParser(TestCase):
         text: str,
         expectNumber: float | None = None, expectUnit: str | None = None,
     ) -> None:
-        parser = self._getParser()
+        services = self.setupServices()
+        parser = services[UnitParser]
 
         result = parser.parseText(text)
 
@@ -61,35 +49,3 @@ class TestUnitParser(TestCase):
         else:
             self.assertEqual(expectNumber, result.number)  # type: ignore[union-attr]
             self.assertEqual(expectUnit, result.unit)  # type: ignore[union-attr]
-
-    def _getParser(self) -> UnitParser:
-        config = [
-            (ConfigId.Converter_Currency_Enabled, False),
-            (ConfigId.Converter_Currency_PrimaryCurrency, 'eur'),
-            (ConfigId.Converter_Distance_Enabled, True),
-            (ConfigId.Converter_Distance_PrimaryUnit_Metric, True),
-            (ConfigId.Converter_Temperature_Enabled, True),
-            (ConfigId.Converter_Temperature_PrimaryUnit_Celsius, True),
-            (ConfigId.Converter_Volume_Enabled, True),
-            (ConfigId.Converter_Volume_PrimaryUnit_Metric, True),
-            (ConfigId.Converter_Weight_Enabled, True),
-            (ConfigId.Converter_Weight_PrimaryUnit_Metric, True),
-        ]
-
-        configMock = MockLibrary.getConfig(config)
-        events = EventService()
-        rounder = Rounder()
-
-        unitBeforeConverters: list[UnitConverterInterface] = [
-
-        ]
-        unitAfterConverters: list[UnitConverterInterface] = [
-            DistanceConverter(rounder, configMock),
-            WeightConverter(rounder, configMock),
-            TemperatureConverter(configMock),
-            VolumeConverter(rounder, configMock),
-        ]
-
-        unitToConverterMapper = UnitToConverterMapper(unitBeforeConverters, unitAfterConverters, events)
-
-        return UnitParser(unitToConverterMapper, ThousandsDetector())

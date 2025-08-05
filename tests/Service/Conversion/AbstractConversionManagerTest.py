@@ -5,6 +5,7 @@ from unittest.mock import Mock, MagicMock
 from TestUtil.TestsFilesystemHelper import TestsFilesystemHelper
 from src.Constant.ConfigId import ConfigId
 from src.DTO.ConvertResult import ConvertResult
+from src.DTO.ServiceContainer import ServiceContainer
 from src.Service.ArgumentParser import ArgumentParser
 from src.Service.Conversion.ConversionManager import ConversionManager
 from src.Service.Conversion.Timestamp.TimestampTextFormatter import TimestampTextFormatter
@@ -13,7 +14,7 @@ from src.Service.Debug import Debug
 from src.Service.EventService import EventService
 from src.Service.Logger import Logger
 from src.Service.OSSwitch import OSSwitch
-from src.Service.ServiceContainer import ServiceContainer
+from src.Service.ServiceBuilder import ServiceBuilder
 from tests.TestUtil.MockLibrary import MockLibrary
 from tests.TestUtil.Types import ConfigurationsList
 
@@ -45,8 +46,8 @@ class AbstractConversionManagerTest(TestCase):
         if text is not None and text != text.strip():
             raise Exception('This service should always receive only whitespace-stripped input')
 
-        conversionManager = self.buildConversionManager(configOverrides)
-
+        container = self.setupServices(configOverrides)
+        conversionManager = container[ConversionManager]
         conversionManager.onClipboardChange(text)
 
         self.assertConvertResult(expectSuccess, expectFrom, expectTo)
@@ -63,7 +64,7 @@ class AbstractConversionManagerTest(TestCase):
             self.assertEqual(expectFrom, self._convertResult.originalText)  # type: ignore[union-attr]
             self.assertEqual(expectTo, self._convertResult.convertedText)  # type: ignore[union-attr]
 
-    def buildConversionManager(self, configOverrides: ConfigurationsList | None = None) -> ConversionManager:
+    def setupServices(self, configOverrides: ConfigurationsList | None = None) -> ServiceContainer:
         configDefault = [
             (ConfigId.ClearOnChange, False),
             (ConfigId.ClearAfterTime, 0),
@@ -96,9 +97,10 @@ class AbstractConversionManagerTest(TestCase):
         filesystemHelperMock = MockLibrary.getFilesystemHelper()
         osSwitch = OSSwitch()
         timestampTextFormatter = TimestampTextFormatter(configMock)
-        container: dict[type, object] = {}
 
-        conversionManager = ServiceContainer().getConversionManager(
+        container = ServiceContainer()
+
+        container[ConversionManager] = conversionManager = ServiceBuilder().getConversionManager(
             container,
             filesystemHelperMock,
             timestampTextFormatter,
@@ -119,4 +121,4 @@ class AbstractConversionManagerTest(TestCase):
         ratesData = json.loads(ratesText)
         currencyConverter.refreshUnits(ratesData['currencies'])
 
-        return conversionManager
+        return container
