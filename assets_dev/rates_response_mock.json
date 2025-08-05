@@ -1,6 +1,6 @@
 {
-  "refreshedAt": 1754168823,
-  "cachedAt": 1754168833,
+  "refreshedAt": 1754427420,
+  "cachedAt": 1754427543,
   "ratesFromCurrency": "eur",
   "currencies": {
     "eur": {
@@ -146,7 +146,7 @@
         "forintok"
       ],
       "aliasesToPluralize": [],
-      "prettyFormat": "Ft‎",
+      "prettyFormat": "Ft",
       "priority": false,
       "category": "fiat",
       "convertTo": true
@@ -195,7 +195,7 @@
         "nkr"
       ],
       "aliasesToPluralize": [],
-      "prettyFormat": "kr‎",
+      "prettyFormat": "kr",
       "priority": false,
       "category": "fiat",
       "convertTo": true
@@ -244,7 +244,7 @@
         "руб"
       ],
       "aliasesToPluralize": [],
-      "prettyFormat": "₽‎",
+      "prettyFormat": "₽",
       "priority": false,
       "category": "fiat",
       "convertTo": true
@@ -296,10 +296,10 @@
       "name": "Turkish lira",
       "aliases": [
         "tl",
-        "₺‎"
+        "₺"
       ],
       "aliasesToPluralize": [],
-      "prettyFormat": "₺‎",
+      "prettyFormat": "₺",
       "priority": false,
       "category": "fiat",
       "convertTo": true
@@ -337,7 +337,7 @@
       "rate": 8.359569,
       "name": "Chinese yuan",
       "aliases": [
-        "¥‎",
+        "¥",
         "块",
         "元",
         "yuán",
@@ -345,7 +345,7 @@
         "rmb"
       ],
       "aliasesToPluralize": [],
-      "prettyFormat": "¥‎",
+      "prettyFormat": "¥",
       "priority": false,
       "category": "fiat",
       "convertTo": true
@@ -410,11 +410,11 @@
       "rate": 3.9447,
       "name": "Israeli new shekel",
       "aliases": [
-        "₪‎",
+        "₪",
         "nis"
       ],
       "aliasesToPluralize": [],
-      "prettyFormat": "₪‎",
+      "prettyFormat": "₪",
       "priority": false,
       "category": "fiat",
       "convertTo": true
@@ -427,7 +427,7 @@
       "aliasesToPluralize": [
         "yen"
       ],
-      "prettyFormat": "¥‎",
+      "prettyFormat": "¥",
       "priority": false,
       "category": "fiat",
       "convertTo": true
@@ -597,11 +597,11 @@
       "rate": 4.0998,
       "name": "Peruvian sol",
       "aliases": [
-        "s/‎",
+        "s/",
         "sol"
       ],
       "aliasesToPluralize": [],
-      "prettyFormat": "S/‎",
+      "prettyFormat": "S/",
       "priority": false,
       "category": "fiat",
       "convertTo": true

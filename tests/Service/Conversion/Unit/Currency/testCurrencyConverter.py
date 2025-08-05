@@ -17,13 +17,13 @@ class TestCurrencyConverter(AbstractConversionManagerTest):
         ('Weird symbols - BGN', 'eur', '55 лв.', True, '55 BGN', '28.12 €'),
         ('Weird symbols - GEL', 'eur', '12345 ₾', True, '12345 GEL', '3961 €'),
         ('Weird symbols - PLN', 'eur', '101 zł', True, '101 PLN', '23.64 €'),
-        ('Weird symbols - TRY', 'eur', '45.454545 ₺‎', True, '45.45 TRY', '0.97 €'),
-        ('Weird symbols - CNY 1', 'eur', '500 ¥‎', True, '500 CNY', '59.81 €'),
+        ('Weird symbols - TRY', 'eur', '45.454545 ₺', True, '45.45 TRY', '0.97 €'),
+        ('Weird symbols - CNY 1', 'eur', '500 ¥', True, '500 CNY', '59.81 €'),
         ('Weird symbols - CNY 2', 'eur', '500 块', True, '500 CNY', '59.81 €'),
         ('Weird symbols - INR', 'eur', '500500 ₹', True, '500500 INR', '4955 €'),
-        # ('Weird symbols - ILS', 'eur', '70₪', True, '70 ILS', '17.75 €'), # TODO this is failing because of invisible LRM character in rates alias. Fix this in updater script
+        ('Weird symbols - ILS', 'eur', '70₪', True, '70 ILS', '17.75 €'),
         ('Weird symbols - KRW', 'eur', '₩ 0.0001', True, '0.0001 KRW', '0 €'),
-        # ('Weird symbols - PEN', 'eur', 'S/ 699', True, '699 PEN', '168.79 €'), # TODO this is failing because of invisible LRM character in rates alias. Fix this in updater script
+        ('Weird symbols - PEN', 'eur', 'S/ 699', True, '699 PEN', '170.5 €'),
         ('Weird symbols - BTC', 'usd', '1 ₿', True, '1 BTC', '113421 $'),
         ('Weird symbols - ADA', 'usd', '₳ 1.01', True, '1.01 ADA', '0.71 $'),
     ])
