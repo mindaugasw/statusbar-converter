@@ -79,8 +79,8 @@ class ConversionRateUpdater:
         self._logger.log(
             f'{Logs.catRateUpdater}Initialize - local refresh {"success" if fileResult.success else "FAIL"}, '
             f'isOutdated: {fileResult.isOutdated}, '
-            f'cachedAt: {fileResult.data.cachedAt if fileResult.success else "-"}, '  # type: ignore[union-attr]
-            f'refreshedAt: {fileResult.data.refreshedAt if fileResult.success else "-"}',  # type: ignore[union-attr]
+            f'cachedAt: {self._timestampRelativeLog(fileResult.data.cachedAt if fileResult.success else "-")}, '  # type: ignore[union-attr]
+            f'refreshedAt: {self._timestampRelativeLog(fileResult.data.refreshedAt if fileResult.success else "-")}',  # type: ignore[union-attr]
         )
 
         parsedData: CurrenciesFileData | None = None
@@ -147,7 +147,8 @@ class ConversionRateUpdater:
 
             self._logger.log(
                 f'{Logs.catRateUpdater}Online refresh success, '
-                f'cachedAt: {parsedData.cachedAt}, refreshedAt: {parsedData.refreshedAt}',
+                f'cachedAt: {self._timestampRelativeLog(parsedData.cachedAt)}, '
+                f'refreshedAt: {self._timestampRelativeLog(parsedData.refreshedAt)}',
             )
 
             self._currencyConverter.refreshUnits(parsedData.currencies)
@@ -189,3 +190,11 @@ class ConversionRateUpdater:
             }
 
         return self._requestHeaders
+
+    def _timestampRelativeLog(self, timestamp: int|str) -> str:
+        if isinstance(timestamp, str):
+            return timestamp
+
+        minutesAgo = int((time.time() - timestamp) / -60)
+
+        return f'{timestamp} ({minutesAgo}m)'
