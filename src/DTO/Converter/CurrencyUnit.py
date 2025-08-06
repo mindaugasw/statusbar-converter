@@ -9,7 +9,7 @@ class CurrencyUnit(AbstractUnit):
     def __init__(
         self,
         primaryAlias: str,
-        prettyFormat: str, # TODO when converting, use pretty format only if it's the main currency. Otherwise, primary alias. Or maybe apply this only for submenu header? Or make only exceptions for $/€?
+        prettyFormat: str,
         rate: float,
         name: str,
         category: str,

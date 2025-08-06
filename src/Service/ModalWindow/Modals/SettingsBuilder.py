@@ -81,12 +81,12 @@ class SettingsBuilder(ModalWindowBuilderInterface):
         with dpg.window(label='Window title', tag=self._PRIMARY_TAG, on_close=self._onClose):
             self._buildHeader()
             self._buildCollapsableSection('General settings', self._buildGeneralSettings)
-            self._buildCollapsableSection('Currency converter settings', self._buildCurrencyConverterSettings)
-            self._buildCollapsableSection('Distance converter settings', self._buildDistanceConverterSettings)
-            self._buildCollapsableSection('Temperature converter settings', self._buildTemperatureConverterSettings)
-            self._buildCollapsableSection('Volume converter settings', self._buildVolumeConverterSettings)
-            self._buildCollapsableSection('Weight converter settings', self._buildWeightConverterSettings)
-            self._buildCollapsableSection('Unix timestamp converter settings', self._buildTimestampConverterSettings)
+            self._buildCollapsableSection('Currency converter', self._buildCurrencyConverterSettings)
+            self._buildCollapsableSection('Distance converter', self._buildDistanceConverterSettings)
+            self._buildCollapsableSection('Temperature converter', self._buildTemperatureConverterSettings)
+            self._buildCollapsableSection('Volume converter', self._buildVolumeConverterSettings)
+            self._buildCollapsableSection('Weight converter', self._buildWeightConverterSettings)
+            self._buildCollapsableSection('Unix timestamp converter', self._buildTimestampConverterSettings)
 
     def _buildHeader(self) -> None:
         with dpg.group(horizontal=True):
