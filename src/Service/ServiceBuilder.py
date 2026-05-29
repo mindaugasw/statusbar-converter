@@ -46,6 +46,8 @@ class ServiceBuilder:
         self._initialized = False
 
     def initializeServices(self) -> ServiceContainer:
+        # TODO reuse dynamic container from algotrading-repo
+
         if self._initialized:
             raise Exception('Services are already initialize, cannot initialize again')
 
