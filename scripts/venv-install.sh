@@ -15,22 +15,6 @@ venvDir=$1
 basePythonBinary=$2
 
 
-_getOsName() {
-    local name
-    name=$(uname)
-    # ${var,,} syntax converts string to lowercase
-    name=${name,,}
-
-    if [ "$name" == 'linux' ]; then
-        echo 'linux'
-    elif [ "$name" == 'darwin' ]; then
-        echo 'macos'
-    else
-        echo -e "$textError Unknown OS type: $name" >&2
-        exit 1
-    fi
-}
-
 _installVenv() {
     local os
     os=$(_getOsName)
