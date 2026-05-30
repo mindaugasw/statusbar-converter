@@ -1,0 +1,3 @@
+# Needed to allow validating imported variables
+# https://stackoverflow.com/questions/58587756/why-does-shellcheck-fail-when-a-source-file-is-representing-the-variables-at-the
+external-sources=true
