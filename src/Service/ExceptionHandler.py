@@ -85,7 +85,7 @@ class ExceptionHandler:
             f'Thread: {threadName}\n'
             f'Type: {exceptionType}\n'
             f'Message: {message}\n'
-            f'Trace: {traceString}'
+            f'Trace: {traceString}',
         )
 
         Logger.instance.logRaw(f'{stars}\n')

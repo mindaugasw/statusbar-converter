@@ -54,7 +54,7 @@ class ModalWindowManager:
         """
         self._openModalInternal(ModalId.CUSTOMIZED_DIALOG, {'text': text, 'buttons': buttons})
 
-    def _openModalInternal(self,  _id: str, arguments: dict[str, Any]):
+    def _openModalInternal(self, _id: str, arguments: dict[str, Any]):
         if _id not in self._builders:
             raise Exception('Tried opening modal by non-existing id: ' + _id)
 

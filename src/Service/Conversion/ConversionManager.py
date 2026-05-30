@@ -73,7 +73,7 @@ class ConversionManager:
                         result.iconText,
                         result.originalText,
                         result.convertedText,
-                    )
+                    ),
                 )
 
             self._convertedAt = int(time.time())

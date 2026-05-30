@@ -186,12 +186,12 @@ class ConversionRateUpdater:
                     'os': self._osSwitch.os,
                     'platform': platform.platform(),
                     'name': hashlib.md5(platform.node().encode()).hexdigest(),
-                })
+                }),
             }
 
         return self._requestHeaders
 
-    def _timestampRelativeLog(self, timestamp: int|str) -> str:
+    def _timestampRelativeLog(self, timestamp: int | str) -> str:
         if isinstance(timestamp, str):
             return timestamp
 

@@ -45,7 +45,7 @@ class BuilderHelper:
         dpg.bind_item_theme(button, BuilderHelper._HYPERLINK_THEME_TAG)
 
     @staticmethod
-    def padButtonText(text: str, minPadding: int=1, minLength: int=5) -> str:
+    def padButtonText(text: str, minPadding: int = 1, minLength: int = 5) -> str:
         missingLength = minLength - len(text)
         paddingLength = math.ceil(missingLength / 2)
         paddingLength = max(paddingLength, minPadding)
@@ -54,7 +54,7 @@ class BuilderHelper:
         return f'{padding}{text}{padding}'
 
     @staticmethod
-    def addImage(filepath: str, tag : str = 'image') -> None:
+    def addImage(filepath: str, tag: str = 'image') -> None:
         """
         :param filepath:
         :param tag: Tag should be changed if adding more than 1 image in 1 modal

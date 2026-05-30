@@ -40,7 +40,7 @@ class Rounder:
         if text == '-0':
             text = '0'
 
-        return  text
+        return text
 
     def _getDecimalPlaces(self, number: float, levels) -> int:
         number = abs(number)

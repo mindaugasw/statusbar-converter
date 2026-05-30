@@ -13,7 +13,7 @@ class WeightConverter(AbstractMetricImperialConverter):
     def __init__(
         self,
         rounder: Rounder,
-        config: Configuration
+        config: Configuration,
     ):
         enabled = config.get(ConfigId.Converter_Weight_Enabled)
         primaryUnitMetric = config.get(ConfigId.Converter_Weight_PrimaryUnit_Metric)
@@ -55,7 +55,7 @@ class WeightConverter(AbstractMetricImperialConverter):
                     True,
                     True,
                     1000,
-                    0.001
+                    0.001,
                 ),
             ),
             'kg': UnitDefinition(

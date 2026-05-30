@@ -5,7 +5,6 @@ from src.DTO.SettingsModal.AbstractControlProperties import AbstractControlPrope
 
 
 class TextControlProperties(AbstractControlProperties):
-
     castToType: Type
 
     def __init__(self, configId: ConfigParameter, castToType: Type):

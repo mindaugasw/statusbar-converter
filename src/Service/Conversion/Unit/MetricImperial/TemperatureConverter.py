@@ -12,6 +12,7 @@ from src.Service.Conversion.Unit.UnitPreprocessor import UnitPreprocessor
 class TemperatureUnit(AbstractUnit):
     pass
 
+
 class TemperatureConverter(UnitConverterInterface):
     _PRIMARY_ALIAS_CELSIUS: Final[str] = 'c'
     _PRIMARY_ALIAS_FAHRENHEIT: Final[str] = 'f'
@@ -25,8 +26,8 @@ class TemperatureConverter(UnitConverterInterface):
         self._enabled = config.get(ConfigId.Converter_Temperature_Enabled)
         self._unitsExpanded = UnitPreprocessor.expandAliases(self._getUnitsDefinition())
 
-        primaryUnitId = self._PRIMARY_ALIAS_CELSIUS\
-            if config.get(ConfigId.Converter_Temperature_PrimaryUnit_Celsius)\
+        primaryUnitId = self._PRIMARY_ALIAS_CELSIUS \
+            if config.get(ConfigId.Converter_Temperature_PrimaryUnit_Celsius) \
             else self._PRIMARY_ALIAS_FAHRENHEIT
         self._primaryUnit = self._unitsExpanded[primaryUnitId]
 

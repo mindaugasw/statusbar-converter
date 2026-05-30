@@ -1,5 +1,6 @@
 from typing import TypeVar
 
+
 class ServiceContainer:
     T = TypeVar('T')
 

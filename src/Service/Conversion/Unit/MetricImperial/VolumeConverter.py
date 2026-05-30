@@ -102,7 +102,7 @@ class VolumeConverter(AbstractMetricImperialConverter):
                 ),
             ),
             'm3': UnitDefinition(
-                ['meter3', 'metre3',]
+                ['meter3', 'metre3']
                 + UnitPreprocessor.pluralizeAliases([
                     'cubicmeter', 'cubicmetre',
                 ]),
@@ -129,7 +129,7 @@ class VolumeConverter(AbstractMetricImperialConverter):
                     True,
                     128,  # 128 fl oz = 1 gal
                     1 / 29.57353,
-                )
+                ),
             ),
             'gal': UnitDefinition(
                 ['gals'] +

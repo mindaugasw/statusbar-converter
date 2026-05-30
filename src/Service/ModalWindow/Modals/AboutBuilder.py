@@ -36,7 +36,6 @@ class AboutBuilder(ModalWindowBuilderInterface):
         BuilderHelper.registerHyperlinkTheme()
 
         with dpg.window(tag=self._PRIMARY_TAG, on_close=self._onClose):
-
             # group with `horizontal` to make 2 "columns" for image and text
             with dpg.group(horizontal=True):
                 with dpg.group():

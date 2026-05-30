@@ -75,7 +75,6 @@ class ConfigId:
         True,
     )
 
-
     # State keys - managed automatically, not configurable from app settings GUI
     Update_SkipVersion: Final = ConfigParameter.newState(
         ['update', 'skip_version'],
@@ -91,7 +90,6 @@ class ConfigId:
         ['auto_run', 'initial_setup_complete'],
         False,
     )
-
 
     # Config keys - configurable in user config file
     Debug: Final = ConfigParameter.newConfig(['debug'])

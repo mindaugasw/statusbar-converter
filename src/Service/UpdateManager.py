@@ -185,7 +185,7 @@ class UpdateManager:
 
             buttons = {'Ok': None}
         else:
-            text =\
+            text = \
                 f'New app update found: {version}.\n' \
                 f'Current app version is v{self._config.getAppVersion()}.\n' \
                 f'Release notes available on the download page.\n\n' \

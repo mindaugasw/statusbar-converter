@@ -121,7 +121,7 @@ class StatusbarApp(ABC):
 
             for key, template in self._menuTemplatesCurrentTimestamp.items():
                 items.update({
-                    key: MenuItem(key, callback=self._onMenuClickCurrentTimestamp)
+                    key: MenuItem(key, callback=self._onMenuClickCurrentTimestamp),
                 })
 
             items.update({'separator_current_timestamp': MenuItem(isSeparator=True)})

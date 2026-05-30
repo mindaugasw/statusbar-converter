@@ -162,7 +162,7 @@ class StatusbarAppMacOs(StatusbarApp):
 
         buttonNames = list(buttons.keys())
         buttonsText = '", "'.join(buttonNames)
-        dialogCommand =\
+        dialogCommand = \
             f'osascript -e \'Tell application "System Events" to display dialog ' \
             f'"{message}" ' \
             f'with title "{AppConstant.APP_NAME}" ' \

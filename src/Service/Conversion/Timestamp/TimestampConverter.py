@@ -74,7 +74,7 @@ class TimestampConverter(ConverterInterface):
                 f'Exception occurred while converting copied text to integer.\n'
                 f'Copied content: {text}\n'
                 f'Exception: {type(e)}\n'
-                f'Message: {str(e)}'
+                f'Message: {str(e)}',
             )
 
             return None

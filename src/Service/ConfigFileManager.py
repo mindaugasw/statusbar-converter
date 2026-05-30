@@ -6,7 +6,6 @@ from src.Service.Logger import Logger
 
 
 class ConfigFileManager:
-
     _logger: Logger
 
     _configAppPath: str

@@ -32,7 +32,7 @@ def main() -> None:
         f'Platform: {platform.platform()}\n'
         f'Detected OS: {osSwitch.os}\n'
         f'Python: {sys.version}\n'
-        f'Debug: {"enabled" if debug.isDebugEnabled() else "disabled"}\n\n'
+        f'Debug: {"enabled" if debug.isDebugEnabled() else "disabled"}\n\n',
     )
 
     sleepTime = services[ArgumentParser].getSleep()
