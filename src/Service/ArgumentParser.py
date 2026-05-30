@@ -1,35 +1,37 @@
 import argparse
 
+from src.Service.CLIArgsCreator import CLIArgsCreator
+
 
 class ArgumentParser:
     _arguments: argparse.Namespace
 
     def __init__(self):
         parser = argparse.ArgumentParser()
+        argsCreator = CLIArgsCreator(parser)
 
-        parser.add_argument('--debug', action='store_true', help='Enable more verbose logging')
-        parser.add_argument(
-            '--mock-update',
-            action='store',
-            choices=['old', 'new'],
+        argsCreator.addOptionBool('--debug', 'Enable more verbose logging')
+
+        argsCreator.addOptionString(
+            cliName='--mock-update',
             help='Helper for development. Allows mocking update check. Should be used to avoid GitHub rate limiter.',
+            choices=['old', 'new'],
         )
-        parser.add_argument(
+
+        argsCreator.addOptionBool(
             '--mock-packaged',
-            action='store_true',
-            help='Helper for development. Allows mocking in-development app as if it was running as packaged '
-                 '("frozen"). Can be used for autostart testing.',
+            'Helper for development. Allows mocking in-development app as if it was running as packaged '
+            '("frozen"). Can be used for autostart testing.',
         )
-        parser.add_argument(
+
+        argsCreator.addOptionString(
             '--currency-rates-url',
-            action='store',
-            help='Override URL for currency conversion rates update',
+            'Override URL for currency conversion rates update',
         )
-        parser.add_argument(
+
+        argsCreator.addOptionInt(
             '--sleep',
-            action='store',
-            type=int,
-            help='Sleep this number of seconds before showing app icon',
+            'Sleep this number of seconds before showing app icon',
         )
         """
         Sleep argument is needed for Linux, to make statusbar icon appear at the end, after
