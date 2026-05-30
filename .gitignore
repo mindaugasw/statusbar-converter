@@ -1,9 +1,11 @@
-.vscode
-.idea
 var
-
 binaries
 docs/notes
+
+# IDE files
+.vscode
+.idea/*
+!.idea/codeStyles
 
 # virtualenv artifacts
 .eggs
