@@ -34,6 +34,27 @@ venv-install basePythonBinary='python3.10':
     {{_scriptsDir}}/venv-install.sh {{_venvDir}} {{basePythonBinary}}
 
 
+# --- scripts ---
+# Run the app
+[group('scrips')]
+run:
+    {{_pythonBinary}} -m src
+
+# Run unit tests
+[group('scrips')]
+test:
+    {{_pythonBinary}} -m unittest
+
+# Run unit tests with coverage
+[group('scrips')]
+coverage:
+    {{_pythonBinary}} -m coverage run
+    @{{_pythonBinary}} -m coverage html
+
+    @echo -e "\nCoverage %:"
+    @{{_pythonBinary}} -m coverage report --format=total
+
+
 # --- build ---
 # Build a spec file. Generally does not need runing, build uses pre-built spec.
 [group('build')]
@@ -44,12 +65,3 @@ build-spec:
 [group('build')]
 build:
     {{_scriptsDir}}/build.sh {{_venvDir}}
-
-
-# --- scripts ---
-#
-[group('scrips')]
-test:
-    echo hello
-    source {{_venvDir}}/bin/activate
-    python -V
