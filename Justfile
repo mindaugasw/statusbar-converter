@@ -17,7 +17,6 @@ _arrow := _yellow + '>' + _r
 
 # --- help ---
 # Print this help
-[group('help')]
 help:
     @just --list --unsorted
 
@@ -37,13 +36,13 @@ venv-install basePythonBinary='python3.10':
 # --- scripts ---
 # Run the app
 [group('scrips')]
-run:
-    {{_pythonBinary}} -m src
+run *ARGS:
+    {{_pythonBinary}} -m src {{ARGS}}
 
 # Run unit tests
 [group('scrips')]
-test:
-    {{_pythonBinary}} -m unittest
+test *ARGS:
+    {{_pythonBinary}} -m unittest {{ARGS}}
 
 # Run unit tests with coverage
 [group('scrips')]
@@ -56,9 +55,9 @@ coverage:
 
 # Run mypy static analysis
 [group('scrips')]
-mypy:
+mypy *ARGS:
     mkdir -p var/mypy_cache
-    {{_pythonBinary}} -m mypy src
+    {{_pythonBinary}} -m mypy src {{ARGS}}
 
 
 # --- build ---
@@ -71,3 +70,18 @@ build-spec:
 [group('build')]
 build:
     {{_scriptsDir}}/build.sh {{_venvDir}}
+
+# Run the app from the built distributable
+[group('build')]
+run-dist:
+    #!/usr/bin/env bash
+    os="$(uname)"
+
+    if [[ "$os" == 'Linux' ]]; then
+        'build/dist-linux-x86_64/Statusbar Converter'
+    elif [[ "$os" == 'Darwin' ]]; then
+        open 'build/dist-macos-arm64/Statusbar Converter.app'
+    else
+        echo "Unsupported OS: $os" >&2
+        exit 1
+    fi
