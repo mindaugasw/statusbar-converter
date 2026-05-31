@@ -35,13 +35,19 @@ _getOsName() {
 }
 
 _getArchitecture() {
-    local name
-    name=$(uname -m)
+    local arch
+    arch=$(uname -m)
 
-    if [[ "$name" != 'arm64' ]] && [[ "$name" != 'x86_64' ]]; then
-        echo -e "$textError Unknown architecture type: $name" >&2
+    local os
+    os=$(_getOsName)
+
+    if [[ "$os" == 'linux' ]] && [[ "$arch" != 'x86_64' ]]; then
+        echo -e "$textError Unsupported architecture for Linux: $arch (only 'x86_64' is allowed)" >&2
+        exit 1
+    elif [[ "$os" == 'macos' ]] && [[ "$arch" != 'arm64' ]]; then
+        echo -e "$textError Unsupported architecture for macOS: $arch (only 'arm64' is allowed)" >&2
         exit 1
     fi
 
-    echo "$name"
+    echo "$arch"
 }
