@@ -15,20 +15,10 @@ source ./scripts/common.sh
 venvDir=$1
 
 
-_getArchitecture() {
-    os=$1
-
-    if [ "$os" == 'macos' ]; then
-        echo 'arm64'
-    elif [ "$os" == 'linux' ]; then
-        echo 'x86_64'
-    fi
-}
-
 _buildSpec() {
     local os arch
     os=$(_getOsName)
-    arch=$(_getArchitecture "$os")
+    arch=$(_getArchitecture)
 
     local specFilePath="build/spec-$os-$arch.spec"
 

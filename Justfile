@@ -35,11 +35,19 @@ venv-install basePythonBinary='python3.10':
 
 
 # --- build ---
+# Build a spec file. Generally does not need runing, build uses pre-built spec.
 [group('build')]
 build-spec:
     {{_scriptsDir}}/build-spec.sh {{_venvDir}}
 
+# Build a distributable
+[group('build')]
+build:
+    {{_scriptsDir}}/build.sh {{_venvDir}}
+
+
 # --- scripts ---
+#
 [group('scrips')]
 test:
     echo hello

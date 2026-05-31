@@ -24,12 +24,24 @@ _getOsName() {
     # ${var,,} syntax converts string to lowercase
     name=${name,,}
 
-    if [ "$name" == 'linux' ]; then
+    if [[ "$name" == 'linux' ]]; then
         echo 'linux'
-    elif [ "$name" == 'darwin' ]; then
+    elif [[ "$name" == 'darwin' ]]; then
         echo 'macos'
     else
         echo -e "$textError Unknown OS type: $name" >&2
         exit 1
     fi
+}
+
+_getArchitecture() {
+    local name
+    name=$(uname -m)
+
+    if [[ "$name" != 'arm64' ]] && [[ "$name" != 'x86_64' ]]; then
+        echo -e "$textError Unknown architecture type: $name" >&2
+        exit 1
+    fi
+
+    echo "$name"
 }
