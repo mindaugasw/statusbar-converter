@@ -1,7 +1,7 @@
 from parameterized import parameterized
 
-from Service.Conversion.AbstractConversionManagerTest import AbstractConversionManagerTest
 from src.Constant.ConfigId import ConfigId
+from tests.Service.Conversion.AbstractConversionManagerTest import AbstractConversionManagerTest
 
 
 class TestCurrencyConverter(AbstractConversionManagerTest):

@@ -1,7 +1,7 @@
 from parameterized import parameterized
 
-from Service.Conversion.AbstractConversionManagerTest import AbstractConversionManagerTest
 from src.Service.Conversion.Unit.UnitParser import UnitParser
+from tests.Service.Conversion.AbstractConversionManagerTest import AbstractConversionManagerTest
 
 
 class TestUnitParser(AbstractConversionManagerTest):

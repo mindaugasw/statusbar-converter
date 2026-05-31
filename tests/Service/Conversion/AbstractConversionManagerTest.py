@@ -2,7 +2,6 @@ import json
 from unittest import TestCase
 from unittest.mock import Mock, MagicMock
 
-from TestUtil.TestsFilesystemHelper import TestsFilesystemHelper
 from src.Constant.ConfigId import ConfigId
 from src.DTO.ConvertResult import ConvertResult
 from src.DTO.ServiceContainer import ServiceContainer
@@ -16,6 +15,7 @@ from src.Service.Logger import Logger
 from src.Service.OSSwitch import OSSwitch
 from src.Service.ServiceBuilder import ServiceBuilder
 from tests.TestUtil.MockLibrary import MockLibrary
+from tests.TestUtil.TestsFilesystemHelper import TestsFilesystemHelper
 from tests.TestUtil.Types import ConfigurationsList
 
 
