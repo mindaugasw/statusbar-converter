@@ -1,0 +1,10 @@
+cache-dir = "var/ruff_cache"
+
+include = ["src/**.py", "tests/**.py"]
+
+line-length = 100
+
+target-version = "py314"
+
+[format]
+quote-style = "single"
