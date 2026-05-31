@@ -1,10 +1,8 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 
-block_cipher = None
-
-
 a = Analysis(
+    # PyInstaller attempts changing this to ['../start.py'], not sure why
     ['../src/__main__.py'],
     pathex=[],
     binaries=[('../binaries/clipnotify/clipnotify', 'binaries/clipnotify')],
@@ -14,18 +12,15 @@ a = Analysis(
     hooksconfig={},
     runtime_hooks=[],
     excludes=[],
-    win_no_prefer_redirects=False,
-    win_private_assemblies=False,
-    cipher=block_cipher,
     noarchive=False,
+    optimize=0,
 )
-pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+pyz = PYZ(a.pure)
 
 exe = EXE(
     pyz,
     a.scripts,
     a.binaries,
-    a.zipfiles,
     a.datas,
     [],
     name='Statusbar Converter',
