@@ -17,8 +17,9 @@ class MockLibrary:
             overrides = []
 
         configMock = Mock(Configuration)
-        configMock.get.side_effect =\
-            lambda configId: MockLibrary._configGetSideEffect(defaultConfig, overrides, configId)
+        configMock.get.side_effect = lambda configId: MockLibrary._configGetSideEffect(
+            defaultConfig, overrides, configId
+        )
 
         return configMock
 

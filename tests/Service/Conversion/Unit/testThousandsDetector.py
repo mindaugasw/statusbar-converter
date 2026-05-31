@@ -10,26 +10,26 @@ class TestThousandsDetector(TestCase):
     def testParseNumber(self) -> None:
         casesInitial: list[TestThousandsDetector._testCaseType] = [
             # input,          expected output,   auto-generate more cases with ,.-? (Default True)
-            ('100',           100,               False),
-            ('-100',          -100,              False),
-            ('10.5',          10.5),
-            ('10.50',         10.5),
-            ('56.123',        56123),
+            ('100', 100, False),
+            ('-100', -100, False),
+            ('10.5', 10.5),
+            ('10.50', 10.5),
+            ('56.123', 56123),
             # triple digit before/after separator - can be both thousand or decimal separator
-            ('100.500',       100500),
-            ('100.5000',      100.5),
-            ('1.123.456',     1123456),
+            ('100.500', 100500),
+            ('100.5000', 100.5),
+            ('1.123.456', 1123456),
             ('1.123.456,789', 1123456.789),
             ('1.123,456,789', None),
-            ('1.2.3',         None),
-            ('11.22.33',      None),
-            ('11.222.33',     None),
-            ('11.222.333',    11222333),
+            ('1.2.3', None),
+            ('11.22.33', None),
+            ('11.222.33', None),
+            ('11.222.333', 11222333),
             ('1234.4567,789', None),
-            ('001',           1,                 False),
-            ('-001',          -1,                False),
-            ('1..5',          None),
-            ('1.,5',          None),
+            ('001', 1, False),
+            ('-001', -1, False),
+            ('1..5', None),
+            ('1.,5', None),
         ]
         cases = self._generateTestCases(casesInitial)
 

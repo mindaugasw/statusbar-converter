@@ -40,7 +40,10 @@ class AbstractConversionManagerTest(TestCase):
 
     def runConverterTest(
         self,
-        text: str | None, expectSuccess: bool, expectFrom: str | None, expectTo: str | None,
+        text: str | None,
+        expectSuccess: bool,
+        expectFrom: str | None,
+        expectTo: str | None,
         configOverrides: ConfigurationsList | None = None,
     ) -> None:
         if text is not None and text != text.strip():
@@ -52,8 +55,9 @@ class AbstractConversionManagerTest(TestCase):
 
         self.assertConvertResult(expectSuccess, expectFrom, expectTo)
 
-
-    def assertConvertResult(self, expectSuccess: bool, expectFrom: str | None = None, expectTo: str | None = None) -> None:
+    def assertConvertResult(
+        self, expectSuccess: bool, expectFrom: str | None = None, expectTo: str | None = None
+    ) -> None:
         self.assertEqual(
             expectSuccess,
             self._convertedWasDispatched,
@@ -115,7 +119,9 @@ class AbstractConversionManagerTest(TestCase):
         currencyConverter: CurrencyConverter = container[CurrencyConverter]  # type: ignore[assignment]
         testsFilesystemHelper = TestsFilesystemHelper()
 
-        with open(testsFilesystemHelper.getProjectDir() + '/assets_dev/rates_response_mock.json', 'r') as ratesFile:
+        with open(
+            testsFilesystemHelper.getProjectDir() + '/assets_dev/rates_response_mock.json', 'r'
+        ) as ratesFile:
             ratesText = ratesFile.read()
 
         ratesData = json.loads(ratesText)

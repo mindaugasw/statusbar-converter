@@ -5,7 +5,9 @@ from src.DTO.Converter.MetricImperialUnit import MetricImperialUnit
 from src.DTO.Converter.UnitDefinition import UnitDefinition
 from src.Service.Configuration import Configuration
 from src.Service.Conversion.Rounder import Rounder
-from src.Service.Conversion.Unit.MetricImperial.AbstractMetricImperialConverter import AbstractMetricImperialConverter
+from src.Service.Conversion.Unit.MetricImperial.AbstractMetricImperialConverter import (
+    AbstractMetricImperialConverter,
+)
 from src.Service.Conversion.Unit.UnitPreprocessor import UnitPreprocessor
 
 
@@ -32,10 +34,11 @@ class DistanceConverter(AbstractMetricImperialConverter):
     def _getUnitsDefinition(self) -> dict[str, UnitDefinition[MetricImperialUnit]]:
         return {
             # Units must be increasing order (per metric/imperial system)
-
             # Metric units
             'mm': UnitDefinition(
-                UnitPreprocessor.pluralizeAliases(['millimeter', 'milimeter', 'millimetre', 'milimetre']),
+                UnitPreprocessor.pluralizeAliases(
+                    ['millimeter', 'milimeter', 'millimetre', 'milimetre']
+                ),
                 MetricImperialUnit(
                     'mm',
                     'mm',
@@ -79,7 +82,10 @@ class DistanceConverter(AbstractMetricImperialConverter):
                 ),
             ),
             'km': UnitDefinition(
-                ['kms'] + UnitPreprocessor.pluralizeAliases(['kilometer', 'killometer', 'kilometre', 'killometre']),
+                ['kms']
+                + UnitPreprocessor.pluralizeAliases(
+                    ['kilometer', 'killometer', 'kilometre', 'killometre']
+                ),
                 MetricImperialUnit(
                     'km',
                     'km',
@@ -89,10 +95,9 @@ class DistanceConverter(AbstractMetricImperialConverter):
                     1000,
                 ),
             ),
-
             # Imperial units
             'in': UnitDefinition(
-                ['ins', 'inch', 'inches', 'inchs', '"', '\'\'', '``', '′′', '″'],
+                ['ins', 'inch', 'inches', 'inchs', '"', "''", '``', '′′', '″'],
                 MetricImperialUnit(
                     'in',
                     'in',
@@ -103,7 +108,7 @@ class DistanceConverter(AbstractMetricImperialConverter):
                 ),
             ),
             'ft': UnitDefinition(
-                ['fts', 'feet', 'feets', 'foot', 'foots', '\'', '`', '′'],
+                ['fts', 'feet', 'feets', 'foot', 'foots', "'", '`', '′'],
                 MetricImperialUnit(
                     'ft',
                     'ft',

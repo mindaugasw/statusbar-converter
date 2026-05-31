@@ -26,17 +26,20 @@ class DialogMissingXselBuilder(ModalWindowBuilderInterface):
         self._customizedDialogBuilder.reinitializeState()
 
     def build(self, arguments: dict[str, Any]) -> None:
-        self._customizedDialogBuilder.build({
-            'text': '',
-            'buttons': {'Close': None},
-            'buildCallback': lambda: self._buildInternal(),
-        })
+        self._customizedDialogBuilder.build(
+            {
+                'text': '',
+                'buttons': {'Close': None},
+                'buildCallback': lambda: self._buildInternal(),
+            }
+        )
 
     def _buildInternal(self) -> None:
-        text = \
-            f'Could not start {AppConstant.APP_NAME}.\n' \
-            'Package "xsel" is missing from your system.\n\n' \
+        text = (
+            f'Could not start {AppConstant.APP_NAME}.\n'
+            'Package "xsel" is missing from your system.\n\n'
             'Run the following command and start the app again:'
+        )
 
         dpg.add_text(text)
         dpg.add_input_text(default_value='sudo apt-get install xsel', readonly=True)

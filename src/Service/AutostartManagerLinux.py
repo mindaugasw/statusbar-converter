@@ -21,7 +21,9 @@ class AutostartManagerLinux(AutostartManager):
     ):
         super().__init__(filesystemHelper, config, argParser, logger)
 
-        self._autostartScriptPath = f'{filesystemHelper.getStartupScriptDir()}/{self._appNamePretty}.desktop'
+        self._autostartScriptPath = (
+            f'{filesystemHelper.getStartupScriptDir()}/{self._appNamePretty}.desktop'
+        )
 
     def _enableAutostartOsSpecific(self) -> str | None:
         scriptContent = self._getAutostartScriptTargetContent()
@@ -43,7 +45,9 @@ class AutostartManagerLinux(AutostartManager):
             with open(self._autostartScriptPath, 'r') as scriptFile:
                 actualContent = scriptFile.read()
         except Exception as e:
-            self._logger.log(f'{Logs.catAutostart}Got EXCEPTION trying to read current autostart file:\n{ExceptionHandler.formatExceptionLog(e)}')
+            self._logger.log(
+                f'{Logs.catAutostart}Got EXCEPTION trying to read current autostart file:\n{ExceptionHandler.formatExceptionLog(e)}'
+            )
             actualContent = ''
 
         return targetContent == actualContent
@@ -54,6 +58,8 @@ class AutostartManagerLinux(AutostartManager):
         with open(exampleScriptPath, 'r') as exampleScriptFile:
             scriptContent = exampleScriptFile.read()
 
-        scriptContent = scriptContent.format(path=f'"{self._appExecutablePath}"', name=self._appNamePretty)
+        scriptContent = scriptContent.format(
+            path=f'"{self._appExecutablePath}"', name=self._appNamePretty
+        )
 
         return scriptContent

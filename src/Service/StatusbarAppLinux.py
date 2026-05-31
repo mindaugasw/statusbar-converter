@@ -198,13 +198,17 @@ class StatusbarAppLinux(StatusbarApp):
 
         self._logger.logDebug(Logs.changingIconTextTo % result.iconText)
         self._app.set_label(result.iconText, '')
-        self._menuItems[self._MENU_ID_LAST_CONVERSION_ORIGINAL_TEXT].nativeItem.set_label(result.originalText)
+        self._menuItems[self._MENU_ID_LAST_CONVERSION_ORIGINAL_TEXT].nativeItem.set_label(
+            result.originalText
+        )
 
         # If menu items are changed too quickly, UI fails to actually update labels.
         # So a small delay is needed
         time.sleep(0.1)
 
-        self._menuItems[self._MENU_ID_LAST_CONVERSION_CONVERTED_TEXT].nativeItem.set_label(result.convertedText)
+        self._menuItems[self._MENU_ID_LAST_CONVERSION_CONVERTED_TEXT].nativeItem.set_label(
+            result.convertedText
+        )
 
     def _flashIcon(self) -> None:
         self._app.set_icon(self._iconPathFlash)

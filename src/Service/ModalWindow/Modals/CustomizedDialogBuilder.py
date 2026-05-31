@@ -48,7 +48,9 @@ class CustomizedDialogBuilder(ModalWindowBuilderInterface):
         with dpg.window(tag=self._PRIMARY_TAG, autosize=True):
             with dpg.group(horizontal=True):
                 with dpg.group():
-                    BuilderHelper.addImage(self._filesystemHelper.getAssetsDir() + '/icon_colored_small.png')
+                    BuilderHelper.addImage(
+                        self._filesystemHelper.getAssetsDir() + '/icon_colored_small.png'
+                    )
 
                 with dpg.group():
                     if buildCallback is not None:
@@ -69,7 +71,9 @@ class CustomizedDialogBuilder(ModalWindowBuilderInterface):
                         """
 
                         text = BuilderHelper.padButtonText(buttonText)
-                        tag = dpg.add_button(label=text, height=25, callback=self._handleButtonPress)
+                        tag = dpg.add_button(
+                            label=text, height=25, callback=self._handleButtonPress
+                        )
                         self._callbacks[tag] = buttonCallback
 
     def _handleButtonPress(self, sender: DpgTag, appData, userData) -> None:

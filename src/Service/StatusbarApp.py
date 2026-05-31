@@ -82,9 +82,15 @@ class StatusbarApp(ABC):
 
         self._configFilePath = configFileManager.getUserConfigPath()
 
-        self._menuTemplateLastConversionOriginalText = config.get(ConfigId.Converter_Timestamp_Menu_LastConversion_OriginalText)
-        self._menuTemplateLastConversionConvertedText = config.get(ConfigId.Converter_Timestamp_Menu_LastConversion_ConvertedText)
-        self._menuTemplatesCurrentTimestamp = config.get(ConfigId.Converter_Timestamp_Menu_CurrentTimestamp)
+        self._menuTemplateLastConversionOriginalText = config.get(
+            ConfigId.Converter_Timestamp_Menu_LastConversion_OriginalText
+        )
+        self._menuTemplateLastConversionConvertedText = config.get(
+            ConfigId.Converter_Timestamp_Menu_LastConversion_ConvertedText
+        )
+        self._menuTemplatesCurrentTimestamp = config.get(
+            ConfigId.Converter_Timestamp_Menu_CurrentTimestamp
+        )
         self._flashIconOnChange = config.get(ConfigId.FlashIconOnChange)
 
         self._events.subscribeUpdateCheckCompleted(self._showAppUpdateDialog)
@@ -99,59 +105,79 @@ class StatusbarApp(ABC):
 
         # Last conversion
         items.update({'label_last_conversion': MenuItem('Last conversion - click to copy', True)})
-        items.update({
-            self._MENU_ID_LAST_CONVERSION_ORIGINAL_TEXT:
-                MenuItem(
-                    self._formatter.format(lastTimestamp, self._menuTemplateLastConversionOriginalText),
+        items.update(
+            {
+                self._MENU_ID_LAST_CONVERSION_ORIGINAL_TEXT: MenuItem(
+                    self._formatter.format(
+                        lastTimestamp, self._menuTemplateLastConversionOriginalText
+                    ),
                     callback=self._onMenuClickLastTimestamp,
                 ),
-        })
-        items.update({
-            self._MENU_ID_LAST_CONVERSION_CONVERTED_TEXT:
-                MenuItem(
-                    self._formatter.format(lastTimestamp, self._menuTemplateLastConversionConvertedText),
+            }
+        )
+        items.update(
+            {
+                self._MENU_ID_LAST_CONVERSION_CONVERTED_TEXT: MenuItem(
+                    self._formatter.format(
+                        lastTimestamp, self._menuTemplateLastConversionConvertedText
+                    ),
                     callback=self._onMenuClickLastTimestamp,
                 ),
-        })
+            }
+        )
         items.update({'separator_last_conversion': MenuItem(isSeparator=True)})
 
         # Current timestamp
         if len(self._menuTemplatesCurrentTimestamp) != 0:
-            items.update({'label_current_timestamp': MenuItem('Current timestamp - click to copy', True)})
+            items.update(
+                {'label_current_timestamp': MenuItem('Current timestamp - click to copy', True)}
+            )
 
             for key, template in self._menuTemplatesCurrentTimestamp.items():
-                items.update({
-                    key: MenuItem(key, callback=self._onMenuClickCurrentTimestamp),
-                })
+                items.update(
+                    {
+                        key: MenuItem(key, callback=self._onMenuClickCurrentTimestamp),
+                    }
+                )
 
             items.update({'separator_current_timestamp': MenuItem(isSeparator=True)})
 
         # Other controls
-        items.update({
-            'clear_statusbar': MenuItem('Clear statusbar', callback=self._onMenuClickClearStatusbar),
-            'autostart': MenuItem(
-                'Run at login',
-                initialState=self._autostartManager.isAutostartEnabled(),
-                callback=self._onMenuClickRunAtLogin,
-            ),
-            'settings': MenuItem('Settings', callback=self._onMenuClickSettings),
-            'check_updates': MenuItem('Check for updates', callback=self._onMenuClickCheckUpdates),
-            'open_website': MenuItem('Open website', callback=self._onMenuClickOpenWebsite),
-            'about': MenuItem('About', callback=self._onMenuClickAbout),
-        })
+        items.update(
+            {
+                'clear_statusbar': MenuItem(
+                    'Clear statusbar', callback=self._onMenuClickClearStatusbar
+                ),
+                'autostart': MenuItem(
+                    'Run at login',
+                    initialState=self._autostartManager.isAutostartEnabled(),
+                    callback=self._onMenuClickRunAtLogin,
+                ),
+                'settings': MenuItem('Settings', callback=self._onMenuClickSettings),
+                'check_updates': MenuItem(
+                    'Check for updates', callback=self._onMenuClickCheckUpdates
+                ),
+                'open_website': MenuItem('Open website', callback=self._onMenuClickOpenWebsite),
+                'about': MenuItem('About', callback=self._onMenuClickAbout),
+            }
+        )
 
         if self._osSwitch.isLinux():
             # On macOS Quit button is automatically created by rumps app, so we manually add only for Linux
-            items.update({
-                'quit': MenuItem('Quit', callback=self._onMenuClickQuit),
-            })
+            items.update(
+                {
+                    'quit': MenuItem('Quit', callback=self._onMenuClickQuit),
+                }
+            )
 
         if self._debug.isDebugEnabled():
-            items.update({
-                'separator_debug': MenuItem(isSeparator=True),
-                'label_debug': MenuItem('Debug tools', isDisabled=True),
-                'gui_demo': MenuItem('Open GUI demo', callback=self._onMenuClickOpenGUIDemo),
-            })
+            items.update(
+                {
+                    'separator_debug': MenuItem(isSeparator=True),
+                    'label_debug': MenuItem('Debug tools', isDisabled=True),
+                    'gui_demo': MenuItem('Open GUI demo', callback=self._onMenuClickOpenGUIDemo),
+                }
+            )
 
         self._menuItems = items
 

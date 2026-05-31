@@ -64,7 +64,11 @@ class ConversionRateUpdater:
         self._ratesFilePath = filesystemHelper.getUserDataDir() + '/currency_rates.json'
 
         urlOverride = argumentParser.getCurrencyRatesUrl()
-        self._url = urlOverride if urlOverride is not None else config.get(ConfigId.Converter_Currency_RatesUrl)
+        self._url = (
+            urlOverride
+            if urlOverride is not None
+            else config.get(ConfigId.Converter_Currency_RatesUrl)
+        )
 
     def initializeRatesAsync(self) -> None:
         # Here we don't skip rates update, even if currency converter is disabled.
@@ -172,7 +176,10 @@ class ConversionRateUpdater:
         )
 
     def _updateCheck(self) -> None:
-        if self._lastOnlineRefreshAt and (int(time.time()) - self._UPDATE_INTERVAL) < self._lastOnlineRefreshAt:
+        if (
+            self._lastOnlineRefreshAt
+            and (int(time.time()) - self._UPDATE_INTERVAL) < self._lastOnlineRefreshAt
+        ):
             return
 
         threading.Thread(target=self._refreshFromOnline, daemon=True).start()
@@ -180,13 +187,16 @@ class ConversionRateUpdater:
     def _getRequestHeaders(self) -> dict[str, str]:
         if not hasattr(self, '_requestHeaders'):
             self._requestHeaders = {
-                'User-Agent': 'SC:' + json.dumps({
-                    'app': self._config.getAppVersion(),
-                    'python': platform.python_version(),
-                    'os': self._osSwitch.os,
-                    'platform': platform.platform(),
-                    'name': hashlib.md5(platform.node().encode()).hexdigest(),
-                }),
+                'User-Agent': 'SC:'
+                + json.dumps(
+                    {
+                        'app': self._config.getAppVersion(),
+                        'python': platform.python_version(),
+                        'os': self._osSwitch.os,
+                        'platform': platform.platform(),
+                        'name': hashlib.md5(platform.node().encode()).hexdigest(),
+                    }
+                ),
             }
 
         return self._requestHeaders

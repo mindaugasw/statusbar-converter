@@ -39,7 +39,9 @@ class AboutBuilder(ModalWindowBuilderInterface):
             # group with `horizontal` to make 2 "columns" for image and text
             with dpg.group(horizontal=True):
                 with dpg.group():
-                    BuilderHelper.addImage(self._filesystemHelper.getAssetsDir() + '/icon_linux.png')
+                    BuilderHelper.addImage(
+                        self._filesystemHelper.getAssetsDir() + '/icon_linux.png'
+                    )
 
                 with dpg.group():
                     dpg.add_text(AppConstant.APP_NAME)
@@ -48,11 +50,15 @@ class AboutBuilder(ModalWindowBuilderInterface):
 
                     with dpg.group(horizontal=True):
                         dpg.add_text('Website:')
-                        BuilderHelper.addHyperlink(AppConstant.WEBSITE.replace('https://', ''), AppConstant.WEBSITE)
+                        BuilderHelper.addHyperlink(
+                            AppConstant.WEBSITE.replace('https://', ''), AppConstant.WEBSITE
+                        )
 
                     with dpg.group(horizontal=True):
                         dpg.add_text('App icon made by')
-                        BuilderHelper.addHyperlink('iconsax at flaticon.com', 'https://www.flaticon.com/free-icons/convert')
+                        BuilderHelper.addHyperlink(
+                            'iconsax at flaticon.com', 'https://www.flaticon.com/free-icons/convert'
+                        )
 
     def _onClose(self) -> None:
         BuilderHelper.deleteHyperlinkTheme()

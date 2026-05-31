@@ -14,8 +14,12 @@ class ThousandsDetector:
     _PATTERN_CONFUSION_COMMA_THOUSANDS: Final = re.compile(
         r'^(?:[-+]?(?=.*\d)(?=.*[1-9]).{1,3},\d{3})$',  # for numbers like '100,000' (is it 100.0 or 100000?)
     )
-    _PATTERN_COMMA_THOUSANDS_DOT_DECIMAL: Final = re.compile(r'^[-+]?((\d{1,3}(,\d{3})*)|(\d*))(\.|\.\d*)?$')
-    _PATTERN_DOT_THOUSANDS_COMMA_DECIMAL: Final = re.compile(r'^[-+]?((\d{1,3}(\.\d{3})*)|(\d*))(,|,\d*)?$')
+    _PATTERN_COMMA_THOUSANDS_DOT_DECIMAL: Final = re.compile(
+        r'^[-+]?((\d{1,3}(,\d{3})*)|(\d*))(\.|\.\d*)?$'
+    )
+    _PATTERN_DOT_THOUSANDS_COMMA_DECIMAL: Final = re.compile(
+        r'^[-+]?((\d{1,3}(\.\d{3})*)|(\d*))(,|,\d*)?$'
+    )
 
     def parseNumber(self, number: str) -> float | None:
         """

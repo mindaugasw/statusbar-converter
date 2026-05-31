@@ -59,7 +59,9 @@ class ModalWindowManager:
             raise Exception('Tried opening modal by non-existing id: ' + _id)
 
         if self._isModalOpen:
-            self._logger.logDebug(Logs.catModal + 'Cannot open 2 modals at once, tried opening id: ' + _id)
+            self._logger.logDebug(
+                Logs.catModal + 'Cannot open 2 modals at once, tried opening id: ' + _id
+            )
 
             return
 
@@ -108,7 +110,9 @@ class ModalWindowManager:
         )
 
         with dpg.font_registry():
-            defaultFont = dpg.add_font(self._filesystemHelper.getAssetsDir() + '/font_supreme_regular.otf', 18)
+            defaultFont = dpg.add_font(
+                self._filesystemHelper.getAssetsDir() + '/font_supreme_regular.otf', 18
+            )
             dpg.bind_font(defaultFont)
 
         builder.reinitializeState()

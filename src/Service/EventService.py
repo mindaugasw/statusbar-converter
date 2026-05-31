@@ -52,7 +52,9 @@ class EventService:
     def dispatchStatusbarClear(self) -> None:
         self._dispatch(self._ID_STATUSBAR_CLEAR)
 
-    def subscribeUpdateCheckCompleted(self, callback: Callable[[str, DialogButtonsDict], None]) -> None:
+    def subscribeUpdateCheckCompleted(
+        self, callback: Callable[[str, DialogButtonsDict], None]
+    ) -> None:
         """Raised when check for app updates is completed.
 
         This could be instead directly coupled between UpdateManager <-> StatusbarApp, but then it
@@ -67,7 +69,9 @@ class EventService:
     def dispatchUpdateCheckCompleted(self, text: str, buttons: DialogButtonsDict) -> None:
         self._dispatch(self._ID_UPDATE_CHECK_COMPLETED, text, buttons)
 
-    def subscribeDelayedConverterInitialized(self, callback: Callable[[UnitConverterInterface], None]) -> None:
+    def subscribeDelayedConverterInitialized(
+        self, callback: Callable[[UnitConverterInterface], None]
+    ) -> None:
         self._subscribe(self._ID_DELAYED_CONVERTER_INITIALIZED, callback)
 
     def dispatchDelayedConverterInitialized(self, converter: UnitConverterInterface) -> None:

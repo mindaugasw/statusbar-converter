@@ -22,7 +22,9 @@ class UnitToConverterMapper:
     def getConverter(self, unit: str, unitPosition: str) -> None | UnitConverterInterface:
         return self._map[unitPosition].get(unit)
 
-    def _generateMap(self, converters: list[UnitConverterInterface]) -> dict[str, UnitConverterInterface]:
+    def _generateMap(
+        self, converters: list[UnitConverterInterface]
+    ) -> dict[str, UnitConverterInterface]:
         _map: dict[str, UnitConverterInterface] = {}
 
         for converter in converters:
@@ -36,7 +38,9 @@ class UnitToConverterMapper:
 
         return _map
 
-    def _appendConverterMap(self, _map: dict[str, UnitConverterInterface], converter: UnitConverterInterface) -> None:
+    def _appendConverterMap(
+        self, _map: dict[str, UnitConverterInterface], converter: UnitConverterInterface
+    ) -> None:
         unitIds = converter.getUnitIds()
 
         for unitId in unitIds:

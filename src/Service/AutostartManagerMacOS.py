@@ -21,8 +21,10 @@ class AutostartManagerMacOS(AutostartManager):
         super().__init__(filesystemHelper, config, argParser, logger)
 
     def _enableAutostartOsSpecific(self) -> str | None:
-        command = 'osascript -e \'tell application "System Events" to make login item at end ' \
-                  f'with properties {{path:"{self._appExecutablePath}", hidden:false}}\' 2>&1'
+        command = (
+            'osascript -e \'tell application "System Events" to make login item at end '
+            f'with properties {{path:"{self._appExecutablePath}", hidden:false}}\' 2>&1'
+        )
         output = os.popen(command).read().strip()
 
         return output
