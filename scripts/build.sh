@@ -35,11 +35,6 @@ _build() {
 
     _createZip "$os" "$arch" "$distDir"
 
-    # TODO remove
-    if [[ "$os" == 'macos' ]]; then
-        _createDmg "$arch" "$distDir"
-    fi
-
     echo -e "$textArrowSuccess Successfully built ${textYellow}${os}-${arch}${textReset} into ${textYellow}${distDir}${textReset}"
 }
 
@@ -66,12 +61,13 @@ _createZip() {
     ( cd "$distDir" && exe zip -qr "$fileName" "$compressContent" )
 }
 
-# TODO test on macOS
 _createDmg() {
     # `create-dmg` must be in PATH (`brew install create-dmg`)
 
     # Note that .dmg triggers additional security measures. Because of the missing app signature
     # Chrome warns about an unsafe app when downloading. So .zip is more convenient.
+
+    # DEPRECATED: because of the reason above, dmg packing is no longer used and this function is no longer maintained.
 
     local arch=$1 distDir=$2
 
@@ -79,13 +75,9 @@ _createDmg() {
     version=$(xargs < version)
 
     local fileName
-    if [[ "$arch" == 'arm64' ]]; then
-        fileName="Statusbar_Converter_v${version}_macOS_AppleSilicon_${arch}.dmg"
-    else
-        fileName="Statusbar_Converter_v${version}_macOS_intel_${arch}.dmg"
-    fi
+    fileName="Statusbar_Converter_v${version}_macOS_${arch}.dmg"
 
-    echo -e "$textArrow Packing into dmg image for $textYellow$arch$textReset"
+    echo -e "$textArrow Packing into dmg image for ${textYellow}${arch}${textReset}"
 
     (
         cd "$distDir"
@@ -108,7 +100,7 @@ _createDmg() {
         exe rm -rf dmg/
     )
 
-    echo -e "$textArrowSuccess Successfully packed into dmg image $textYellow$fileName$textReset"
+    echo -e "$textArrowSuccess Successfully packed into dmg image ${textYellow}${fileName}${textReset}"
 }
 
 _build
