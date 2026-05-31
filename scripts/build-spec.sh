@@ -38,7 +38,7 @@ _buildSpec() {
             --target-arch "$arch" \
             --osx-bundle-identifier 'com.mindaugasw.statusbar_converter' \
             --specpath 'build' \
-            start.py
+            src/__main__.py
     else
         "$venvDir/bin/pyi-makespec" \
             --name 'Statusbar Converter' \
@@ -49,7 +49,7 @@ _buildSpec() {
             --add-binary '../binaries/clipnotify/clipnotify:binaries/clipnotify' \
             --icon '../assets/icon_linux.png' \
             --specpath 'build' \
-            start.py
+            src/__main__.py
     fi
 
     exe mv "build/Statusbar Converter.spec" "$specFilePath"

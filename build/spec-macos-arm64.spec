@@ -1,9 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 
-block_cipher = None
-
-
 a = Analysis(
     ['../src/__main__.py'],
     pathex=[],
@@ -14,12 +11,10 @@ a = Analysis(
     hooksconfig={},
     runtime_hooks=[],
     excludes=[],
-    win_no_prefer_redirects=False,
-    win_private_assemblies=False,
-    cipher=block_cipher,
     noarchive=False,
+    optimize=0,
 )
-pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+pyz = PYZ(a.pure)
 
 exe = EXE(
     pyz,
@@ -42,7 +37,6 @@ exe = EXE(
 coll = COLLECT(
     exe,
     a.binaries,
-    a.zipfiles,
     a.datas,
     strip=False,
     upx=True,
@@ -54,8 +48,9 @@ app = BUNDLE(
     name='Statusbar Converter.app',
     icon='../assets/icon_macos.png',
     bundle_identifier='com.mindaugasw.statusbar_converter',
+    # Custom added
+    # These keys are needed to completely hide the dock icon
     info_plist={
-        # These keys are needed to completely hide the dock icon
         'LSUIElement': True,
         'LSBackgroundOnly': True,
     },
