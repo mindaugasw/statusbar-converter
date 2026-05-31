@@ -120,7 +120,7 @@ class UpdateManager:
         if releaseVersion <= currentVersion:
             return False
 
-        if releaseVersion <= skippedVersion:
+        if releaseVersion <= skippedVersion:  # type: ignore[operator]
             return False
 
         return True

@@ -54,6 +54,12 @@ coverage:
     @echo -e "\nCoverage %:"
     @{{_pythonBinary}} -m coverage report --format=total
 
+# Run mypy static analysis
+[group('scrips')]
+mypy:
+    mkdir -p var/mypy_cache
+    {{_pythonBinary}} -m mypy src
+
 
 # --- build ---
 # Build a spec file. Generally does not need runing, build uses pre-built spec.

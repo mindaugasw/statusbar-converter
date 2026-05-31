@@ -39,6 +39,8 @@ from src.Service.StatusbarApp import StatusbarApp
 from src.Service.UpdateManager import UpdateManager
 
 
+# mypy: disable-error-code="type-abstract"
+
 class ServiceBuilder:
     _initialized: bool
 
