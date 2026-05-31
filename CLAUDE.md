@@ -4,20 +4,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Statusbar Converter is a Python 3.10 desktop app (macOS + Linux) that watches the OS clipboard and, when the copied text parses as a known format, shows the converted value in the system statusbar. Supported conversions: Unix timestamp → datetime, metric ↔ imperial (distance/volume/weight/temperature), and currency.
+Statusbar Converter is a Python 3.14 desktop app (macOS + Linux) that watches the OS clipboard and, when the copied text parses as a known format, shows the converted value in the system statusbar. Supported conversions: Unix timestamp → datetime, metric ↔ imperial (distance/volume/weight/temperature), and currency.
 
 ## Common commands
 
-The virtualenv lives at `.venv-<os>-<arch>/` (e.g. `.venv-linux-x86_64`) and must be activated first. `make` targets auto-source it via glob; running Python directly requires manual `source .venv-*/bin/activate`.
+Tasks are run via [`just`](https://just.systems) (the `Justfile`). The virtualenv lives at `.venv/`; Scripts invoke `.venv/bin/python` directly, so they don't need it activated. To run Python yourself, `source .venv/bin/activate` first. The user usually runs these commands themselves — prefer asking them to run a command over running it yourself unless told otherwise.
 
-- `make run` — start the app (`python -m src`). `--debug`, `--mock-update {old,new}`, `--mock-packaged`, `--currency-rates-url <url>`, `--sleep <sec>` are available CLI args (see `src/Service/ArgumentParser.py`).
-- `make test` — run all unit tests (`python -m unittest`).
-- Run a single test: `source .venv-*/bin/activate && python -m unittest tests.Service.Conversion.testConversionManager` (or `...testConversionManager.TestClass.test_method`).
-- `make coverage` — run tests with coverage, HTML report to `var/htmlcov/`.
-- `make mypy` — static type check over `src tests` with `--follow-untyped-imports --ignore-missing-imports`.
-- `make install_linux` / `make install_macOS_AppleSilicon` / `make install_macOS_intel_simulated` — create venv from `requirements_<os>.txt` via `builder.sh install`.
-- `make build_linux` / `make build_macOS_AppleSilicon` / `make build_macOS_intel` — produce distributable via PyInstaller (`builder.sh build`). A spec file in `build/spec-<os>-<arch>.spec` is required; regenerate via `./builder.sh buildSpec <arch>` when distribution inputs change.
-- `make run_dist_linux` — run the built Linux binary.
+- `just` — list all recipes.
+- `just run` — start the app (`python -m src`). `--debug`, `--mock-update {old,new}`, `--mock-packaged`, `--currency-rates-url <url>`, `--sleep <sec>` are available CLI args (see `src/Service/ArgumentParser.py`).
+- `just test` — run all unit tests (`python -m unittest`). Run a single test with the activated venv: `python -m unittest tests.Service.Conversion.testConversionManager` (or `...testConversionManager.TestClass.test_method`).
+- `just mypy` — static type check over `src` only (config in `mypy.ini`).
+- `just venv-install [basePythonBinary=python3.14]` — create `.venv` from `requirements_common.txt` + `requirements_<os>.txt` via `scripts/venv-install.sh` (also builds `binaries/clipnotify` on Linux).
+- `just build` / `just build-spec` — produce the distributable via PyInstaller / regenerate the spec (`scripts/build.sh`, `scripts/build-spec.sh`). The spec lives in `build/spec-<os>-<arch>.spec`; regenerate when distribution inputs change. `just run-dist` runs the built binary.
 
 ## Architecture
 
@@ -25,7 +23,7 @@ The virtualenv lives at `.venv-<os>-<arch>/` (e.g. `.venv-linux-x86_64`) and mus
 
 Wiring happens in `src/Service/ServiceBuilder.py`. `ServiceBuilder.initializeServices()` returns a `ServiceContainer` (a typed `dict[type, object]` — see `src/DTO/ServiceContainer.py`) that `__main__.py` uses to pull entry-point services. There is no decorator-based DI framework; every service is constructed manually.
 
-Many services have a base class plus `*Linux` / `*MacOs` concrete implementations selected by `OSSwitch` (`src/Service/OSSwitch.py`). This pattern applies to `AppLoop`, `AutostartManager`, `ClipboardManager`, `FilesystemHelper`, `StatusbarApp`. The `_get*` helpers in `ServiceBuilder` do the dispatch and import the platform-specific module lazily so that macOS-only (`rumps`) and Linux-only (`vext.gi`, `clipnotify`) imports never load on the wrong OS. When adding a new cross-platform service, follow this pattern and put the `from src.Service.XxxMacOs import …` inside the `isMacOS()` branch — don't hoist it to the top of the file.
+Many services have a base class plus `*Linux` / `*MacOs` concrete implementations selected by `OSSwitch` (`src/Service/OSSwitch.py`). This pattern applies to `AppLoop`, `AutostartManager`, `ClipboardManager`, `FilesystemHelper`, `StatusbarApp`. The `_get*` helpers in `ServiceBuilder` do the dispatch and import the platform-specific module lazily so that macOS-only (`rumps`) and Linux-only (PyGObject's `gi`, `clipnotify`) imports never load on the wrong OS. When adding a new cross-platform service, follow this pattern and put the `from src.Service.XxxMacOs import …` inside the `isMacOS()` branch — don't hoist it to the top of the file.
 
 ### Event bus
 
@@ -61,7 +59,5 @@ Access goes through `ConfigParameter` instances defined in `src/Constant/ConfigI
 
 ## Things to know
 
-- Python 3.10 is pinned. On macOS Apple Silicon, building the x86_64 distributable requires a separate `python3.10-intel64` from python.org (Homebrew Python is single-arch).
-- Linux builds depend on `binaries/clipnotify` (cloned+built by `builder.sh _installLinux`) and a copy of `/usr/lib/python3/dist-packages/gi` into the venv — both are required for PyInstaller to pick them up.
+- Python 3.14 is pinned. Linux GTK/statusbar access goes through native PyGObject + pycairo (`requirements_linux.txt`). PyGObject is held at `>= 3.50, < 3.52` because 3.52+ needs girepository-2.0 (GLib ≥ 2.80) while Ubuntu 22.04 ships GLib 2.72 Additional build dependencies include `libgirepository1.0-dev`, `libcairo2-dev`, `pkg-config` (+ `gir1.2-gtk-3.0` at runtime).
 - `# mypy: disable-error-code="..."` pragmas at the top of some files are intentional; leave them unless you're fixing the underlying typing issue.
-- There is a TODO in `ServiceBuilder` and `ArgumentParser` to reuse utilities from a separate `algotrading-repo`. Don't invent those abstractions here preemptively.
