@@ -35,17 +35,17 @@ venv-install basePythonBinary='python3.14':
 
 # --- scripts ---
 # Run the app
-[group('scrips')]
+[group('scripts')]
 run *ARGS:
     {{_pythonBinary}} -m src {{ARGS}}
 
 # Run unit tests
-[group('scrips')]
+[group('scripts')]
 test *ARGS:
     {{_pythonBinary}} -m unittest {{ARGS}}
 
 # Run unit tests with coverage
-[group('scrips')]
+[group('scripts')]
 coverage:
     {{_pythonBinary}} -m coverage run
     @{{_pythonBinary}} -m coverage html
@@ -54,11 +54,15 @@ coverage:
     @{{_pythonBinary}} -m coverage report --format=total
 
 # Run mypy static analysis
-[group('scrips')]
+[group('scripts')]
 mypy *ARGS:
     mkdir -p var/mypy_cache
     {{_pythonBinary}} -m mypy src {{ARGS}}
 
+# Run automated style formatting
+[group('scripts')]
+format *ARGS:
+    @{{_venvDir}}/bin/ruff format {{ARGS}}
 
 # --- build ---
 # Build a spec file. Generally does not need runing, build uses pre-built spec.
