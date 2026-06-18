@@ -14,7 +14,9 @@ class TimestampTextFormatter:
         self._iconFormats = config.get(ConfigId.Converter_Timestamp_IconFormat)
 
     def format(self, timestamp: Timestamp, template: str) -> str:
-        return self._formatInternal(timestamp, template, self._getRelativeTimeData(timestamp.seconds))
+        return self._formatInternal(
+            timestamp, template, self._getRelativeTimeData(timestamp.seconds)
+        )
 
     def formatForIcon(self, timestamp: Timestamp) -> str:
         """Format timestamp for main icon, according to user config"""
@@ -32,7 +34,9 @@ class TimestampTextFormatter:
 
         return self._formatInternal(timestamp, formatTemplate, timeData)
 
-    def _formatInternal(self, timestamp: Timestamp, template: str, relativeTimeData: RelativeTimeData) -> str:
+    def _formatInternal(
+        self, timestamp: Timestamp, template: str, relativeTimeData: RelativeTimeData
+    ) -> str:
         """Format timestamp with relative time support
 
         Formatter supports all standard strftime() codes:

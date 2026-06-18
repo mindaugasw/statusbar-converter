@@ -5,7 +5,9 @@ from src.DTO.Converter.MetricImperialUnit import MetricImperialUnit
 from src.DTO.Converter.UnitDefinition import UnitDefinition
 from src.Service.Configuration import Configuration
 from src.Service.Conversion.Rounder import Rounder
-from src.Service.Conversion.Unit.MetricImperial.AbstractMetricImperialConverter import AbstractMetricImperialConverter
+from src.Service.Conversion.Unit.MetricImperial.AbstractMetricImperialConverter import (
+    AbstractMetricImperialConverter,
+)
 from src.Service.Conversion.Unit.UnitPreprocessor import UnitPreprocessor
 
 
@@ -32,13 +34,17 @@ class VolumeConverter(AbstractMetricImperialConverter):
     def _getUnitsDefinition(self) -> dict[str, UnitDefinition[MetricImperialUnit]]:
         return {
             # Units must be increasing order (per metric/imperial system)
-
             # Metric units
             'mm3': UnitDefinition(
                 ['millimeter3', 'milimeter3', 'millimetre3', 'milimetre3', 'cubicmm']
-                + UnitPreprocessor.pluralizeAliases([
-                    'cubicmillimeter', 'cubicmilimeter', 'cubicmillimetre', 'cubicmilimetre',
-                ]),
+                + UnitPreprocessor.pluralizeAliases(
+                    [
+                        'cubicmillimeter',
+                        'cubicmilimeter',
+                        'cubicmillimetre',
+                        'cubicmilimetre',
+                    ]
+                ),
                 MetricImperialUnit(
                     'mm3',
                     'mm3',
@@ -49,10 +55,22 @@ class VolumeConverter(AbstractMetricImperialConverter):
                 ),
             ),
             'ml / cm3': UnitDefinition(
-                ['cm3', 'centimeter3', 'centimetre3', 'cubiccm', 'cubiccentimeter', 'cubiccentimetre']
-                + UnitPreprocessor.pluralizeAliases([
-                    'milliliter', 'mililiter', 'millilitre', 'mililitre',
-                ]),
+                [
+                    'cm3',
+                    'centimeter3',
+                    'centimetre3',
+                    'cubiccm',
+                    'cubiccentimeter',
+                    'cubiccentimetre',
+                ]
+                + UnitPreprocessor.pluralizeAliases(
+                    [
+                        'milliliter',
+                        'mililiter',
+                        'millilitre',
+                        'mililitre',
+                    ]
+                ),
                 MetricImperialUnit(
                     'ml',
                     'ml',
@@ -63,9 +81,14 @@ class VolumeConverter(AbstractMetricImperialConverter):
                 ),
             ),
             'cl (10 ml)': UnitDefinition(
-                UnitPreprocessor.pluralizeAliases([
-                    'centiliter', 'centilitre', 'centliter', 'centlitre',
-                ]),
+                UnitPreprocessor.pluralizeAliases(
+                    [
+                        'centiliter',
+                        'centilitre',
+                        'centliter',
+                        'centlitre',
+                    ]
+                ),
                 MetricImperialUnit(
                     'cl',
                     'cl',
@@ -76,9 +99,12 @@ class VolumeConverter(AbstractMetricImperialConverter):
                 ),
             ),
             'dl (100 ml)': UnitDefinition(
-                UnitPreprocessor.pluralizeAliases([
-                    'deciliter', 'decilitre',
-                ]),
+                UnitPreprocessor.pluralizeAliases(
+                    [
+                        'deciliter',
+                        'decilitre',
+                    ]
+                ),
                 MetricImperialUnit(
                     'dl',
                     'dl',
@@ -89,9 +115,12 @@ class VolumeConverter(AbstractMetricImperialConverter):
                 ),
             ),
             'l': UnitDefinition(
-                UnitPreprocessor.pluralizeAliases([
-                    'liter', 'litre',
-                ]),
+                UnitPreprocessor.pluralizeAliases(
+                    [
+                        'liter',
+                        'litre',
+                    ]
+                ),
                 MetricImperialUnit(
                     'l',
                     'l',
@@ -103,9 +132,12 @@ class VolumeConverter(AbstractMetricImperialConverter):
             ),
             'm3': UnitDefinition(
                 ['meter3', 'metre3']
-                + UnitPreprocessor.pluralizeAliases([
-                    'cubicmeter', 'cubicmetre',
-                ]),
+                + UnitPreprocessor.pluralizeAliases(
+                    [
+                        'cubicmeter',
+                        'cubicmetre',
+                    ]
+                ),
                 MetricImperialUnit(
                     'm3',
                     'm3',
@@ -115,7 +147,6 @@ class VolumeConverter(AbstractMetricImperialConverter):
                     1000,
                 ),
             ),
-
             # Imperial (US) units
             # TODO improve by adding UK imperial units
             #  They are slightly different than US sizes, but have same names.
@@ -132,10 +163,13 @@ class VolumeConverter(AbstractMetricImperialConverter):
                 ),
             ),
             'gal': UnitDefinition(
-                ['gals'] +
-                UnitPreprocessor.pluralizeAliases([
-                    'gallon', 'galon',
-                ]),
+                ['gals']
+                + UnitPreprocessor.pluralizeAliases(
+                    [
+                        'gallon',
+                        'galon',
+                    ]
+                ),
                 MetricImperialUnit(
                     'gal',
                     'gal',

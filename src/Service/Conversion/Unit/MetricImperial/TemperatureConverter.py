@@ -26,9 +26,11 @@ class TemperatureConverter(UnitConverterInterface):
         self._enabled = config.get(ConfigId.Converter_Temperature_Enabled)
         self._unitsExpanded = UnitPreprocessor.expandAliases(self._getUnitsDefinition())
 
-        primaryUnitId = self._PRIMARY_ALIAS_CELSIUS \
-            if config.get(ConfigId.Converter_Temperature_PrimaryUnit_Celsius) \
+        primaryUnitId = (
+            self._PRIMARY_ALIAS_CELSIUS
+            if config.get(ConfigId.Converter_Temperature_PrimaryUnit_Celsius)
             else self._PRIMARY_ALIAS_FAHRENHEIT
+        )
         self._primaryUnit = self._unitsExpanded[primaryUnitId]
 
     def isEnabled(self) -> bool:
@@ -64,7 +66,9 @@ class TemperatureConverter(UnitConverterInterface):
             numberTo = (number - 32) / 1.8
             unitTo = self._unitsExpanded[self._PRIMARY_ALIAS_CELSIUS]
         else:
-            raise Exception(f'Unknown unitFrom.primaryAlias "{unitFrom.primaryAlias}" in TemperatureConverter')
+            raise Exception(
+                f'Unknown unitFrom.primaryAlias "{unitFrom.primaryAlias}" in TemperatureConverter'
+            )
 
         textFrom = f'{round(number)} {unitFrom.prettyFormat}'
         textTo = f'{round(numberTo)} {unitTo.prettyFormat}'
@@ -75,7 +79,10 @@ class TemperatureConverter(UnitConverterInterface):
         return {
             'c': UnitDefinition(
                 [
-                    '°C', 'Celsius', '°Celsius', '*Celsius',
+                    '°C',
+                    'Celsius',
+                    '°Celsius',
+                    '*Celsius',
                     # Common misspellings:
                     'Celcius',
                 ],
@@ -86,9 +93,18 @@ class TemperatureConverter(UnitConverterInterface):
             ),
             'f': UnitDefinition(
                 [
-                    '°F', 'Fahrenheit', '°Fahrenheit', '*Fahrenheit',
+                    '°F',
+                    'Fahrenheit',
+                    '°Fahrenheit',
+                    '*Fahrenheit',
                     # Common misspellings:
-                    'Farenheit', 'Farenheight', 'Ferenheit', 'Ferenheight', 'Ferinheit', 'Ferinheight', 'Fahrinheight',
+                    'Farenheit',
+                    'Farenheight',
+                    'Ferenheit',
+                    'Ferenheight',
+                    'Ferinheit',
+                    'Ferinheight',
+                    'Fahrinheight',
                 ],
                 TemperatureUnit(
                     self._PRIMARY_ALIAS_FAHRENHEIT,

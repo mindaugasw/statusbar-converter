@@ -5,28 +5,35 @@ from tests.Service.Conversion.AbstractConversionManagerTest import AbstractConve
 
 
 class TestVolumeConverter(AbstractConversionManagerTest):
-    @parameterized.expand([
-        ('To mm3, too small number', 'metric', '0.0029 floz', False),
-        ('To mm3', 'metric', '0.0035 floz', True, '0.0035 fl oz', '0.12 ml'),
-        ('To ml', 'metric', '0.035 floz', True, '0.035 fl oz', '1.18 ml'),
-        ('To cl/dl (unit skipped)', 'metric', '10 floz', True, '10 fl oz', '338 ml'),
-        ('To l', 'metric', '5 gal', True, '5 gal', '1.32 l'),
-        ('To m3 (unit skipped)', 'metric', '7922 gal', True, '7922 gal', '2093 l'),
-        ('From tbsp', 'metric', '3.5 tbsp.', True, '3.5 tbsp', '51.8 ml'),
-        ('From tsp', 'metric', '2 tsp', True, '2 tsp', '9.86 ml'),
-
-        ('To fl oz', 'imperial', '80 ml', True, '80 ml', '2.37 fl oz'),
-        ('To gal', 'imperial', '80 l', True, '80 l', '303 gal'),
-
-        ('Negative', 'metric', '-5 gal', True, '-5 gal', '-1.32 l'),
-    ])
+    @parameterized.expand(
+        [
+            ('To mm3, too small number', 'metric', '0.0029 floz', False),
+            ('To mm3', 'metric', '0.0035 floz', True, '0.0035 fl oz', '0.12 ml'),
+            ('To ml', 'metric', '0.035 floz', True, '0.035 fl oz', '1.18 ml'),
+            ('To cl/dl (unit skipped)', 'metric', '10 floz', True, '10 fl oz', '338 ml'),
+            ('To l', 'metric', '5 gal', True, '5 gal', '1.32 l'),
+            ('To m3 (unit skipped)', 'metric', '7922 gal', True, '7922 gal', '2093 l'),
+            ('From tbsp', 'metric', '3.5 tbsp.', True, '3.5 tbsp', '51.8 ml'),
+            ('From tsp', 'metric', '2 tsp', True, '2 tsp', '9.86 ml'),
+            ('To fl oz', 'imperial', '80 ml', True, '80 ml', '2.37 fl oz'),
+            ('To gal', 'imperial', '80 l', True, '80 l', '303 gal'),
+            ('Negative', 'metric', '-5 gal', True, '-5 gal', '-1.32 l'),
+        ]
+    )
     def testVolumeConverter(
-        self, _: str,
+        self,
+        _: str,
         primaryUnitSystem: str,
-        text: str, expectSuccess: bool, expectFrom: str | None = None, expectTo: str | None = None,
+        text: str,
+        expectSuccess: bool,
+        expectFrom: str | None = None,
+        expectTo: str | None = None,
     ):
         configOverrides = [
-            (ConfigId.Converter_Volume_PrimaryUnit_Metric, True if primaryUnitSystem == 'metric' else False),
+            (
+                ConfigId.Converter_Volume_PrimaryUnit_Metric,
+                True if primaryUnitSystem == 'metric' else False,
+            ),
         ]
 
         self.runConverterTest(text, expectSuccess, expectFrom, expectTo, configOverrides)

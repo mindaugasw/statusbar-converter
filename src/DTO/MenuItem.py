@@ -18,7 +18,9 @@ class MenuItem:
         callback: Callable | None = None,
     ):
         if isSeparator and (label or isDisabled or callback):
-            raise Exception('Invalid MenuItem creation: separator item cannot have any other properties')
+            raise Exception(
+                'Invalid MenuItem creation: separator item cannot have any other properties'
+            )
 
         if not isSeparator and not label:
             raise Exception('Invalid MenuItem creation: all non-separator items must have label')

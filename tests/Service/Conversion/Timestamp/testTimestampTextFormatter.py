@@ -22,43 +22,55 @@ class TestTimestampTextFormatter(TestCase):
         ('Years ago', 1733022011 - 3600 * 24 * 365 * 15.111, None, '{r_int}, {r_float}', '15 years ago, 15.1 years ago'),
         ('In seconds', 1733022011 + 15, None, '{r_int}, {r_float}', 'in 15 s, in 15.0 s'),
         ('In years', 1733022011 + 3600 * 24 * 365 * 15.111, None, '{r_int}, {r_float}', 'in 15 years, in 15.1 years'),
-    ])
+    ])  # fmt: skip
     @patch('time.time', return_value=1733022011.42)
     def testFormat(
-        self, _: str,
-        seconds: int, milliseconds: int | None, template: str,
+        self,
+        _: str,
+        seconds: int,
+        milliseconds: int | None,
+        template: str,
         expected: str,
         timeMock,
     ) -> None:
-        configMock = MockLibrary.getConfig([
-            (ConfigId.Converter_Timestamp_IconFormat, {}),
-        ])
+        configMock = MockLibrary.getConfig(
+            [
+                (ConfigId.Converter_Timestamp_IconFormat, {}),
+            ],
+        )
         formatter = TimestampTextFormatter(configMock)
 
         text = formatter.format(Timestamp(seconds, milliseconds), template)
 
         self.assertEqual(expected, text)
 
-    @parameterized.expand([
-        ('Level 4', 1733022011 - 86400 + 100, 'none 4'),
-        ('Level 5', 1733022011 - 86400 - 100, '1732935511 - 1.0 days ago (11-30  04:58)'),
-        ('Level 6', 1733022011 - 2678400 - 100, 'none 6'),
-        ('Level default', 1733022011 + 2365200000 + 100, '4098222111 - in 75.0 years'),
-    ])
+    @parameterized.expand(
+        [
+            ('Level 4', 1733022011 - 86400 + 100, 'none 4'),
+            ('Level 5', 1733022011 - 86400 - 100, '1732935511 - 1.0 days ago (11-30  04:58)'),
+            ('Level 6', 1733022011 - 2678400 - 100, 'none 6'),
+            ('Level default', 1733022011 + 2365200000 + 100, '4098222111 - in 75.0 years'),
+        ],
+    )
     @patch('time.time', return_value=1733022011.42)
     def testFormatForIcon(self, _: str, seconds: int, expected: str, timeMock) -> None:
-        configMock = MockLibrary.getConfig([
-            (ConfigId.Converter_Timestamp_IconFormat, {
-                '60': 'none 1',
-                '600': 'none 2',
-                '3600': 'none 3',
-                '86400': 'none 4',
-                '2678400': '{ts_ms_sep} - {r_float} (%m-%d  %H:%M)',
-                '31536000': 'none 6',
-                '2365200000': 'none 7',
-                'default': '{ts_ms_sep} - {r_float}',
-            }),
-        ])
+        configMock = MockLibrary.getConfig(
+            [
+                (
+                    ConfigId.Converter_Timestamp_IconFormat,
+                    {
+                        '60': 'none 1',
+                        '600': 'none 2',
+                        '3600': 'none 3',
+                        '86400': 'none 4',
+                        '2678400': '{ts_ms_sep} - {r_float} (%m-%d  %H:%M)',
+                        '31536000': 'none 6',
+                        '2365200000': 'none 7',
+                        'default': '{ts_ms_sep} - {r_float}',
+                    },
+                ),
+            ],
+        )
         formatter = TimestampTextFormatter(configMock)
 
         text = formatter.formatForIcon(Timestamp(seconds, None))

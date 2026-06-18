@@ -80,7 +80,9 @@ class StatusbarAppMacOs(StatusbarApp):
 
         self._app.run()
 
-    def _createOsNativeMenu(self, commonMenu: dict[str, MenuItem]) -> dict[str, rumps.MenuItem | None]:
+    def _createOsNativeMenu(
+        self, commonMenu: dict[str, MenuItem]
+    ) -> dict[str, rumps.MenuItem | None]:
         menu: dict[str, rumps.MenuItem | None] = {}
 
         item: MenuItem
@@ -136,8 +138,12 @@ class StatusbarAppMacOs(StatusbarApp):
         self._logger.logDebug(Logs.changingIconTextTo % result.iconText)
         self._app.title = result.iconText
 
-        self._menuItems[self._MENU_ID_LAST_CONVERSION_ORIGINAL_TEXT].nativeItem.title = result.originalText
-        self._menuItems[self._MENU_ID_LAST_CONVERSION_CONVERTED_TEXT].nativeItem.title = result.convertedText
+        self._menuItems[
+            self._MENU_ID_LAST_CONVERSION_ORIGINAL_TEXT
+        ].nativeItem.title = result.originalText
+        self._menuItems[
+            self._MENU_ID_LAST_CONVERSION_CONVERTED_TEXT
+        ].nativeItem.title = result.convertedText
 
     def _flashIcon(self) -> None:
         self._app.icon = self._iconPathFlash
@@ -162,14 +168,15 @@ class StatusbarAppMacOs(StatusbarApp):
 
         buttonNames = list(buttons.keys())
         buttonsText = '", "'.join(buttonNames)
-        dialogCommand = \
-            f'osascript -e \'Tell application "System Events" to display dialog ' \
-            f'"{message}" ' \
-            f'with title "{AppConstant.APP_NAME}" ' \
-            f'buttons {{"{buttonsText}"}} ' \
-            f'default button "{buttonNames[0]}" ' \
-            f'with icon POSIX file "{self._iconPathDefault}" ' \
-            f'giving up after 90\''
+        dialogCommand = (
+            f'osascript -e \'Tell application "System Events" to display dialog '
+            f'"{message}" '
+            f'with title "{AppConstant.APP_NAME}" '
+            f'buttons {{"{buttonsText}"}} '
+            f'default button "{buttonNames[0]}" '
+            f'with icon POSIX file "{self._iconPathDefault}" '
+            f"giving up after 90'"
+        )
 
         # "giving up after" clause would not be needed, but after 120 seconds
         # AppleEvent timeouts with an exception.

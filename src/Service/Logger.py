@@ -58,6 +58,9 @@ class Logger:
 
     def _truncateLogFile(self) -> None:
         tempLogPath = self._logPath + '.tmp'
-        subprocess.call(f'tail -n {Logger._LOG_FILE_TRUNCATE_LENGTH} "{self._logPath}" > "{tempLogPath}"', shell=True)
+        subprocess.call(
+            f'tail -n {Logger._LOG_FILE_TRUNCATE_LENGTH} "{self._logPath}" > "{tempLogPath}"',
+            shell=True,
+        )
         os.remove(self._logPath)
         os.rename(tempLogPath, self._logPath)

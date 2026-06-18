@@ -50,11 +50,15 @@ class AutostartManager(ABC):
             initialSetupCompleted = self._config.get(ConfigId.Autostart_InitialSetupComplete)
             enabled = self._config.get(ConfigId.Autostart_Enabled)
 
-            self._logger.log(f'{Logs.catAutostart}Starting setup. enabled={enabled}, initialSetupCompleted={initialSetupCompleted}')
+            self._logger.log(
+                f'{Logs.catAutostart}Starting setup. enabled={enabled}, initialSetupCompleted={initialSetupCompleted}'
+            )
 
             if not initialSetupCompleted:
                 if enabled:
-                    self._logger.log(f'{Logs.catAutostart}Found invalid state. enabled=True, initialSetupCompleted=False. Setting initialSetupCompleted=True')
+                    self._logger.log(
+                        f'{Logs.catAutostart}Found invalid state. enabled=True, initialSetupCompleted=False. Setting initialSetupCompleted=True'
+                    )
                     self._config.set(ConfigId.Autostart_InitialSetupComplete, True)
                 else:
                     self._runInitialSetup()
@@ -67,13 +71,17 @@ class AutostartManager(ABC):
                 return
 
             if not self._validateSetup():
-                self._logger.log(f'{Logs.catAutostart}Expected and actual autostart setup don\'t match, will re-enable autostart')
+                self._logger.log(
+                    f"{Logs.catAutostart}Expected and actual autostart setup don't match, will re-enable autostart"
+                )
 
                 self.enableAutostart()
             else:
                 self._logger.log(f'{Logs.catAutostart}Existing setup is valid')
         except Exception as e:
-            self._logger.log(f'{Logs.catAutostart}EXCEPTION in AUTOSTART SETUP:\n{ExceptionHandler.formatExceptionLog(e)}')
+            self._logger.log(
+                f'{Logs.catAutostart}EXCEPTION in AUTOSTART SETUP:\n{ExceptionHandler.formatExceptionLog(e)}'
+            )
 
     def _runInitialSetup(self) -> None:
         self._logger.log(f'{Logs.catAutostart}Starting initial setup')
@@ -87,7 +95,9 @@ class AutostartManager(ABC):
 
         try:
             if not self.isAutostartSupported():
-                self._logger.log(f'{Logs.catAutostart}Attempted autostart enable. Cannot complete because not in a packaged app')
+                self._logger.log(
+                    f'{Logs.catAutostart}Attempted autostart enable. Cannot complete because not in a packaged app'
+                )
 
                 return False
 
@@ -98,7 +108,9 @@ class AutostartManager(ABC):
 
             return True
         except Exception as e:
-            self._logger.log(f'{Logs.catAutostart}EXCEPTION in AUTOSTART ENABLE:\n{ExceptionHandler.formatExceptionLog(e)}')
+            self._logger.log(
+                f'{Logs.catAutostart}EXCEPTION in AUTOSTART ENABLE:\n{ExceptionHandler.formatExceptionLog(e)}'
+            )
 
             return False
 
@@ -109,7 +121,9 @@ class AutostartManager(ABC):
     def disableAutostart(self) -> bool:
         try:
             if not self.isAutostartSupported():
-                self._logger.log(f'{Logs.catAutostart}Attempted autostart disable. Cannot complete because not in a packaged app')
+                self._logger.log(
+                    f'{Logs.catAutostart}Attempted autostart disable. Cannot complete because not in a packaged app'
+                )
 
                 return False
 
@@ -120,7 +134,9 @@ class AutostartManager(ABC):
 
             return True
         except Exception as e:
-            self._logger.log(f'{Logs.catAutostart}EXCEPTION in AUTOSTART DISABLE:\n{ExceptionHandler.formatExceptionLog(e)}')
+            self._logger.log(
+                f'{Logs.catAutostart}EXCEPTION in AUTOSTART DISABLE:\n{ExceptionHandler.formatExceptionLog(e)}'
+            )
 
             return False
 

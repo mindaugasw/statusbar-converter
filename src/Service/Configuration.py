@@ -137,7 +137,9 @@ class Configuration:
         self._setValue(key, value, self._state)
 
         stateContent = yaml.dump(self._state)
-        stateContent = '# Internal app state. THIS FILE SHOULD NOT BE EDITED MANUALLY.\n\n' + stateContent
+        stateContent = (
+            '# Internal app state. THIS FILE SHOULD NOT BE EDITED MANUALLY.\n\n' + stateContent
+        )
 
         self._configFileManager.writeStateData(stateContent)
 

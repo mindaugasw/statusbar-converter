@@ -41,6 +41,7 @@ from src.Service.UpdateManager import UpdateManager
 
 # mypy: disable-error-code="type-abstract"
 
+
 class ServiceBuilder:
     _initialized: bool
 
@@ -71,18 +72,52 @@ class ServiceBuilder:
 
         # Conversion services
         _[TimestampTextFormatter] = timestampTextFormatter = TimestampTextFormatter(config)
-        _[ConversionManager] = conversionManager = self.getConversionManager(_, filesystemHelper, timestampTextFormatter, argumentParser, config, logger, osSwitch, events, debug)
+        _[ConversionManager] = conversionManager = self.getConversionManager(
+            _,
+            filesystemHelper,
+            timestampTextFormatter,
+            argumentParser,
+            config,
+            logger,
+            osSwitch,
+            events,
+            debug,
+        )
         currencyConverter: CurrencyConverter = _[CurrencyConverter]
 
         # GUI services
-        _[list[ModalWindowBuilderInterface]] = modalWindowBuilders = self._getModalWindowBuilders(config, configFileManager, filesystemHelper, currencyConverter, logger)
-        _[ModalWindowManager] = modalWindowManager = ModalWindowManager(modalWindowBuilders, filesystemHelper, osSwitch, logger)
+        _[list[ModalWindowBuilderInterface]] = modalWindowBuilders = self._getModalWindowBuilders(
+            config, configFileManager, filesystemHelper, currencyConverter, logger
+        )
+        _[ModalWindowManager] = modalWindowManager = ModalWindowManager(
+            modalWindowBuilders, filesystemHelper, osSwitch, logger
+        )
 
         # App services
-        _[UpdateManager] = updateManager = UpdateManager(filesystemHelper, events, config, logger, debug)
-        _[AutostartManager] = autostartManager = self._getAutostartManager(osSwitch, filesystemHelper, config, argumentParser, logger)
-        _[ClipboardManager] = clipboardManager = self._getClipboardManager(osSwitch, events, logger, modalWindowManager, filesystemHelper)
-        _[StatusbarApp] = statusbarApp = self._getStatusbarApp(osSwitch, timestampTextFormatter, clipboardManager, conversionManager, events, config, configFileManager, autostartManager, updateManager, modalWindowManager, filesystemHelper, logger, debug)
+        _[UpdateManager] = updateManager = UpdateManager(
+            filesystemHelper, events, config, logger, debug
+        )
+        _[AutostartManager] = autostartManager = self._getAutostartManager(
+            osSwitch, filesystemHelper, config, argumentParser, logger
+        )
+        _[ClipboardManager] = clipboardManager = self._getClipboardManager(
+            osSwitch, events, logger, modalWindowManager, filesystemHelper
+        )
+        _[StatusbarApp] = statusbarApp = self._getStatusbarApp(
+            osSwitch,
+            timestampTextFormatter,
+            clipboardManager,
+            conversionManager,
+            events,
+            config,
+            configFileManager,
+            autostartManager,
+            updateManager,
+            modalWindowManager,
+            filesystemHelper,
+            logger,
+            debug,
+        )
         _[AppLoop] = appLoop = self._getAppLoop(osSwitch, events, clipboardManager)
 
         return _
@@ -90,9 +125,11 @@ class ServiceBuilder:
     def _getFilesystemHelper(self, osSwitch: OSSwitch) -> FilesystemHelper:
         if osSwitch.isMacOS():
             from src.Service.FilesystemHelperMacOs import FilesystemHelperMacOs
+
             return FilesystemHelperMacOs()
         else:
             from src.Service.FilesystemHelperLinux import FilesystemHelperLinux
+
             return FilesystemHelperLinux()
 
     def getConversionManager(
@@ -108,8 +145,12 @@ class ServiceBuilder:
         debug: Debug,
     ) -> ConversionManager:
         rounder = Rounder()
-        _[CurrencyConverter] = currencyConverter = CurrencyConverter(rounder, events, config, logger)
-        _[ConversionRateUpdater] = conversionRateUpdater = ConversionRateUpdater(currencyConverter, filesystemHelper, argumentParser, config, events, osSwitch, logger)
+        _[CurrencyConverter] = currencyConverter = CurrencyConverter(
+            rounder, events, config, logger
+        )
+        _[ConversionRateUpdater] = conversionRateUpdater = ConversionRateUpdater(
+            currencyConverter, filesystemHelper, argumentParser, config, events, osSwitch, logger
+        )
 
         unitBeforeConverters: list[UnitConverterInterface] = [
             currencyConverter,
@@ -123,7 +164,9 @@ class ServiceBuilder:
             currencyConverter,
         ]
 
-        unitToConverterMapper = UnitToConverterMapper(unitBeforeConverters, unitAfterConverters, events)
+        unitToConverterMapper = UnitToConverterMapper(
+            unitBeforeConverters, unitAfterConverters, events
+        )
 
         thousandsDetector = ThousandsDetector()
         _[UnitParser] = unitParser = UnitParser(unitToConverterMapper, thousandsDetector)
@@ -147,7 +190,9 @@ class ServiceBuilder:
 
         return {
             ModalId.DEMO: DemoBuilder(),
-            ModalId.SETTINGS: SettingsBuilder(config, configFileManager, filesystemHelper, currencyConverter, logger),
+            ModalId.SETTINGS: SettingsBuilder(
+                config, configFileManager, filesystemHelper, currencyConverter, logger
+            ),
             ModalId.ABOUT: AboutBuilder(filesystemHelper, config),
             ModalId.CUSTOMIZED_DIALOG: customizedDialogBuilder,
             ModalId.MISSING_XSEL: DialogMissingXselBuilder(customizedDialogBuilder),
@@ -163,9 +208,11 @@ class ServiceBuilder:
     ) -> AutostartManager:
         if osSwitch.isMacOS():
             from src.Service.AutostartManagerMacOS import AutostartManagerMacOS
+
             return AutostartManagerMacOS(filesystemHelper, config, argParser, logger)
         else:
             from src.Service.AutostartManagerLinux import AutostartManagerLinux
+
             return AutostartManagerLinux(filesystemHelper, config, argParser, logger)
 
     def _getClipboardManager(
@@ -178,9 +225,11 @@ class ServiceBuilder:
     ) -> ClipboardManager:
         if osSwitch.isMacOS():
             from src.Service.ClipboardManagerMacOs import ClipboardManagerMacOs
+
             return ClipboardManagerMacOs(eventService, logger)
         else:
             from src.Service.ClipboardManagerLinux import ClipboardManagerLinux
+
             return ClipboardManagerLinux(eventService, logger, modalWindowManager, filesystemHelper)
 
     def _getStatusbarApp(
@@ -201,6 +250,7 @@ class ServiceBuilder:
     ) -> StatusbarApp:
         if osSwitch.isMacOS():
             from src.Service.StatusbarAppMacOs import StatusbarAppMacOs
+
             return StatusbarAppMacOs(
                 osSwitch,
                 timestampTextFormatter,
@@ -218,6 +268,7 @@ class ServiceBuilder:
             )
         else:
             from src.Service.StatusbarAppLinux import StatusbarAppLinux
+
             return StatusbarAppLinux(
                 osSwitch,
                 timestampTextFormatter,
@@ -234,7 +285,9 @@ class ServiceBuilder:
                 debug,
             )
 
-    def _getAppLoop(self, osSwitch: OSSwitch, events: EventService, clipboardManager: ClipboardManager) -> AppLoop:
+    def _getAppLoop(
+        self, osSwitch: OSSwitch, events: EventService, clipboardManager: ClipboardManager
+    ) -> AppLoop:
         if osSwitch.isMacOS():
             from src.Service.AppLoopMacOs import AppLoopMacOs
             from src.Service.ClipboardManagerMacOs import ClipboardManagerMacOs
@@ -245,4 +298,5 @@ class ServiceBuilder:
             return AppLoopMacOs(events, clipboardManager)
         else:
             from src.Service.AppLoopLinux import AppLoopLinux
+
             return AppLoopLinux(events)

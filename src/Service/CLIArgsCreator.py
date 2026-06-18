@@ -37,7 +37,9 @@ class CLIArgsCreator:
         """
 
         if cliName.startswith('-'):
-            raise Exception(f'cliName for positional arg must not start with a dash, give name: {cliName}')
+            raise Exception(
+                f'cliName for positional arg must not start with a dash, give name: {cliName}'
+            )
 
         params: dict[str, Any] = {}
 
@@ -153,7 +155,9 @@ class CLIArgsCreator:
 
         for cliNameValue in cliName:
             if not cliNameValue.startswith('-'):
-                raise Exception(f'Invalid config for {cliName[0]} option - value must start with dash - or --')
+                raise Exception(
+                    f'Invalid config for {cliName[0]} option - value must start with dash - or --'
+                )
 
         params: dict[str, Any] = {}
 

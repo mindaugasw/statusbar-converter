@@ -35,8 +35,12 @@ class TimestampConverter(ConverterInterface):
         self._logger = logger
 
         self._enabled = config.get(ConfigId.Converter_Timestamp_Enabled)
-        self._templateOriginalText = config.get(ConfigId.Converter_Timestamp_Menu_LastConversion_OriginalText)
-        self._templateConvertedText = config.get(ConfigId.Converter_Timestamp_Menu_LastConversion_ConvertedText)
+        self._templateOriginalText = config.get(
+            ConfigId.Converter_Timestamp_Menu_LastConversion_OriginalText
+        )
+        self._templateConvertedText = config.get(
+            ConfigId.Converter_Timestamp_Menu_LastConversion_ConvertedText
+        )
 
     def isEnabled(self) -> bool:
         return self._enabled

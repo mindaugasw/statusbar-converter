@@ -46,7 +46,9 @@ class ClipboardManager(ABC):
             return
 
         if len(trimmed) > ClipboardManager._MAX_CONTENT_LENGTH_TRIMMED:
-            self._logger.logDebug(Logs.catClipboard + 'Changed: Too long clipboard content after trimming, skipping')
+            self._logger.logDebug(
+                Logs.catClipboard + 'Changed: Too long clipboard content after trimming, skipping'
+            )
             self._events.dispatchClipboardChanged(None)
 
             return

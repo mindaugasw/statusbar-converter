@@ -22,7 +22,9 @@ from src.Type.Types import DialogButtonsDict
 
 class UpdateManager:
     _CHECK_INTERVAL: Final[int] = 3600 * 24 * 2  # Check every 2 days
-    _RELEASES_URL: Final[str] = 'https://api.github.com/repos/mindaugasw/statusbar-converter/releases?per_page=100'
+    _RELEASES_URL: Final[str] = (
+        'https://api.github.com/repos/mindaugasw/statusbar-converter/releases?per_page=100'
+    )
 
     _filesystemHelper: FilesystemHelper
     _events: EventService
@@ -53,7 +55,9 @@ class UpdateManager:
 
     def checkForUpdatesAsync(self, manuallyTriggered: bool) -> None:
         self._lastCheckAt = int(time.time())
-        threading.Thread(target=self._checkForUpdates, args=[manuallyTriggered], daemon=True).start()
+        threading.Thread(
+            target=self._checkForUpdates, args=[manuallyTriggered], daemon=True
+        ).start()
 
     def _updateCheckIteration(self) -> None:
         if self._lastCheckAt and (int(time.time()) - self._CHECK_INTERVAL) < self._lastCheckAt:
@@ -62,7 +66,9 @@ class UpdateManager:
         self.checkForUpdatesAsync(False)
 
     def _checkForUpdates(self, manuallyTriggered: bool) -> None:
-        self._logger.log(f'{Logs.catUpdateCheck}Starting check for updates, manual check: {manuallyTriggered}')
+        self._logger.log(
+            f'{Logs.catUpdateCheck}Starting check for updates, manual check: {manuallyTriggered}'
+        )
 
         try:
             if manuallyTriggered:
@@ -90,7 +96,9 @@ class UpdateManager:
                     break
 
                 if not self._doesReleaseContainCurrentPlatform(release):
-                    self._logger.log(f'{Logs.catUpdateCheck}Release {release["tag_name"]} does not contain current platform download')
+                    self._logger.log(
+                        f'{Logs.catUpdateCheck}Release {release["tag_name"]} does not contain current platform download'
+                    )
 
                     continue
 
@@ -106,7 +114,9 @@ class UpdateManager:
             self._lastCheckAt = int(time.time())
             self._logger.log(f'{Logs.catUpdateCheck}Completed')
         except Exception as e:
-            self._logger.log(f'{Logs.catUpdateCheck}UPDATE CHECK EXCEPTION:\n{ExceptionHandler.formatExceptionLog(e)}')
+            self._logger.log(
+                f'{Logs.catUpdateCheck}UPDATE CHECK EXCEPTION:\n{ExceptionHandler.formatExceptionLog(e)}'
+            )
 
     def _isNewerVersion(
         self,
@@ -151,14 +161,18 @@ class UpdateManager:
             Allow using mock response. Because GitHub has rate limiting per IP, which is possible to reach
             when testing more intensively
             """
-            with open(f'{self._filesystemHelper.getAssetsDevDir()}/releases_response_mock_{mockUpdate}.json') as file:
+            with open(
+                f'{self._filesystemHelper.getAssetsDevDir()}/releases_response_mock_{mockUpdate}.json'
+            ) as file:
                 return json.load(file)
 
         response = requests.get(self._RELEASES_URL)
         statusCode = response.status_code
 
         if statusCode < 200 or statusCode > 299:
-            raise InvalidHTTPResponseException('Received invalid response when checking for app updates', response)
+            raise InvalidHTTPResponseException(
+                'Received invalid response when checking for app updates', response
+            )
 
         return response.json()
 
@@ -179,17 +193,16 @@ class UpdateManager:
         buttons: DialogButtonsDict
 
         if version is None:
-            text = \
-                f'No new version found.\n' \
-                f'Current app version is v{self._config.getAppVersion()}.'
+            text = f'No new version found.\nCurrent app version is v{self._config.getAppVersion()}.'
 
             buttons = {'Ok': None}
         else:
-            text = \
-                f'New app update found: {version}.\n' \
-                f'Current app version is v{self._config.getAppVersion()}.\n' \
-                f'Release notes available on the download page.\n\n' \
+            text = (
+                f'New app update found: {version}.\n'
+                f'Current app version is v{self._config.getAppVersion()}.\n'
+                f'Release notes available on the download page.\n\n'
                 f'Download update?'
+            )
 
             buttons = {
                 'Go to download page': lambda: _handleClickGoToDownloadPage(version),

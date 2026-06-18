@@ -6,10 +6,7 @@ from abc import ABC, abstractmethod
 class FilesystemHelper(ABC):
     def getInitializationLogs(self) -> str:
         # We cannot directly use Logger because of circular imports, so we only return info to log
-        return (
-            f'Project dir: `{self.getProjectDir()}`\n'
-            f'User data dir: `{self.getUserDataDir()}`\n'
-        )
+        return f'Project dir: `{self.getProjectDir()}`\nUser data dir: `{self.getUserDataDir()}`\n'
 
     def getAssetsDir(self) -> str:
         """Get Assets directory (inside project directory)"""

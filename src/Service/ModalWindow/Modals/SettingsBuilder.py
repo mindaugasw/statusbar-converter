@@ -1,4 +1,4 @@
-from typing import Callable, Any, Final, Type, Tuple
+from typing import Any, Callable, Final, Tuple, Type
 
 import dearpygui.dearpygui as dpg
 
@@ -81,17 +81,31 @@ class SettingsBuilder(ModalWindowBuilderInterface):
         with dpg.window(label='Window title', tag=self._PRIMARY_TAG, on_close=self._onClose):
             self._buildHeader()
             self._buildCollapsableSection('General settings', self._buildGeneralSettings)
-            self._buildCollapsableSection('Currency converter', self._buildCurrencyConverterSettings)
-            self._buildCollapsableSection('Distance converter', self._buildDistanceConverterSettings)
-            self._buildCollapsableSection('Temperature converter', self._buildTemperatureConverterSettings)
+            self._buildCollapsableSection(
+                'Currency converter',
+                self._buildCurrencyConverterSettings,
+            )
+            self._buildCollapsableSection(
+                'Distance converter',
+                self._buildDistanceConverterSettings,
+            )
+            self._buildCollapsableSection(
+                'Temperature converter',
+                self._buildTemperatureConverterSettings,
+            )
             self._buildCollapsableSection('Volume converter', self._buildVolumeConverterSettings)
             self._buildCollapsableSection('Weight converter', self._buildWeightConverterSettings)
-            self._buildCollapsableSection('Unix timestamp converter', self._buildTimestampConverterSettings)
+            self._buildCollapsableSection(
+                'Unix timestamp converter',
+                self._buildTimestampConverterSettings,
+            )
 
     def _buildHeader(self) -> None:
         with dpg.group(horizontal=True):
             with dpg.group():
-                BuilderHelper.addImage(self._filesystemHelper.getAssetsDir() + '/icon_colored_small.png')
+                BuilderHelper.addImage(
+                    self._filesystemHelper.getAssetsDir() + '/icon_colored_small.png',
+                )
 
             with dpg.group():
                 dpg.add_text('Settings')
@@ -102,11 +116,19 @@ class SettingsBuilder(ModalWindowBuilderInterface):
                 # Seems like it's impossible to change text color. So we create 2 labels, 1 hidden, and then switch them
                 noteText = 'App needs to be restarted for changes to take effect.'
                 self._appRestartNoteDefaultTag = dpg.add_text(noteText)
-                self._appRestartNoteEditedTag = dpg.add_text(noteText, show=False, color=BuilderHelper.COLOR_TEXT_RED)
+                self._appRestartNoteEditedTag = dpg.add_text(
+                    noteText,
+                    show=False,
+                    color=BuilderHelper.COLOR_TEXT_RED,
+                )
 
                 dpg.add_spacer(height=25)
 
-    def _buildCollapsableSection(self, title: str, buildContentCallback: Callable[[], None]) -> None:
+    def _buildCollapsableSection(
+        self,
+        title: str,
+        buildContentCallback: Callable[[], None],
+    ) -> None:
         with dpg.collapsing_header(label=title):
             with dpg.group(horizontal=True):
                 with dpg.group():
@@ -145,8 +167,7 @@ class SettingsBuilder(ModalWindowBuilderInterface):
             int,
         )
         BuilderHelper.addHelpText(
-            'Enter zero to disable automatic text clearing.\n'
-            'Default is 300 seconds (5 minutes).',
+            'Enter zero to disable automatic text clearing.\nDefault is 300 seconds (5 minutes).',
         )
 
     def _buildCurrencyConverterSettings(self) -> None:
@@ -160,7 +181,10 @@ class SettingsBuilder(ModalWindowBuilderInterface):
 
         dpg.add_spacer(height=self._SPACER_SECTION_INNER_HEIGHT)
 
-        self._registerCheckboxControl(dpg.add_checkbox(label='Enabled'), ConfigId.Converter_Currency_Enabled)
+        self._registerCheckboxControl(
+            dpg.add_checkbox(label='Enabled'),
+            ConfigId.Converter_Currency_Enabled,
+        )
 
         currencies = self._currencyConverter.getUnitsDefinition()
 
@@ -168,10 +192,13 @@ class SettingsBuilder(ModalWindowBuilderInterface):
             dpg.add_text('Convert to currency:')
 
             if len(currencies) == 0:
-                dpg.add_combo([], enabled=False, height_mode=dpg.mvComboHeight_Large),
+                (dpg.add_combo([], enabled=False, height_mode=dpg.mvComboHeight_Large),)
             else:
                 currenciesSorted = dict(sorted(currencies.items(), key=self._currenciesSorter))
-                dropdownItems = {code: f'{code.upper()} - {definition.unit.name}' for code, definition in currenciesSorted.items()}
+                dropdownItems = {
+                    code: f'{code.upper()} - {definition.unit.name}'
+                    for code, definition in currenciesSorted.items()
+                }
                 dropdownNames = list(dropdownItems.values())
 
                 self._registerDropdownControl(
@@ -302,7 +329,10 @@ class SettingsBuilder(ModalWindowBuilderInterface):
             dpg.add_text('.')
 
         dpg.add_spacer(height=self._SPACER_SECTION_INNER_HEIGHT)
-        self._registerCheckboxControl(dpg.add_checkbox(label='Enabled'), ConfigId.Converter_Timestamp_Enabled)
+        self._registerCheckboxControl(
+            dpg.add_checkbox(label='Enabled'),
+            ConfigId.Converter_Timestamp_Enabled,
+        )
         dpg.add_spacer(height=self._SPACER_SECTION_INNER_HEIGHT)
 
         with dpg.tree_node(label='Advanced unix timestamp settings'):
@@ -319,7 +349,9 @@ class SettingsBuilder(ModalWindowBuilderInterface):
             dpg.add_text('Configuration can be edited in the file:')
             BuilderHelper.addHyperlink(
                 self._configFileManager.getUserConfigPath(),
-                lambda: self._filesystemHelper.openFile(self._configFileManager.getUserConfigPath()),
+                lambda: self._filesystemHelper.openFile(
+                    self._configFileManager.getUserConfigPath(),
+                ),
             )
 
             url = AppConstant.WEBSITE + '/blob/master/config/config.app.yml'
@@ -329,7 +361,12 @@ class SettingsBuilder(ModalWindowBuilderInterface):
                 url,
             )
 
-    def _registerTextControl(self, tag: DpgTag, configId: ConfigParameter, castToType: Type) -> None:
+    def _registerTextControl(
+        self,
+        tag: DpgTag,
+        configId: ConfigParameter,
+        castToType: Type,
+    ) -> None:
         dpg.set_item_callback(tag, self._controlCallback)
         dpg.set_value(tag, self._config.get(configId))
         self._controls[tag] = TextControlProperties(configId, castToType)
@@ -339,7 +376,12 @@ class SettingsBuilder(ModalWindowBuilderInterface):
         dpg.set_value(tag, self._config.get(configId))
         self._controls[tag] = CheckboxControlProperties(configId)
 
-    def _registerRadioControl(self, tag: DpgTag, configId: ConfigParameter, radioValues: SettingsRadioValues) -> None:
+    def _registerRadioControl(
+        self,
+        tag: DpgTag,
+        configId: ConfigParameter,
+        radioValues: SettingsRadioValues,
+    ) -> None:
         radioValuesInverted = {v: k for k, v in radioValues.items()}
         selectedValue = radioValuesInverted[self._config.get(configId)]
 
@@ -347,7 +389,12 @@ class SettingsBuilder(ModalWindowBuilderInterface):
         dpg.set_value(tag, selectedValue)
         self._controls[tag] = RadioControlProperties(configId, radioValues)
 
-    def _registerDropdownControl(self, tag: DpgTag, configId: ConfigParameter, valueToNameMap: dict[str, str]) -> None:
+    def _registerDropdownControl(
+        self,
+        tag: DpgTag,
+        configId: ConfigParameter,
+        valueToNameMap: dict[str, str],
+    ) -> None:
         dpg.set_item_callback(tag, self._controlCallback)
         initialValue = valueToNameMap[self._config.get(configId)]
         dpg.set_value(tag, initialValue)
@@ -371,7 +418,9 @@ class SettingsBuilder(ModalWindowBuilderInterface):
             raise Exception(f'Unknown control properties type: {type(controlProperties).__name__}')
 
         label = dpg.get_item_label(sender)
-        self._logger.log(f'{Logs.catSettings}Callback #{sender} ({label}) with data: {value} ({type(value).__name__})')
+        self._logger.log(
+            f'{Logs.catSettings}Callback #{sender} ({label}) with data: {value} ({type(value).__name__})',
+        )
 
         self._config.set(controlProperties.configId, value)
 

@@ -69,7 +69,9 @@ class CurrencyConverter(UnitConverterInterface):
         targetCurrencyAmount = (number / fromCurrency.rate) * targetCurrency.rate
 
         textFrom = f'{self._rounder.roundCurrency(number)} {fromCurrency.primaryAlias.upper()}'
-        textTo = f'{self._rounder.roundCurrency(targetCurrencyAmount)} {targetCurrency.prettyFormat}'
+        textTo = (
+            f'{self._rounder.roundCurrency(targetCurrencyAmount)} {targetCurrency.prettyFormat}'
+        )
 
         return True, ConvertResult(f'{textFrom}  =  {textTo}', textFrom, textTo, self.getName())
 
@@ -92,9 +94,13 @@ class CurrencyConverter(UnitConverterInterface):
 
         if self._enabled:
             self._events.dispatchDelayedConverterInitialized(self)
-            self._logger.log(f'{Logs.catConverter}Currency] Successfully refreshed units data, in converter and mapper')
+            self._logger.log(
+                f'{Logs.catConverter}Currency] Successfully refreshed units data, in converter and mapper'
+            )
         else:
-            self._logger.log(f'{Logs.catConverter}Currency] Successfully refreshed units data, skipping mapper')
+            self._logger.log(
+                f'{Logs.catConverter}Currency] Successfully refreshed units data, skipping mapper'
+            )
 
     def getUnitsDefinition(self) -> dict[str, UnitDefinition[CurrencyUnit]]:
         if not hasattr(self, '_unitsDefinition'):
@@ -107,7 +113,8 @@ class CurrencyConverter(UnitConverterInterface):
 
         for key, currency in data.items():
             unitsDefinition[key] = UnitDefinition(
-                currency['aliases'] + UnitPreprocessor.pluralizeAliases(currency['aliasesToPluralize']),
+                currency['aliases']
+                + UnitPreprocessor.pluralizeAliases(currency['aliasesToPluralize']),
                 CurrencyUnit(
                     currency['primaryAlias'],
                     currency['prettyFormat'],

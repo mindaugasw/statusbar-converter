@@ -28,7 +28,7 @@ class BuilderHelper:
 
     @staticmethod
     def deleteHyperlinkTheme() -> None:
-        dpg.delete_item("__demo_hyperlinkTheme")
+        dpg.delete_item('__demo_hyperlinkTheme')
 
     @staticmethod
     def addHyperlink(text: str, onClick: str | Callable[[], Any]) -> None:

@@ -54,7 +54,8 @@ class ConversionManager:
                 success, result = converter.tryConvert(text)
             except Exception as e:
                 self._logger.log(
-                    '%s%s] CONVERTER EXCEPTION:\n%s' % (
+                    '%s%s] CONVERTER EXCEPTION:\n%s'
+                    % (
                         Logs.catConverter,
                         converter.getName(),
                         ExceptionHandler.formatExceptionLog(e),
@@ -68,7 +69,9 @@ class ConversionManager:
 
             if self._debug.isDebugEnabled():
                 self._logger.log(
-                    Logs.catConverter + '%s] Converted to: %s / %s / %s' % (
+                    Logs.catConverter
+                    + '%s] Converted to: %s / %s / %s'
+                    % (
                         result.converterName,
                         result.iconText,
                         result.originalText,

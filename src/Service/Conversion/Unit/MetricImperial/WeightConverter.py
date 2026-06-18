@@ -5,7 +5,9 @@ from src.DTO.Converter.MetricImperialUnit import MetricImperialUnit
 from src.DTO.Converter.UnitDefinition import UnitDefinition
 from src.Service.Configuration import Configuration
 from src.Service.Conversion.Rounder import Rounder
-from src.Service.Conversion.Unit.MetricImperial.AbstractMetricImperialConverter import AbstractMetricImperialConverter
+from src.Service.Conversion.Unit.MetricImperial.AbstractMetricImperialConverter import (
+    AbstractMetricImperialConverter,
+)
 from src.Service.Conversion.Unit.UnitPreprocessor import UnitPreprocessor
 
 
@@ -32,7 +34,6 @@ class WeightConverter(AbstractMetricImperialConverter):
     def _getUnitsDefinition(self) -> dict[str, UnitDefinition[MetricImperialUnit]]:
         units = {
             # Units must be increasing order (per metric/imperial system)
-
             # Metric
             'mg': UnitDefinition(
                 UnitPreprocessor.pluralizeAliases(['milligram', 'miligram']),
@@ -59,7 +60,10 @@ class WeightConverter(AbstractMetricImperialConverter):
                 ),
             ),
             'kg': UnitDefinition(
-                ['kgs'] + UnitPreprocessor.pluralizeAliases(['kilogram', 'killogram', 'kilogramme', 'killogramme']),
+                ['kgs']
+                + UnitPreprocessor.pluralizeAliases(
+                    ['kilogram', 'killogram', 'kilogramme', 'killogramme']
+                ),
                 MetricImperialUnit(
                     'kg',
                     'kg',
@@ -69,7 +73,6 @@ class WeightConverter(AbstractMetricImperialConverter):
                     1,
                 ),
             ),
-
             # Imperial
             'ounce': UnitDefinition(
                 ['oz.'] + UnitPreprocessor.pluralizeAliases(['ounce']),
@@ -111,56 +114,60 @@ class WeightConverter(AbstractMetricImperialConverter):
         # First unit is unitFrom, used for aliases and multiplier.
         # Second unit is unitTo, used for prettyFormat and multiplier.
         if self._primaryUnitMetric:
-            units.update({
-                'imperial_ton': UnitDefinition(
-                    UnitPreprocessor.pluralizeAliases(['ton', 'tone', 'tonne']),
-                    MetricImperialUnit(
-                        't',
-                        't',
-                        False,
-                        False,
-                        -1,
-                        1016.0469088,
+            units.update(
+                {
+                    'imperial_ton': UnitDefinition(
+                        UnitPreprocessor.pluralizeAliases(['ton', 'tone', 'tonne']),
+                        MetricImperialUnit(
+                            't',
+                            't',
+                            False,
+                            False,
+                            -1,
+                            1016.0469088,
+                        ),
                     ),
-                ),
-                # Uncomment to enable converting ton-to-ton:
-                # 'metric_tonne': UnitDefinition(
-                #     [],
-                #     MetricImperialUnit(
-                #         'metric tonne',
-                #         't',
-                #         True,
-                #         True,
-                #         sys.maxsize,
-                #         1000,
-                #     )
-                # ),
-            })
+                    # Uncomment to enable converting ton-to-ton:
+                    # 'metric_tonne': UnitDefinition(
+                    #     [],
+                    #     MetricImperialUnit(
+                    #         'metric tonne',
+                    #         't',
+                    #         True,
+                    #         True,
+                    #         sys.maxsize,
+                    #         1000,
+                    #     )
+                    # ),
+                }
+            )
         else:
-            units.update({
-                'metric_tonne': UnitDefinition(
-                    UnitPreprocessor.pluralizeAliases(['ton', 'tone', 'tonne']),
-                    MetricImperialUnit(
-                        't',
-                        't',
-                        True,
-                        False,
-                        -1,
-                        1000,
+            units.update(
+                {
+                    'metric_tonne': UnitDefinition(
+                        UnitPreprocessor.pluralizeAliases(['ton', 'tone', 'tonne']),
+                        MetricImperialUnit(
+                            't',
+                            't',
+                            True,
+                            False,
+                            -1,
+                            1000,
+                        ),
                     ),
-                ),
-                # Uncomment to enable converting ton-to-ton:
-                # 'imperial_ton': UnitDefinition(
-                #     [],
-                #     MetricImperialUnit(
-                #         'imperial ton',
-                #         't',
-                #         False,
-                #         True,
-                #         sys.maxsize,
-                #         1016.0469088,
-                #     ),
-                # ),
-            })
+                    # Uncomment to enable converting ton-to-ton:
+                    # 'imperial_ton': UnitDefinition(
+                    #     [],
+                    #     MetricImperialUnit(
+                    #         'imperial ton',
+                    #         't',
+                    #         False,
+                    #         True,
+                    #         sys.maxsize,
+                    #         1016.0469088,
+                    #     ),
+                    # ),
+                }
+            )
 
         return units
