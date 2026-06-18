@@ -8,3 +8,18 @@ target-version = "py314"
 
 [format]
 quote-style = "single"
+
+[lint]
+select = [
+    "E", # pycodestyle
+    "F", # Pyflakes
+    "UP", # pyupgrade
+    "B", # flake8-bugbear
+    "SIM", # flake8-simplify
+]
+extend-ignore = [
+    "E501", # line-too-long - managed by the formatter
+    "UP015", # redundant-open-modes - kept open modes for easier readability on why file is being openened
+    "SIM117", # multiple-with-statements - left for easier readability
+    "SIM108", # use ternary operator - left for easier readability
+]

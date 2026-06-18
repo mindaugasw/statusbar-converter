@@ -39,6 +39,21 @@ venv-install basePythonBinary='python3.14':
 run *ARGS:
     {{_pythonBinary}} -m src {{ARGS}}
 
+# Run tests and all static analysers
+[group('scripts')]
+static-analysis:
+    @echo -e "{{_arrow}} Test":
+    @just test
+
+    @echo -e "\n{{_arrow}} Mypy":
+    @just mypy
+
+    @echo -e "\n{{_arrow}} Lint":
+    @just lint
+
+    @echo -e "\n{{_arrow}} Format":
+    @just format
+
 # Run unit tests
 [group('scripts')]
 test *ARGS:
@@ -56,8 +71,24 @@ coverage:
 # Run mypy static analysis
 [group('scripts')]
 mypy *ARGS:
-    mkdir -p var/mypy_cache
+    @mkdir -p var/mypy_cache
     {{_pythonBinary}} -m mypy src {{ARGS}}
+
+# Run code linter
+[group('scripts')]
+lint *ARGS:
+    # We run linter twice to output both full error info and concise summary at the end
+    -@{{_venvDir}}/bin/ruff check {{ARGS}}
+    @echo -e "--- --- ---   --- --- ---   --- --- ---   --- --- ---   --- --- ---   --- --- ---   --- --- ---   ---"
+    @{{_venvDir}}/bin/ruff check --statistics {{ARGS}}
+
+    # Some ruff commands that may be relevant when solving errors:
+    # `ruff check --select UP015` - check only 1 rule
+    # `ruff rule UP015` - explain a rule
+
+# Run code linter and auto-fix errors
+[group('scripts')]
+lint-fix *ARGS: (lint "--fix")
 
 # Run automated style formatting
 [group('scripts')]
