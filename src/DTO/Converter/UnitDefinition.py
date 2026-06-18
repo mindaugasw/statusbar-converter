@@ -1,4 +1,4 @@
-from typing import TypeVar, Generic
+from typing import TypeVar
 
 from src.DTO.Converter.AbstractUnit import AbstractUnit
 
@@ -6,7 +6,7 @@ from src.DTO.Converter.AbstractUnit import AbstractUnit
 UnitDefT = TypeVar('UnitDefT', bound=AbstractUnit)
 
 
-class UnitDefinition(Generic[UnitDefT]):
+class UnitDefinition[UnitDefT: AbstractUnit]:
     aliases: list[str]
     unit: UnitDefT
 

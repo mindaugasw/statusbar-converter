@@ -1,4 +1,5 @@
-from typing import Any, Callable, Final, Tuple, Type
+from collections.abc import Callable
+from typing import Any, Final
 
 import dearpygui.dearpygui as dpg
 
@@ -365,7 +366,7 @@ class SettingsBuilder(ModalWindowBuilderInterface):
         self,
         tag: DpgTag,
         configId: ConfigParameter,
-        castToType: Type,
+        castToType: type,
     ) -> None:
         dpg.set_item_callback(tag, self._controlCallback)
         dpg.set_value(tag, self._config.get(configId))
@@ -432,7 +433,7 @@ class SettingsBuilder(ModalWindowBuilderInterface):
     def _onClose(self) -> None:
         BuilderHelper.deleteHyperlinkTheme()
 
-    def _currenciesSorter(self, item: Tuple[str, UnitDefinition[CurrencyUnit]]) -> str:
+    def _currenciesSorter(self, item: tuple[str, UnitDefinition[CurrencyUnit]]) -> str:
         currency = item[1].unit
         categoryPrefix = '0' if currency.category == CurrencyCategory.FIAT else '1'
         priorityPrefix = '0' if currency.primaryAlias in self._PRIORITY_SORT_CURRENCIES else '1'

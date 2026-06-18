@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Tuple
 
 from src.DTO.ConvertResult import ConvertResult
 from src.DTO.Converter.MetricImperialUnit import MetricImperialUnit
@@ -47,7 +46,7 @@ class AbstractMetricImperialConverter(UnitConverterInterface, ABC):
 
         return list(self._unitsExpanded.keys())
 
-    def tryConvert(self, number: float, unitId: str) -> Tuple[bool, ConvertResult | None]:
+    def tryConvert(self, number: float, unitId: str) -> tuple[bool, ConvertResult | None]:
         unitFrom = self._unitsExpanded[unitId]
 
         if unitFrom.isMetric == self._primaryUnitMetric:

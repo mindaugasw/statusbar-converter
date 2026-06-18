@@ -54,12 +54,8 @@ class ConversionManager:
                 success, result = converter.tryConvert(text)
             except Exception as e:
                 self._logger.log(
-                    '%s%s] CONVERTER EXCEPTION:\n%s'
-                    % (
-                        Logs.catConverter,
-                        converter.getName(),
-                        ExceptionHandler.formatExceptionLog(e),
-                    ),
+                    f'{Logs.catConverter}{converter.getName()}] CONVERTER EXCEPTION:\n'
+                    f'{ExceptionHandler.formatExceptionLog(e)}',
                 )
 
                 continue
@@ -69,14 +65,8 @@ class ConversionManager:
 
             if self._debug.isDebugEnabled():
                 self._logger.log(
-                    Logs.catConverter
-                    + '%s] Converted to: %s / %s / %s'
-                    % (
-                        result.converterName,
-                        result.iconText,
-                        result.originalText,
-                        result.convertedText,
-                    ),
+                    f'{Logs.catConverter}{result.converterName}] Converted to: '
+                    f'{result.iconText} / {result.originalText} / {result.convertedText}',
                 )
 
             self._convertedAt = int(time.time())

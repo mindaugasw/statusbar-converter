@@ -1,11 +1,10 @@
-from typing import Union, Tuple
 from unittest import TestCase
 
 from src.Service.Conversion.Unit.ThousandsDetector import ThousandsDetector
 
 
 class TestThousandsDetector(TestCase):
-    _testCaseType = Union[Tuple[str, int | float | None], Tuple[str, int | float | None, bool]]
+    _testCaseType = tuple[str, int | float | None] | tuple[str, int | float | None, bool]
 
     def testParseNumber(self) -> None:
         casesInitial: list[TestThousandsDetector._testCaseType] = [
@@ -35,15 +34,15 @@ class TestThousandsDetector(TestCase):
 
         correctResults = 0
         casesCount = len(cases)
-        output = '\n%15s => %12s  !=  Error\n' % ('From', 'Expected')
+        output = f'\n{"From":>15} => {"Expected":>12}  !=  Error\n'
         parser = ThousandsDetector()
 
         for case in cases:
             result = parser.parseNumber(case[0])
-            output += '%15s => %12s' % (case[0], case[1])
+            output += f'{case[0]:>15} => {case[1]!s:>12}'
 
             if result != case[1]:
-                output += '  != %12s\n' % result
+                output += f'  != {result:>12}\n'
             else:
                 output += '\n'
                 correctResults += 1
@@ -63,7 +62,7 @@ class TestThousandsDetector(TestCase):
         for case in cases:
             convertedList.append(case)
 
-            if len(case) > 2 and case[2] == False:
+            if len(case) > 2 and not case[2]:
                 continue
 
             convertedText = case[0].replace(',', '#').replace('.', ',').replace('#', '.')

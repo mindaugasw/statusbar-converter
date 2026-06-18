@@ -104,7 +104,7 @@ class AbstractConversionManagerTest(TestCase):
 
         container = ServiceContainer()
 
-        container[ConversionManager] = conversionManager = ServiceBuilder().getConversionManager(
+        container[ConversionManager] = ServiceBuilder().getConversionManager(
             container,
             filesystemHelperMock,
             timestampTextFormatter,

@@ -6,7 +6,7 @@ import threading
 import time
 
 import requests
-from typing_extensions import Final
+from typing import Final
 
 from src.Constant.ConfigId import ConfigId
 from src.Constant.Logs import Logs

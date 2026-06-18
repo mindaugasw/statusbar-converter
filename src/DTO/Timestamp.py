@@ -19,4 +19,4 @@ class Timestamp:
         if self.milliseconds is None or not includeMs:
             return str(self.seconds)
 
-        return '%d%s%03d' % (self.seconds, msSeparator, self.milliseconds)
+        return f'{self.seconds}{msSeparator}{self.milliseconds:03d}'

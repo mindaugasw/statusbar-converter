@@ -61,11 +61,7 @@ class ExceptionHandler:
         traceList = traceback.format_exception(exception)
         traceString = ''.join(traceList)
 
-        text = 'Type: %s\nMessage: %s\nTrace: %s' % (
-            type(exception),
-            exception,
-            traceString,
-        )
+        text = f'Type: {type(exception)}\nMessage: {exception}\nTrace: {traceString}'
 
         if isinstance(exception, FormatableExceptionInterface):
             text += '\n' + exception.formatExceptionData()

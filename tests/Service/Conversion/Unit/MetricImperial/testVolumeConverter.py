@@ -32,7 +32,7 @@ class TestVolumeConverter(AbstractConversionManagerTest):
         configOverrides = [
             (
                 ConfigId.Converter_Volume_PrimaryUnit_Metric,
-                True if primaryUnitSystem == 'metric' else False,
+                primaryUnitSystem == 'metric',
             ),
         ]
 

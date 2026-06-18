@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from src.DTO.ConvertResult import ConvertResult
 from src.Service.Conversion.ConverterInterface import ConverterInterface
 from src.Service.Conversion.Unit.ThousandsDetector import ThousandsDetector
@@ -26,7 +24,7 @@ class UnitConverter(ConverterInterface):
     def getName(self) -> str:
         return 'Simple'
 
-    def tryConvert(self, text: str) -> Tuple[bool, ConvertResult | None]:
+    def tryConvert(self, text: str) -> tuple[bool, ConvertResult | None]:
         parsed = self._unitParser.parseText(text)
 
         if parsed is None:

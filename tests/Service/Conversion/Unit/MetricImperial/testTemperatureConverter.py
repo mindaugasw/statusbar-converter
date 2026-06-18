@@ -33,7 +33,7 @@ class TestTemperatureConverter(AbstractConversionManagerTest):
         configOverrides = [
             (
                 ConfigId.Converter_Temperature_PrimaryUnit_Celsius,
-                True if primaryUnitId.lower() == 'c' else False,
+                primaryUnitId.lower() == 'c',
             ),
         ]
 

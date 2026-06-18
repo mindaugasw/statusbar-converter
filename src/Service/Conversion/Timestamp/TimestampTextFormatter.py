@@ -53,19 +53,17 @@ class TimestampTextFormatter:
         - {r_float} - relative time with float number, e.g. '5.5 h ago'.
         """
 
-        relativeFormatArguments = (
-            '' if relativeTimeData.isPast else 'in ',
-            relativeTimeData.number,
-            relativeTimeData.unit,
-            ' ago' if relativeTimeData.isPast else '',
-        )
+        prefix = '' if relativeTimeData.isPast else 'in '
+        number = relativeTimeData.number
+        unit = relativeTimeData.unit
+        suffix = ' ago' if relativeTimeData.isPast else ''
 
         formatted = template.format(
             ts=timestamp.toString(False),
             ts_ms=timestamp.toString(True, ''),
             ts_ms_sep=timestamp.toString(True, '.'),
-            r_int='%s%d %s%s' % relativeFormatArguments,
-            r_float='%s%.1f %s%s' % relativeFormatArguments,
+            r_int=f'{prefix}{int(number)} {unit}{suffix}',
+            r_float=f'{prefix}{number:.1f} {unit}{suffix}',
         )
 
         dateTime = datetime.datetime.fromtimestamp(timestamp.seconds)

@@ -1,4 +1,4 @@
-from AppKit import NSPasteboard, NSStringPboardType, NSArray
+from AppKit import NSArray, NSPasteboard, NSStringPboardType
 
 from src.Service.ClipboardManager import ClipboardManager
 from src.Service.EventService import EventService
@@ -29,7 +29,9 @@ class ClipboardManagerMacOs(ClipboardManager):
             contentArray = NSArray.arrayWithObject_(content)
             self._pasteboard.writeObjects_(contentArray)
         except Exception as e:
-            raise Exception('Could not set clipboard content.\nOriginal exception: ' + str(e))
+            raise Exception(
+                'Could not set clipboard content.\nOriginal exception: ' + str(e)
+            ) from e
 
     def pollClipboard(self) -> None:
         # From https://stackoverflow.com/a/8317794/4110469

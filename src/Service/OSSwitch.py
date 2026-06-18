@@ -1,6 +1,6 @@
 import platform
 
-from typing_extensions import Final
+from typing import Final
 
 
 class OSSwitch:

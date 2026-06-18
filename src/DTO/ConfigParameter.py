@@ -7,7 +7,7 @@ class ConfigParameter:
     defaultValue: Any
 
     @staticmethod
-    def newConfig(key: list[str]) -> 'ConfigParameter':
+    def newConfig(key: list[str]) -> ConfigParameter:
         configParameter = ConfigParameter()
         configParameter.key = key
         configParameter.isState = False
@@ -17,7 +17,7 @@ class ConfigParameter:
         return configParameter
 
     @staticmethod
-    def newState(key: list[str], defaultValue: Any) -> 'ConfigParameter':
+    def newState(key: list[str], defaultValue: Any) -> ConfigParameter:
         configParameter = ConfigParameter()
         configParameter.key = key
         configParameter.isState = True

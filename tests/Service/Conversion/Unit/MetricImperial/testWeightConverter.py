@@ -30,7 +30,7 @@ class TestWeightConverter(AbstractConversionManagerTest):
         configOverrides = [
             (
                 ConfigId.Converter_Weight_PrimaryUnit_Metric,
-                True if primaryUnitSystem == 'metric' else False,
+                primaryUnitSystem == 'metric',
             ),
         ]
 

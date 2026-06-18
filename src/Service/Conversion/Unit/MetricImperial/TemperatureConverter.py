@@ -1,4 +1,4 @@
-from typing import Tuple, Final
+from typing import Final
 
 from src.Constant.ConfigId import ConfigId
 from src.DTO.ConvertResult import ConvertResult
@@ -48,7 +48,7 @@ class TemperatureConverter(UnitConverterInterface):
 
         return list(self._unitsExpanded.keys())
 
-    def tryConvert(self, number: float, unitId: str) -> Tuple[bool, ConvertResult | None]:
+    def tryConvert(self, number: float, unitId: str) -> tuple[bool, ConvertResult | None]:
         unitFrom = self._unitsExpanded[unitId]
 
         if unitFrom == self._primaryUnit:

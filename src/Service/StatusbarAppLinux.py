@@ -27,12 +27,10 @@ from src.Service.StatusbarApp import StatusbarApp
 from src.Service.UpdateManager import UpdateManager
 from src.Type.Types import DialogButtonsDict
 
-
 gi.require_version('Gtk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
 
-from gi.repository import Gtk, AppIndicator3  # type: ignore[attr-defined]
-
+from gi.repository import AppIndicator3, Gtk  # type: ignore[attr-defined]  # noqa: E402
 
 """
 AppIndicator tutorial 1: https://fosspost.org/custom-system-tray-icon-indicator-linux/
@@ -129,7 +127,7 @@ class StatusbarAppLinux(StatusbarApp):
         menu = Gtk.Menu()
 
         item: MenuItem
-        for key, item in commonMenu.items():
+        for _key, item in commonMenu.items():
             if item.isSeparator:
                 nativeItem = Gtk.SeparatorMenuItem()
                 menu.append(nativeItem)

@@ -1,6 +1,6 @@
-from typing import Callable
+from collections.abc import Callable
 
-from typing_extensions import Final
+from typing import Final
 
 from src.DTO.ConvertResult import ConvertResult
 from src.DTO.Event import Event

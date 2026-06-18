@@ -3,9 +3,9 @@ import platform
 import threading
 import time
 import webbrowser
+from typing import Final
 
 import requests
-from typing_extensions import Final
 
 from src.Constant.AppConstant import AppConstant
 from src.Constant.ConfigId import ConfigId
@@ -130,7 +130,7 @@ class UpdateManager:
         if releaseVersion <= currentVersion:
             return False
 
-        if releaseVersion <= skippedVersion:  # type: ignore[operator]
+        if releaseVersion <= skippedVersion:  # type: ignore[operator]  # noqa: SIM103
             return False
 
         return True

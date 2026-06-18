@@ -133,7 +133,7 @@ class StatusbarApp(ABC):
                 {'label_current_timestamp': MenuItem('Current timestamp - click to copy', True)}
             )
 
-            for key, template in self._menuTemplatesCurrentTimestamp.items():
+            for key, _template in self._menuTemplatesCurrentTimestamp.items():
                 items.update(
                     {
                         key: MenuItem(key, callback=self._onMenuClickCurrentTimestamp),

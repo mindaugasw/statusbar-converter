@@ -27,17 +27,16 @@ from src.Service.EventService import EventService
 from src.Service.ExceptionHandler import ExceptionHandler
 from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
-from src.Service.ModalWindow.ModalWindowManager import ModalWindowManager
 from src.Service.ModalWindow.Modals.AboutBuilder import AboutBuilder
 from src.Service.ModalWindow.Modals.CustomizedDialogBuilder import CustomizedDialogBuilder
 from src.Service.ModalWindow.Modals.DemoBuilder import DemoBuilder
 from src.Service.ModalWindow.Modals.MissingXselBuilder import DialogMissingXselBuilder
 from src.Service.ModalWindow.Modals.ModalWindowBuilderInterface import ModalWindowBuilderInterface
 from src.Service.ModalWindow.Modals.SettingsBuilder import SettingsBuilder
+from src.Service.ModalWindow.ModalWindowManager import ModalWindowManager
 from src.Service.OSSwitch import OSSwitch
 from src.Service.StatusbarApp import StatusbarApp
 from src.Service.UpdateManager import UpdateManager
-
 
 # mypy: disable-error-code="type-abstract"
 
@@ -103,7 +102,7 @@ class ServiceBuilder:
         _[ClipboardManager] = clipboardManager = self._getClipboardManager(
             osSwitch, events, logger, modalWindowManager, filesystemHelper
         )
-        _[StatusbarApp] = statusbarApp = self._getStatusbarApp(
+        _[StatusbarApp] = self._getStatusbarApp(
             osSwitch,
             timestampTextFormatter,
             clipboardManager,
@@ -118,7 +117,7 @@ class ServiceBuilder:
             logger,
             debug,
         )
-        _[AppLoop] = appLoop = self._getAppLoop(osSwitch, events, clipboardManager)
+        _[AppLoop] = self._getAppLoop(osSwitch, events, clipboardManager)
 
         return _
 
@@ -148,7 +147,7 @@ class ServiceBuilder:
         _[CurrencyConverter] = currencyConverter = CurrencyConverter(
             rounder, events, config, logger
         )
-        _[ConversionRateUpdater] = conversionRateUpdater = ConversionRateUpdater(
+        _[ConversionRateUpdater] = ConversionRateUpdater(
             currencyConverter, filesystemHelper, argumentParser, config, events, osSwitch, logger
         )
 

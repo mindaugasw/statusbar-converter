@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from src.Constant.ConfigId import ConfigId
 from src.Constant.Logs import Logs
 from src.DTO.ConvertResult import ConvertResult
@@ -59,7 +57,7 @@ class CurrencyConverter(UnitConverterInterface):
 
         return list(self._unitsExpanded.keys())
 
-    def tryConvert(self, number: float, unitId: str) -> Tuple[bool, ConvertResult | None]:
+    def tryConvert(self, number: float, unitId: str) -> tuple[bool, ConvertResult | None]:
         fromCurrency = self._unitsExpanded[unitId]
         targetCurrency = self._unitsExpanded[self._primaryCurrency]
 
@@ -79,7 +77,7 @@ class CurrencyConverter(UnitConverterInterface):
         self._unitsDefinition = self._buildUnitsDefinition(data)
         self._unitsExpanded = UnitPreprocessor.expandAliases(self._unitsDefinition)
 
-        if not self._primaryCurrency in self._unitsDefinition:
+        if self._primaryCurrency not in self._unitsDefinition:
             defaultPrimaryCurrency = ConfigId.Converter_Currency_PrimaryCurrency.defaultValue
 
             self._logger.log(

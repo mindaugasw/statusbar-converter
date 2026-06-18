@@ -53,7 +53,7 @@ class TestDistanceConverter(AbstractConversionManagerTest):
         configOverrides = [
             (
                 ConfigId.Converter_Distance_PrimaryUnit_Metric,
-                True if primaryUnitSystem == 'metric' else False,
+                primaryUnitSystem == 'metric',
             ),
         ]
 

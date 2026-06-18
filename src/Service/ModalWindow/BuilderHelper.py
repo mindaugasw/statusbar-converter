@@ -1,9 +1,9 @@
 import math
 import webbrowser
-from typing import Callable, Any
+from collections.abc import Callable
+from typing import Any, Final
 
 import dearpygui.dearpygui as dpg
-from typing_extensions import Final
 
 
 class BuilderHelper:
@@ -37,7 +37,7 @@ class BuilderHelper:
         :param onClick: URL to open (if string) or custom callback (if Callable)
         """
         if isinstance(onClick, str):
-            callback = lambda: webbrowser.open(onClick)
+            callback = lambda: webbrowser.open(onClick)  # noqa: E731
         else:
             callback = onClick
 
