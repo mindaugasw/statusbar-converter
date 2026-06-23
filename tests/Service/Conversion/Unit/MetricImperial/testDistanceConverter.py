@@ -25,11 +25,14 @@ class TestDistanceConverter(AbstractConversionManagerTest):
             ('Weird unit symbols ft 1', 'metric', "5.5 '", True, '5.5 ft', '1.68 m'),
             ('Weird unit symbols ft 2', 'metric', '5.5 `', True, '5.5 ft', '1.68 m'),
             ('Weird unit symbols ft 3', 'metric', '5.5 ′', True, '5.5 ft', '1.68 m'),
+            ('Weird unit symbols ft 4', 'metric', '5.5 ’', True, '5.5 ft', '1.68 m'),
             ('Weird unit symbols in 1', 'metric', '5.5 "', True, '5.5 in', '14 cm'),
             ('Weird unit symbols in 2', 'metric', "5.5 ''", True, '5.5 in', '14 cm'),
             ('Weird unit symbols in 3', 'metric', '5.5 ``', True, '5.5 in', '14 cm'),
             ('Weird unit symbols in 4', 'metric', '5.5 ′′', True, '5.5 in', '14 cm'),
             ('Weird unit symbols in 5', 'metric', '5.5 ″', True, '5.5 in', '14 cm'),
+            ('Weird unit symbols in 6', 'metric', '5.5 ’’', True, '5.5 in', '14 cm'),
+            ('Weird unit symbols in 7', 'metric', '5.5 ”', True, '5.5 in', '14 cm'),
             ('Negative', 'metric', '-5.5 ″', True, '-5.5 in', '-14 cm'),
             # Compound units like 5'11" generally are not supported. But current parsers
             # already half-parse them, treating as 5ft (cutting off inches).
