@@ -31,10 +31,19 @@ _installVenv() {
     exe "$venvDir/bin/pip" install -r "requirements_$os.txt"
 
     if [[ "$os" == 'linux' ]]; then
+        _verifyGiLoads
         _installClipnotify
     fi
 
     echo -e "$textArrowSuccess Successfully installed venv into $textYellow$venvDir$textReset"
+}
+
+# Verify that the GTK/glib bindings load in the new venv. This fails if the venv was built
+# from a Homebrew Python, whose bundled glibc can't open the system libglib that PyGObject
+# needs. Without this verification, app fails when initializing StatusbarAppLinux class.
+_verifyGiLoads() {
+    echo -e "$textArrow Verifying gi/GTK bindings load in the venv"
+    "$venvDir/bin/python" -c "import gi; gi.require_version('Gtk', '3.0'); from gi.repository import Gtk"
 }
 
 _installClipnotify() {

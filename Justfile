@@ -29,7 +29,7 @@ venv-activate-instructions:
 
 # Install Python virtual env
 [group('setup')]
-venv-install basePythonBinary='python3.14':
+venv-install basePythonBinary='/usr/bin/python3.14':
     {{_scriptsDir}}/venv-install.sh {{_venvDir}} {{basePythonBinary}}
 
 
