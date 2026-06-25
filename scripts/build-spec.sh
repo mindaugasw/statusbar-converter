@@ -40,6 +40,8 @@ _buildSpec() {
             --specpath 'build' \
             src/__main__.py
     else
+        # Most directory paths here are relative to this spec file (data, binary, icon paths).
+        # Except fpr hooks dir: 'build/hooks' is project root-relative (the build CWD)
         "$venvDir/bin/pyi-makespec" \
             --name 'Statusbar Converter' \
             --onefile \
@@ -47,6 +49,7 @@ _buildSpec() {
             --add-data '../config:config' \
             --add-data '../version:.' \
             --add-binary '../binaries/clipnotify/clipnotify:binaries/clipnotify' \
+            --additional-hooks-dir 'build/hooks' \
             --icon '../assets/icon_linux.png' \
             --specpath 'build' \
             src/__main__.py

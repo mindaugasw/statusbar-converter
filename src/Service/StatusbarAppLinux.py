@@ -28,9 +28,13 @@ from src.Service.UpdateManager import UpdateManager
 from src.Type.Types import DialogButtonsDict
 
 gi.require_version('Gtk', '3.0')
-gi.require_version('AppIndicator3', '0.1')
+# Previously this used AppIndicator3. Now it's deprecated and was replaced by
+# AyatanaAppIndicator3 - it is the maintained successor of AppIndicator3.
+# The GI API is a drop-in replacement: same Indicator/IndicatorCategory/IndicatorStatus
+# and app_indicator_* symbols, so this code keeps using the `AppIndicator3` alias unchanged.
+gi.require_version('AyatanaAppIndicator3', '0.1')
 
-from gi.repository import AppIndicator3, Gtk  # type: ignore[attr-defined]  # noqa: E402
+from gi.repository import AyatanaAppIndicator3 as AppIndicator3, Gtk  # type: ignore[attr-defined]  # noqa: E402
 
 """
 AppIndicator tutorial 1: https://fosspost.org/custom-system-tray-icon-indicator-linux/

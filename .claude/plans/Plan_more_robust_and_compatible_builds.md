@@ -65,7 +65,7 @@ It is also the **legacy** stack (from `gir1.2-appindicator3-0.1` in non-multiarc
 
 ## Steps (in execution order)
 
-### Step 1 — Migrate to Ayatana AppIndicator + bundle its `.so` chain  ★ highest value
+### Step 1 — Migrate to Ayatana AppIndicator + bundle its `.so` chain - Completed ✅
 Fixes the one real distributable defect and moves off the deprecated stack in one go.
 
 - **Code (`src/Service/StatusbarAppLinux.py`):** change
@@ -193,10 +193,8 @@ Already-identified actions (validate/expand at implementation time):
 ### Step 9 — Update `docs/building.md` (LAST)
 Done last because earlier steps change the inputs.
 
-- Fix stale content: Python **3.14** (not 3.10); correct apt deps
-  (`libgirepository1.0-dev`, `libcairo2-dev`, `pkg-config`, `gir1.2-gtk-3.0`,
-  `gir1.2-ayatanaappindicator3-0.1`, `libayatana-appindicator3-1`, `libxfixes-dev` for
-  clipnotify; drop the inaccurate `libxcomposite-dev`).
+- Fix stale content: Python **3.14** (not 3.10) and the corrected host-dependency list in
+  the subsection below; drop the inaccurate `libxcomposite-dev`.
 - Document the **glibc-floor rule** (keep build machine on oldest target LTS).
 - Document new scripts (audit, glibc floor) and the AppImage/FUSE requirement.
 - Optionally add `scripts/host-deps.sh` with the apt list as lightweight "env as code".
@@ -204,6 +202,45 @@ Done last because earlier steps change the inputs.
 - **Update the supported-environments claim** in `README.md` (currently *"built for and
   tested on Ubuntu, Gnome"*): once verified per the test matrix below, list KDE and state
   the X11/Wayland session caveat.
+
+#### Host dependencies (verified during Step 1 implementation)
+
+**Key distinction — these are BUILD-HOST deps, not end-user deps.** After Step 1 the Ayatana
+`.so` chain + typelib are bundled in the distributable, so **end users need no
+appindicator/ayatana package at all** (previously the app silently relied on the host's
+`libappindicator3`). The build host needs the typelib (so `gi.require_version` works during
+PyInstaller analysis) and the libs (so the Step-1 hook's `findSystemLibrary` can locate and
+bundle them).
+
+**Step-1 dependency change (verified via `dpkg -S` on the 22.04 build host):**
+- **Add** `gir1.2-ayatanaappindicator3-0.1`. apt auto-installs its full chain, so this single
+  package is sufficient: → `libayatana-appindicator3-1` → `libayatana-indicator3-7`,
+  `libayatana-ido3-0.4-0`, `libdbusmenu-gtk3-4`, `libdbusmenu-glib4`. Those provide the five
+  `.so` files the bundle now ships (`libayatana-appindicator3.so.1`,
+  `libayatana-indicator3.so.7`, `libayatana-ido3-0.4.so.0`, `libdbusmenu-gtk3.so.4`,
+  `libdbusmenu-glib.so.4`).
+- **No longer needed:** the legacy `gir1.2-appindicator3-0.1` / `libappindicator3-1` chain.
+  Harmless to leave installed; safe to `apt remove`.
+
+**Full apt list for a fresh build machine** (the `gir1.2-ayatanaappindicator3-0.1` line is the
+Step-1 addition):
+
+      # Python — system python3.14, NOT Homebrew (Homebrew's bundled glibc/loader
+      # can't open the system libglib that PyGObject needs)
+      python3.14 python3.14-venv
+      # PyGObject / pycairo build deps
+      libgirepository1.0-dev libcairo2-dev pkg-config
+      # GTK3 + tray typelibs (runtime gi)
+      gir1.2-gtk-3.0 gir1.2-ayatanaappindicator3-0.1
+      # clipnotify build deps
+      build-essential git libxfixes-dev
+      # tooling / packaging
+      just zip
+
+**Fail-loud gap (closed by Step 6):** `_verifyGiLoads` in `venv-install.sh` currently only
+checks `Gtk`, so on a fresh host missing `gir1.2-ayatanaappindicator3-0.1`, `just
+venv-install` still passes and the failure surfaces only later at build/run time. Step 6 adds
+the `AyatanaAppIndicator3` import check that makes this fail loudly at install time.
 
 ---
 

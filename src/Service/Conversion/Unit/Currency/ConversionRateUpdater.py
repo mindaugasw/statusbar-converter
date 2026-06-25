@@ -80,10 +80,17 @@ class ConversionRateUpdater:
     def _buildDefaultRatesUrl(self) -> str:
         # URL assembled from fragments so naive bots don't see it as a valid URL to scrape
         return (
-            'htt' + 'ps:' + '//'
-            + 'sc-server' + '-prod-478' + str(24447987 * 16)
-            + '.us-' + 'east1.' + 'run.app'
-            + '/ra' + 'tes'
+            'htt'
+            + 'ps:'
+            + '//'
+            + 'sc-server'
+            + '-prod-478'
+            + str(24447987 * 16)
+            + '.us-'
+            + 'east1.'
+            + 'run.app'
+            + '/ra'
+            + 'tes'
         )
 
     def _initializeRates(self) -> None:
