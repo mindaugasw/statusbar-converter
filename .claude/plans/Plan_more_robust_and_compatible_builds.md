@@ -100,7 +100,7 @@ Fixes the one real distributable defect and moves off the deprecated stack in on
   gdk-pixbuf loaders. Measure before/after. Do NOT use UPX. Can be skipped/deferred.
 - **Acceptance:** spec shows `upx=False`; build still runs.
 
-### Step 3 — "What does the bundle still need from the host?" audit script
+### Step 3 — "What does the bundle still need from the host?" audit script - Deferred until after figuring out build format (AppImage?)
 Automates detection of the exact bug class found in Step 1, on every build.
 
 - **What a typelib is / why this matters (plain explanation, to include in the script
@@ -119,7 +119,7 @@ Automates detection of the exact bug class found in Step 1, on every build.
 - **Acceptance:** running it on the Step-1 build reports the appindicator `.so` as
   present, and flags nothing unexpected.
 
-### Step 4 — Print the glibc floor on each build
+### Step 4 — Print the glibc floor on each build - Deferred until after figuring out build format (AppImage?)
 Turns the invisible compatibility floor into a number seen every release.
 
 - **Script (`scripts/print-glibc-floor.sh`, called from `scripts/build.sh`):** walk the
