@@ -31,6 +31,7 @@ _buildSpec() {
             --name 'Statusbar Converter' \
             --onedir \
             --windowed \
+            --noupx \
             --add-data '../assets:assets' \
             --add-data '../config:config' \
             --add-data '../version:.' \
@@ -45,6 +46,7 @@ _buildSpec() {
         "$venvDir/bin/pyi-makespec" \
             --name 'Statusbar Converter' \
             --onefile \
+            --noupx \
             --add-data '../assets:assets' \
             --add-data '../config:config' \
             --add-data '../version:.' \

@@ -89,9 +89,12 @@ Fixes the one real distributable defect and moves off the deprecated stack in on
   bundle*; `just run-dist` shows the tray icon + working menu; ideally confirmed on a
   machine/account without the appindicator runtime lib installed.
 
-### Step 2 — Set `upx=False` explicitly
+### Step 2 — Set `upx=False` explicitly - Completed ✅
 - **`build/spec-linux-x86_64.spec`** (and macOS spec for parity): `upx=False`.
   No-op today, but prevents a future upx install from silently corrupting a `.so`.
+  Also added `--noupx` to both `pyi-makespec` calls in `scripts/build-spec.sh` so
+  regeneration keeps `upx=False` (makespec defaults to `upx=True`). `strip`/`excludes`
+  evaluated and rejected — see `Step2_upx_strip_summary.md`.
 - **Optional (separate, only if size matters):** investigate safe size reduction —
   `strip=True`, `excludes=[...]` for unused stdlib/3rd-party modules, prune unneeded
   gdk-pixbuf loaders. Measure before/after. Do NOT use UPX. Can be skipped/deferred.
