@@ -1,0 +1,9 @@
+# Constrain shared dependencies to the platform-neutral common lock.
+# common.lock must be compiled first; see `just lock`.
+-c common.lock
+
+# pyinstaller added here (and not in common) because it pulls different package based on
+# OS (macOS version contains `macholib` dependency), and has different lock per OS
+pyinstaller==6.20.0
+
+rumps == 0.4.0

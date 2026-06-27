@@ -1,6 +1,5 @@
 PyYAML==6.0.3
 types-PyYAML~=6.0.12
-pyinstaller==6.20.0
 requests==2.34.2
 types-requests~=2.33.0
 # Pillow is needed for pyinstaller to be able to convert .png image to .icns to allow to use as macOS file icon
@@ -14,3 +13,5 @@ coverage==7.14.1
 mypy==2.1.0
 mypy_extensions~=1.1.0
 ruff==0.15.15
+# pip-tools provides pip-compile (lock generation) and pip-sync (lock-drift check)`
+pip-tools==7.5.3

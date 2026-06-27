@@ -131,7 +131,7 @@ Turns the invisible compatibility floor into a number seen every release.
 - **Acceptance:** build output prints a single max-glibc number; sanity-matches host
   (~2.35) today.
 
-### Step 5 — Lock dependencies with hashes  ⚠ DEFERRED (discuss before implementing)
+### Step 5 — Lock dependencies with hashes - Completed ✅
 Goal: reproducible venvs (transitive deps currently float). Likely `pip-compile`
 (pip-tools) or `uv pip compile` to generate a fully pinned, hashed lock from `.in` files,
 with `venv-install.sh` installing from the lock. **Do not implement yet** — discuss

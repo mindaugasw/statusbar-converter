@@ -25,6 +25,8 @@ _build() {
 
     echo -e "$textArrow Starting build for ${textYellow}${os}-${arch}${textReset}"
 
+    exe ./scripts/verify-dependencies.sh "$venvDir"
+
     exe rm -rf "$distDir"
 
     exe "$venvDir/bin/pyinstaller" \

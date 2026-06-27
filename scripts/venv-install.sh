@@ -27,8 +27,10 @@ _installVenv() {
 
     exe "$venvDir/bin/pip" install --upgrade pip
     exe "$venvDir/bin/pip" install wheel
-    exe "$venvDir/bin/pip" install -r "requirements_common.txt"
-    exe "$venvDir/bin/pip" install -r "requirements_$os.txt"
+    # Instead of `pip install` can alternatively use `pip-sync` - it would also remove not needed packages
+    exe "$venvDir/bin/pip" install --require-hashes \
+        -r "requirements/common.lock" \
+        -r "requirements/$os.lock"
 
     if [[ "$os" == 'linux' ]]; then
         _verifyGiLoads

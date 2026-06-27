@@ -1,0 +1,13 @@
+# Constrain shared dependencies to the platform-neutral common lock.
+# common.lock must be compiled first; see `just lock`.
+-c common.lock
+
+# pyinstaller added here (and not in common) because it pulls different package based on
+# OS (macOS version contains `macholib` dependency), and has different lock per OS
+pyinstaller==6.20.0
+
+# Native access to the system GObject-Introspection bindings (gi / GTK), replacing the deprecated vext + vext.gi.
+# PyGObject is pinned to 3.50.x because 3.52+ requires girepository-2.0 (GLib >= 2.80), while Ubuntu 22.04 ships
+# GLib 2.72 and only provides gobject-introspection-1.0.
+PyGObject >= 3.50, < 3.52
+pycairo == 1.29.0
