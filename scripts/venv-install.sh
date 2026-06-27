@@ -40,12 +40,14 @@ _installVenv() {
     echo -e "$textArrowSuccess Successfully installed venv into $textYellow$venvDir$textReset"
 }
 
-# Verify that the GTK/glib bindings load in the new venv. This fails if the venv was built
-# from a Homebrew Python, whose bundled glibc can't open the system libglib that PyGObject
-# needs. Without this verification, app fails when initializing StatusbarAppLinux class.
+# Verify that the UI libs bindings load in the new venv:
+# - GTK/glib: fails if the venv was built from a Homebrew Python, whose bundled
+#   glibc can't open the system libglib that PyGObject needs.
+# - AyatanaAppIndicator3: fails if gir1.2-ayatanaappindicator3-0.1 is missing on the
+#   host (needed during PyInstaller analysis and for bundling the Ayatana .so chain).
 _verifyGiLoads() {
-    echo -e "$textArrow Verifying gi/GTK bindings load in the venv"
-    "$venvDir/bin/python" -c "import gi; gi.require_version('Gtk', '3.0'); from gi.repository import Gtk"
+    echo -e "$textArrow Verifying gi/GTK + AyatanaAppIndicator3 bindings load in the venv"
+    "$venvDir/bin/python" -c "import gi; gi.require_version('Gtk', '3.0'); gi.require_version('AyatanaAppIndicator3', '0.1'); from gi.repository import AyatanaAppIndicator3, Gtk"
 }
 
 _installClipnotify() {

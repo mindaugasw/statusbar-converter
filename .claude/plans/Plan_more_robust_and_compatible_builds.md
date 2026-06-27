@@ -137,7 +137,7 @@ Goal: reproducible venvs (transitive deps currently float). Likely `pip-compile`
 with `venv-install.sh` installing from the lock. **Do not implement yet** — discuss
 tooling choice and workflow impact with the user first.
 
-### Step 6 — Strengthen `_verifyGiLoads` in `scripts/venv-install.sh`
+### Step 6 — Strengthen `_verifyGiLoads` in `scripts/venv-install.sh` - Completed ✅
 Make a missing host dep fail loudly at `just venv-install` (the on-host equivalent of the
 container's fail-loud guarantee).
 
