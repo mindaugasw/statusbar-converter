@@ -6,4 +6,3 @@ class ModalId:
     SETTINGS: Final[str] = 'settings'
     ABOUT: Final[str] = 'about'
     CUSTOMIZED_DIALOG: Final[str] = 'dialog'
-    MISSING_XSEL: Final[str] = 'dialog.missingXsel'

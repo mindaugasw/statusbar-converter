@@ -1,60 +1,69 @@
-import os
-import shutil
-import subprocess
-import threading
+import gi
 
-from src.Constant.ModalId import ModalId
+from src.Constant.ConfigId import ConfigId
+from src.Constant.Logs import Logs
 from src.Service.ClipboardManager import ClipboardManager
+from src.Service.Configuration import Configuration
 from src.Service.EventService import EventService
-from src.Service.FilesystemHelper import FilesystemHelper
 from src.Service.Logger import Logger
-from src.Service.ModalWindow.ModalWindowManager import ModalWindowManager
+
+
+gi.require_version('Gtk', '3.0')
+gi.require_version('Gdk', '3.0')
+
+from gi.repository import Gdk, Gtk  # type: ignore[attr-defined]  # noqa: E402
 
 
 class ClipboardManagerLinux(ClipboardManager):
-    _modalWindowManager: ModalWindowManager
+    _config: Configuration
 
-    _clipnotifyPath: str
+    _monitoredSelection: Gtk.Clipboard  # TODO rename? _monitoredClipboard
 
     def __init__(
         self,
         events: EventService,
         logger: Logger,
-        modalWindowManager: ModalWindowManager,
-        filesystemHelper: FilesystemHelper,
+        config: Configuration,
     ):
         super().__init__(events, logger)
 
-        self._modalWindowManager = modalWindowManager
-
-        self._clipnotifyPath = filesystemHelper.getBinariesDir() + '/clipnotify/clipnotify'
-
-        if not os.path.isfile(self._clipnotifyPath):
-            raise Exception('Clipnotify binary not found in: ' + self._clipnotifyPath)
+        self._config = config
 
     def validateSystem(self) -> bool:
-        if shutil.which('xsel') is not None:
-            return True
+        # init_check() performs GTK initialization: opens a connection to the default display
+        # (X server, or Wayland via GDK), sets up the GTK type system. On failure returns False,
+        # instead of aborting like init().
+        success, _ = Gtk.init_check()
 
-        self._modalWindowManager.openModal(ModalId.MISSING_XSEL)
+        if not success:
+            self._logger.log(Logs.catClipboard + 'No display available, cannot access clipboard')
 
-        return False
+        return success
 
     def initializeClipboardWatch(self) -> None:
-        threading.Thread(target=self._watchClipboard, daemon=True).start()
+        # The watch is driven by GTK's `owner-change` signal on the main loop (started later by
+        # StatusbarAppLinux.createApp() -> Gtk.main()), so no separate thread is needed.
+        self._monitoredSelection = Gtk.Clipboard.get(self._getMonitoredSelectionType())
+        self._monitoredSelection.connect('owner-change', self._onSelectionChange)  # TODO monitor both clipboards - so that it would re-parse on Ctrl+C. Value not necessarily has to be selected, can be copied programatically
 
     def setClipboardContent(self, content: str) -> None:
-        subprocess.run(['xsel', '-ib'], input=content, text=True)
-        subprocess.run(['xsel', '-ip'], input=content, text=True)
+        # Write to both selections: CLIPBOARD so the value pastes with Ctrl+V, and PRIMARY so it
+        # pastes with middle-click and so the monitor (when set to PRIMARY) fires `owner-change`,
+        # giving visual feedback that the copied value was detected and parsed.
+        Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD).set_text(content, -1)  # TODO cache reference in class variable
+        Gtk.Clipboard.get(Gdk.SELECTION_PRIMARY).set_text(content, -1)
 
-    def _watchClipboard(self) -> None:
-        while True:
-            # Clipnotify will block thread until selection changes, so we run command and simply wait.
-            # To allow clipnotify to block, it must be run with `call`
-            # See https://stackoverflow.com/a/2562292/4110469
+    def _onSelectionChange(self, _clipboard: Gtk.Clipboard, _event: Gdk.EventOwnerChange) -> None:
+        text = self._monitoredSelection.wait_for_text()
 
-            subprocess.call([self._clipnotifyPath], stdout=None, stderr=None)
+        # None when the clipboard holds non-text content (e.g. an image or file)
+        if text is not None:
+            self._handleChangedClipboard(text)
 
-            selection = os.popen('xsel -o').read()
+    def _getMonitoredSelectionType(self) -> Gdk.Atom:
+        # convert_on_highlight: True -> PRIMARY (react to text selection/highlight),
+        # False -> CLIPBOARD (react to an explicit Ctrl+C copy).
+        if self._config.get(ConfigId.General_ConvertOnHighlight):
+            return Gdk.SELECTION_PRIMARY
 
-            self._handleChangedClipboard(selection)
+        return Gdk.SELECTION_CLIPBOARD

@@ -30,7 +30,6 @@ from src.Service.Logger import Logger
 from src.Service.ModalWindow.Modals.AboutBuilder import AboutBuilder
 from src.Service.ModalWindow.Modals.CustomizedDialogBuilder import CustomizedDialogBuilder
 from src.Service.ModalWindow.Modals.DemoBuilder import DemoBuilder
-from src.Service.ModalWindow.Modals.MissingXselBuilder import DialogMissingXselBuilder
 from src.Service.ModalWindow.Modals.ModalWindowBuilderInterface import ModalWindowBuilderInterface
 from src.Service.ModalWindow.Modals.SettingsBuilder import SettingsBuilder
 from src.Service.ModalWindow.ModalWindowManager import ModalWindowManager
@@ -100,7 +99,7 @@ class ServiceBuilder:
             osSwitch, filesystemHelper, config, argumentParser, logger
         )
         _[ClipboardManager] = clipboardManager = self._getClipboardManager(
-            osSwitch, events, logger, modalWindowManager, filesystemHelper
+            osSwitch, events, logger, config
         )
         _[StatusbarApp] = self._getStatusbarApp(
             osSwitch,
@@ -194,7 +193,6 @@ class ServiceBuilder:
             ),
             ModalId.ABOUT: AboutBuilder(filesystemHelper, config),
             ModalId.CUSTOMIZED_DIALOG: customizedDialogBuilder,
-            ModalId.MISSING_XSEL: DialogMissingXselBuilder(customizedDialogBuilder),
         }
 
     def _getAutostartManager(
@@ -219,8 +217,7 @@ class ServiceBuilder:
         osSwitch: OSSwitch,
         eventService: EventService,
         logger: Logger,
-        modalWindowManager: ModalWindowManager,
-        filesystemHelper: FilesystemHelper,
+        config: Configuration,
     ) -> ClipboardManager:
         if osSwitch.isMacOS():
             from src.Service.ClipboardManagerMacOs import ClipboardManagerMacOs
@@ -229,7 +226,7 @@ class ServiceBuilder:
         else:
             from src.Service.ClipboardManagerLinux import ClipboardManagerLinux
 
-            return ClipboardManagerLinux(eventService, logger, modalWindowManager, filesystemHelper)
+            return ClipboardManagerLinux(eventService, logger, config)
 
     def _getStatusbarApp(
         self,
