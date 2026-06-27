@@ -84,7 +84,7 @@ Fixes the one real distributable defect and moves off the deprecated stack in on
   in `build-spec.sh` with paths resolved dynamically (e.g. via `ldconfig -p`), not
   hardcoded `/lib/x86_64-linux-gnu/...`.
 - **Host dep note:** build host needs `gir1.2-ayatanaappindicator3-0.1` +
-  `libayatana-appindicator3-1` installed (already present here; documented in Step 9).
+  `libayatana-appindicator3-1` installed (already present here; documented in Step 10).
 - **Acceptance:** Step 3 audit reports the appindicator typelib's `.so` as *present in
   bundle*; `just run-dist` shows the tray icon + working menu; ideally confirmed on a
   machine/account without the appindicator runtime lib installed.
@@ -114,7 +114,7 @@ Automates detection of the exact bug class found in Step 1, on every build.
   built bundle, extract its referenced shared-library name (parse with `strings`/similar),
   and check whether that `.so` is present in the bundle. Print a clear PASS/WARN list;
   exit non-zero if any referenced `.so` is missing, so it can gate `just build`.
-- **Interaction:** easiest against a **onedir/AppDir** tree of loose files (see Step 7);
+- **Interaction:** easiest against a **onedir/AppDir** tree of loose files (see Step 8);
   for the current onefile, extract first or scan the pre-pack collected dir.
 - **Acceptance:** running it on the Step-1 build reports the appindicator `.so` as
   present, and flags nothing unexpected.
@@ -126,7 +126,7 @@ Turns the invisible compatibility floor into a number seen every release.
   bundle's binaries/`.so` files, run `objdump -T`, collect the max `GLIBC_x.y` symbol
   version across all of them, and print it (e.g. "Bundle requires glibc >= 2.35").
 - **Interaction:** onefile hides packed `.so` from `objdump`; simplest against the
-  onedir/AppDir tree (Step 7) or by scanning the bundled input libs (venv `.so` +
+  onedir/AppDir tree (Step 8) or by scanning the bundled input libs (venv `.so` +
   resolved system libs + clipnotify, which alone needs `GLIBC_2.34`).
 - **Acceptance:** build output prints a single max-glibc number; sanity-matches host
   (~2.35) today.
@@ -147,7 +147,33 @@ container's fail-loud guarantee).
 - **Acceptance:** on a host missing the ayatana typelib, `just venv-install` fails with a
   clear message instead of deferring the failure to runtime.
 
-### Step 7 — Package the distributable as an AppImage
+### Step 7 — Replace `xsel` + `clipnotify` with native `Gtk.Clipboard`
+Removes both external Linux clipboard dependencies by using the GTK3 stack the bundle
+already ships. Today `ClipboardManagerLinux` shells out to `xsel` (read/write) and a
+locally-compiled `clipnotify` binary (block-until-change). GTK3's `Gtk.Clipboard` covers
+all three operations natively: `wait_for_text()` reads, `set_text()` writes, and the
+`owner-change` signal notifies on change — the same XFixes mechanism clipnotify uses,
+but built in. Since GTK is already bundled and `StatusbarAppLinux` already runs
+`Gtk.main()`, this adds no dependency while removing two.
+
+Wins: end users no longer need `xsel` installed (drops the `MISSING_XSEL` modal +
+`validateSystem` check); the build drops the clipnotify git-clone+`make` step and its
+`build-essential git libxfixes-dev` host deps; and `binaries/clipnotify` no longer ships
+in the distributable.
+
+Implementation notes (full details elsewhere): the watch moves off its own daemon thread
+onto the GTK main loop — `connect('owner-change', …)` once during setup (after GTK init),
+the callback then fires on every change with no re-subscribe. Guard against the self-write
+feedback loop (our own `setClipboardContent` also triggers `owner-change`). Standardize
+watch+read on the **CLIPBOARD** selection (explicit Ctrl+C), which fixes the current
+inconsistency where the code reads PRIMARY but writes both; optionally keep writing
+results to both selections for middle-click paste convenience.
+
+- **Caveat:** no change to the Wayland limitation — same XFixes/XWayland path as clipnotify.
+- **Acceptance:** a clipboard conversion still works with no `xsel`/`clipnotify` present;
+  build and `venv-install` no longer reference them.
+
+### Step 8 — Package the distributable as an AppImage
 Standard single-file Linux distribution format with desktop integration; can carry extra
 system libs for broader compat.
 
@@ -162,7 +188,7 @@ system libs for broader compat.
 - **Acceptance:** the `.AppImage` launches on the build host and shows the working tray
   app; Step 3 audit + Step 4 floor run against the AppDir.
 
-### Step 8 — macOS environment-as-code & compatibility floor  ⚠ CONTEXT ONLY (analyze in depth at implementation)
+### Step 9 — macOS environment-as-code & compatibility floor  ⚠ CONTEXT ONLY (analyze in depth at implementation)
 Mirror the Linux reproducibility/compatibility goals on macOS. **Only already-gathered
 context from discussion is captured here.** This step must be researched/expanded in depth
 when it is actually implemented (likely a separate session) — do not treat the list below
@@ -193,7 +219,7 @@ Already-identified actions (validate/expand at implementation time):
 - **Tentative files:** `scripts/build.sh` (deployment target), `scripts/macos-setup.sh`
   *(new)*, `Brewfile` *(new)*, `build/spec-macos-arm64.spec`.
 
-### Step 9 — Update `docs/building.md` (LAST)
+### Step 10 — Update `docs/building.md` (LAST)
 Done last because earlier steps change the inputs.
 
 - Fix stale content: Python **3.14** (not 3.10) and the corrected host-dependency list in
@@ -250,17 +276,19 @@ the `AyatanaAppIndicator3` import check that makes this fail loudly at install t
 ## Files to be modified / created
 - `src/Service/StatusbarAppLinux.py` — Ayatana aliased import (Step 1).
 - `scripts/build-spec.sh`, `build/spec-linux-x86_64.spec` — bundle `.so` chain, `upx=False`,
-  likely `--onedir` (Steps 1, 2, 7).
+  likely `--onedir` (Steps 1, 2, 8).
 - `build/spec-macos-arm64.spec` — `upx=False` parity (Step 2).
 - `hooks/hook-gi.repository.AyatanaAppIndicator3.py` *(new, preferred)* — collect Ayatana
   libs (Step 1).
 - `scripts/audit-bundle-deps.sh` *(new)* — Step 3.
 - `scripts/print-glibc-floor.sh` *(new)* — Step 4.
-- `scripts/build.sh` — call audit + glibc floor; AppImage packaging (Steps 3, 4, 7).
+- `src/Service/ClipboardManagerLinux.py` — native `Gtk.Clipboard`; `scripts/venv-install.sh`
+  drops the clipnotify build (Step 7).
+- `scripts/build.sh` — call audit + glibc floor; AppImage packaging (Steps 3, 4, 8).
 - `scripts/venv-install.sh` — strengthen `_verifyGiLoads` (Step 6).
 - `scripts/build.sh` (`MACOSX_DEPLOYMENT_TARGET`), `scripts/macos-setup.sh` *(new)*,
-  `Brewfile` *(new)* — Step 8 (macOS, context-only for now).
-- `docs/building.md`, `README.md`, optional `scripts/host-deps.sh` — Step 9.
+  `Brewfile` *(new)* — Step 9 (macOS, context-only for now).
+- `docs/building.md`, `README.md`, optional `scripts/host-deps.sh` — Step 10.
 - *(Deferred)* lock file + `requirements*.in` — Step 5.
 
 ## Verification (end-to-end)
@@ -302,9 +330,9 @@ aren't lost; almost all require running on real sessions/machines by hand.
 ## Risks / open questions
 - **Step 1 lib placement:** the bundled `.so` must be found by SONAME at runtime; verify
   via Step 3 audit + an actual clean run, not just presence in the TOC.
-- **Steps 3/4 vs onefile:** cleanest after the Step-7 onedir switch; if Step 7 slips,
+- **Steps 3/4 vs onefile:** cleanest after the Step-8 onedir switch; if Step 8 slips,
   these scripts must extract/locate packed libs.
-- **Step 7 format:** AppImage-only vs AppImage + zip — decide with user.
+- **Step 8 format:** AppImage-only vs AppImage + zip — decide with user.
 - **Step 5:** deferred pending discussion.
 - **No container = no enforced floor:** mitigated by Step 4 visibility + discipline of not
   upgrading the build host past the oldest target.

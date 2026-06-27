@@ -20,6 +20,14 @@ class ConfigId:
         300,
     )
 
+    # Linux only:
+    # True - convert on text highlighting (PRIMARY selection)
+    # False - convert on explicit Ctrl+C copy (CLIPBOARD selection)
+    General_ConvertOnHighlight: Final = ConfigParameter.newState(
+        ['general_settings', 'convert_on_highlight'],
+        True,
+    )
+
     Converter_Currency_Enabled: Final = ConfigParameter.newState(
         ['converters', 'currency', 'enabled'],
         True,

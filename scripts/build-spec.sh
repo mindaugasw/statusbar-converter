@@ -50,7 +50,6 @@ _buildSpec() {
             --add-data '../assets:assets' \
             --add-data '../config:config' \
             --add-data '../version:.' \
-            --add-binary '../binaries/clipnotify/clipnotify:binaries/clipnotify' \
             --additional-hooks-dir 'build/hooks' \
             --icon '../assets/icon_linux.png' \
             --specpath 'build' \

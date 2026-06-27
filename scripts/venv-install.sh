@@ -34,7 +34,6 @@ _installVenv() {
 
     if [[ "$os" == 'linux' ]]; then
         _verifyGiLoads
-        _installClipnotify
     fi
 
     echo -e "$textArrowSuccess Successfully installed venv into $textYellow$venvDir$textReset"
@@ -48,18 +47,6 @@ _installVenv() {
 _verifyGiLoads() {
     echo -e "$textArrow Verifying gi/GTK + AyatanaAppIndicator3 bindings load in the venv"
     "$venvDir/bin/python" -c "import gi; gi.require_version('Gtk', '3.0'); gi.require_version('AyatanaAppIndicator3', '0.1'); from gi.repository import AyatanaAppIndicator3, Gtk"
-}
-
-_installClipnotify() {
-    local clipnotifyDir='binaries/clipnotify'
-
-    echo -e "$textArrow Installing clipnotify into $textYellow$clipnotifyDir$textReset"
-
-    exe rm -rf "$clipnotifyDir"
-    exe git clone https://github.com/cdown/clipnotify.git "$clipnotifyDir"
-    exe make -C "$clipnotifyDir"
-
-    echo -e "$textArrow Successfully installed clipnotify into $textYellow$clipnotifyDir$textReset"
 }
 
 _installVenv

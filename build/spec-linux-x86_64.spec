@@ -4,7 +4,7 @@
 a = Analysis(
     ['../src/__main__.py'],
     pathex=[],
-    binaries=[('../binaries/clipnotify/clipnotify', 'binaries/clipnotify')],
+    binaries=[],
     datas=[('../assets', 'assets'), ('../config', 'config'), ('../version', '.')],
     hiddenimports=[],
     hookspath=['build/hooks'],

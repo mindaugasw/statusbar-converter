@@ -25,5 +25,6 @@ general_settings:
   clear_after_time: 300
   clear_on_change: false
   flash_icon_on_change: true
+  convert_on_highlight: true
 update:
   skip_version: null
