@@ -21,8 +21,8 @@ class ConfigId:
     )
 
     # Linux only:
-    # True - convert on text highlighting (PRIMARY selection)
-    # False - convert on explicit Ctrl+C copy (CLIPBOARD selection)
+    # True - convert on text highlighting (PRIMARY selection) and also on copy.
+    # False - convert only on explicit Ctrl+C copy (CLIPBOARD selection).
     General_ConvertOnHighlight: Final = ConfigParameter.newState(
         ['general_settings', 'convert_on_highlight'],
         True,
